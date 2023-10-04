@@ -21,7 +21,7 @@ const visible = ref(false);
 
 const killLCURenderHandler = () => {
   visible.value = false;
-  lcuStore.killRender().then(ElMessage.success("kill请求已发送！"));
+  lcuStore.killRender().then(() => ElMessage.success("kill请求已发送！"));
 };
 
 onMounted(() => {
