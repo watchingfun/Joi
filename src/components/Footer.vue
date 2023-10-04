@@ -21,7 +21,7 @@ const visible = ref(false);
 
 const killLCURenderHandler = () => {
   visible.value = false;
-  lcuStore.killRender().then(ElMessage.success("kill请求已发送！"));
+  lcuStore.killRender().then(() => ElMessage.success("kill请求已发送！"));
 };
 
 onMounted(() => {
@@ -64,6 +64,27 @@ onUnmounted(() => {
           </div>
           <template #reference>
             <div class="kill-btn" @click="visible = true">重启LCURender进程</div>
+          </template>
+        </el-popover>
+      </div>
+      <div>
+        <el-popover :visible="visible" placement="top" :width="350">
+          <p>
+            此操作通过杀掉LeagueClientUxRender.exe进程来让客户端重启界面进程，可以解决各种黑屏，显示不全等问题。
+            确认继续?
+          </p>
+          <div style="text-align: right; margin: 0">
+            <el-button size="small" text @click="visible = false"
+              >取消
+            </el-button>
+            <el-button size="small" type="primary" @click="killLCURenderHandler"
+              >确认
+            </el-button>
+          </div>
+          <template #reference>
+            <div class="kill-btn" @click="visible = true">
+              重启LCURender进程
+            </div>
           </template>
         </el-popover>
       </div>
