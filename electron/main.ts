@@ -1,5 +1,5 @@
 import path from "path";
-import { app, ipcMain } from "electron";
+import { app, ipcMain, shell } from "electron";
 import { getSqlite3 } from "./better-sqlite3";
 import { setupTitleBarHandler } from "./handleTitleBar";
 import { setupTray } from "./handleTray";
@@ -69,6 +69,10 @@ export function createWindow() {
 app.on("window-all-closed", () => {
   app.quit();
   win = null;
+});
+
+ipcMain.on("open-url", (e, args) => {
+  shell.openExternal(args);
 });
 
 app.whenReady().then(() => {
