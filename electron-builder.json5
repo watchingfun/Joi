@@ -1,0 +1,41 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  "appId": "YourAppID",
+  "asar": false,
+  "productName": "Joi",
+  "copyright": "Copyright © 2022 ${author}",
+  "directories": {
+    "output": "release/${version}",
+  },
+  "files": [
+    "dist",
+    "dist-electron",
+    "dist-native"
+  ],
+  "win": {
+    "icon": "public/icon.ico",
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  },
+  "mac": {
+    "target": ["dmg"],
+    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "artifactName": "${productName}-Linux-${version}.${ext}"
+  }
+}
