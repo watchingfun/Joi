@@ -29,6 +29,10 @@ const useLCUStore = defineStore("lcu", () => {
     }
   }
 
+  async function killRender() {
+    return window.ipcRenderer.invoke("lcu:killRender");
+  }
+
   async function getCurrentSummoner() {
     if (connectStatus.value !== ConnectStatusEnum.connected) {
       throw new Error("客户端未连接");
@@ -40,7 +44,7 @@ const useLCUStore = defineStore("lcu", () => {
       });
   }
 
-  return { connectStatus, connectLCU, getCurrentSummoner };
+  return { connectStatus, connectLCU, getCurrentSummoner,killRender };
 });
 
 export default useLCUStore;

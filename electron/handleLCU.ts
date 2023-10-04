@@ -1,4 +1,5 @@
 import { getAuthInfo } from "./util/authUtil";
+import { exec } from "child_process";
 import { BrowserWindow, ipcMain} from "electron";
 import {
   DEPRECATED_connect,
@@ -14,6 +15,20 @@ ipcMain.handle("lcu:connect", async (event, args) => {
   credentials = await getAuthInfo();
   const ws = await DEPRECATED_connect(credentials);
   wsSubscribe(ws, credentials);
+});
+
+ipcMain.handle("lcu:killRender", (event, args) => {
+  return new Promise((resolve, reject)=>{
+    exec(`cd ${process.env.VITE_PUBLIC} && killLCURender.bat`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`无法杀死进程 LeagueClientUxRender.exe: ${error.message}`);
+        reject(error.message)
+      }else{
+        console.log(`成功杀死进程 LeagueClientUxRender.exe`);
+        resolve(null)
+      }
+    });
+  })
 });
 
 ipcMain.handle("lcu:getCurrentSummoner", (event, args) => {
