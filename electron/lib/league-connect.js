@@ -353,6 +353,28 @@ var LeagueWebSocket = class extends WebSocket {
     this.on("open", () => {
       this.send(JSON.stringify([5, "OnJsonApiEvent"]));
     });
+    this.on("close", ()=>{
+      var _a; const closeKey = "/close"
+      try {
+        if (this.subscriptions.has(closeKey)) {
+          (_a = this.subscriptions.get(closeKey)) == null ? void 0 : _a.forEach((cb) => {
+            cb(null);
+          });
+        }
+      } catch {
+      }
+    })
+    this.on("error", (e)=>{
+      var _a; const key = "/error"
+      try {
+        if (this.subscriptions.has(key)) {
+          (_a = this.subscriptions.get(key)) == null ? void 0 : _a.forEach((cb) => {
+            cb(e);
+          });
+        }
+      } catch {
+      }
+    })
     this.on("message", (content) => {
       var _a;
       try {

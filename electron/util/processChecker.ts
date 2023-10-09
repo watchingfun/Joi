@@ -30,14 +30,22 @@ class ProcessChecker extends EventEmitter {
   }
 
   checkProcess() {
-    exec(`tasklist /fi "pid eq ${this.pid}"`, (error, stdout) => {
-      if (!error && stdout.includes(this.pid.toString())) {
-        this.emit("running");
-      } else {
-        this.emit("stopped");
-      }
-    });
+    checkProcessExist(this.pid).then(
+      (flag) => () => this.emit(flag ? "running" : "stopped"),
+    );
   }
 }
 
-export default ProcessChecker
+export async function checkProcessExist(pid: number) {
+  return new Promise((resolve, reject) => {
+    exec(`tasklist /fi "pid eq ${pid}"`, (error, stdout) => {
+      if (!error && stdout.includes(pid.toString())) {
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  });
+}
+
+export default ProcessChecker;

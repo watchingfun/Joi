@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { Ref, ref } from "vue";
+import IpcRendererEvent = Electron.IpcRendererEvent;
+import {ElMessage} from "element-plus";
 
 export enum ConnectStatusEnum {
   connecting,
@@ -18,10 +20,19 @@ const useLCUStore = defineStore("lcu", () => {
       await window.ipcRenderer.invoke("lcu:connect").then(() => {
         connectStatus.value = ConnectStatusEnum.connected;
       });
-      window.ipcRenderer.on("lcu:disconnect", () => {
-        connectStatus.value = ConnectStatusEnum.disconnect;
-        console.log("lcu:disconnect");
-      });
+      window.ipcRenderer.on(
+        "lcu:disconnect",
+        (event: IpcRendererEvent, ...args: any[]) => {
+          connectStatus.value = ConnectStatusEnum.disconnect;
+          console.log("lcu:disconnect", args);
+          let e = args[0] as string;
+          if (e && e.includes("connect ECONNREFUSED")) {
+            ElMessage.error(e+" 连接失败，请重试");
+          } else if (e) {
+            ElMessage.error(e);
+          }
+        },
+      );
     } catch (e) {
       connectStatus.value = ConnectStatusEnum.disconnect;
       console.error(e);
@@ -44,7 +55,7 @@ const useLCUStore = defineStore("lcu", () => {
       });
   }
 
-  return { connectStatus, connectLCU, getCurrentSummoner,killRender };
+  return { connectStatus, connectLCU, getCurrentSummoner, killRender };
 });
 
 export default useLCUStore;
