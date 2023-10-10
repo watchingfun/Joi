@@ -17,12 +17,8 @@ const useLCUStore = defineStore("lcu", () => {
   async function connectLCU() {
     try {
       connectStatus.value = ConnectStatusEnum.connecting;
-      await window.ipcRenderer
-        .invoke("lcu:connect")
-        .then(() => {
-          connectStatus.value = ConnectStatusEnum.connected;
-        })
-        .cache(() => (connectStatus.value = ConnectStatusEnum.disconnect));
+      await window.ipcRenderer.invoke("lcu:connect")
+      connectStatus.value = ConnectStatusEnum.connected;
       window.ipcRenderer.on(
         "lcu:disconnect",
         (event: IpcRendererEvent, ...args: any[]) => {
