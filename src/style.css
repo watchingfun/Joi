@@ -6,6 +6,16 @@
   color-scheme: light dark;
   color: #fff;
   /*background-color: transparent;*/
+  font-family: 'NotoSansSC-Regular', sans-serif;
+  -webkit-font-smoothing: antialiased; /*chrome、safari*/
+  -moz-osx-font-smoothing: grayscale; /*firefox*/
+}
+
+@font-face {
+  font-family: 'NotoSansSC-Regular';
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/NotoSansSC-Regular.woff2') format('woff2');
 }
 
 .title-bar {
@@ -13,7 +23,7 @@
   -webkit-app-region: drag;
 }
 
-html,body{
+html, body {
   height: 100%;
   padding: 0;
   margin: 0;

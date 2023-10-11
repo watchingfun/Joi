@@ -30,8 +30,8 @@ const { connectLCU } = lcuStore;
           type="danger"
           style="color: #ff0000f2"
           @click="connectLCU"
-          >未连接, 点击重连</el-text
-        >
+          >未连接, 点击重连
+        </el-text>
       </div>
       <div v-else-if="connectStatus === ConnectStatusEnum.connecting">
         <el-icon class="rotate">
@@ -44,6 +44,10 @@ const { connectLCU } = lcuStore;
 </template>
 
 <style scoped>
+.status-info :deep(.el-text){
+  font-size: 12px;
+}
+
 .status-info > div {
   display: flex;
   flex-direction: row;
@@ -57,9 +61,5 @@ const { connectLCU } = lcuStore;
 
 .disconnect:hover {
   background-color: rgba(245, 112, 45, 0.63);
-}
-
-.el-text {
-  font-size: 12px;
 }
 </style>
