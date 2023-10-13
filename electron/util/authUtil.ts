@@ -82,12 +82,11 @@ XWehWA==
 `;
 
 export async function getAuthInfo(): Promise<Credentials> {
-  const rawStdout = await executeCmdAndGetOutput();
-  const portRegex = /--app-port=([0-9]+)(?= *"| --)/;
-  const passwordRegex = /--remoting-auth-token=(.+?)(?= *"| --)/;
-  const pidRegex = /--app-pid=([0-9]+)(?= *"| --)/;
-
   try {
+    const rawStdout = await executeCmdAndGetOutput();
+    const portRegex = /--app-port=([0-9]+)(?= *"| --)/;
+    const passwordRegex = /--remoting-auth-token=(.+?)(?= *"| --)/;
+    const pidRegex = /--app-pid=([0-9]+)(?= *"| --)/;
     const stdout = rawStdout.replace(/\n|\r/g, "");
     const [, port] = stdout.match(portRegex);
     const [, password] = stdout.match(passwordRegex);
@@ -99,8 +98,8 @@ export async function getAuthInfo(): Promise<Credentials> {
       password,
       certificate: RIOT_GAMES_CERT,
     };
-  }catch (e) {
+  } catch (e) {
+    console.log(e);
     throw new Error("提取LCU进程信息失败");
   }
 }
-

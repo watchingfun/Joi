@@ -3,7 +3,8 @@ import { app, ipcMain, shell } from "electron";
 import { getSqlite3 } from "./better-sqlite3";
 import { setupTitleBarHandler } from "./handleTitleBar";
 import { setupTray } from "./handleTray";
-import "./handleLCU";
+import "./lcu/handleLCU";
+import { startGuardTask } from "./lcu/handleLCU";
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
@@ -51,14 +52,15 @@ export function createWindow() {
     },
   });
 
-  // Test active push message to Renderer-process.
+  // 当窗口准备完毕
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
+    startGuardTask();
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
-    win.webContents.openDevTools();
+    //win.webContents.openDevTools();
   } else {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, "index.html"));
@@ -79,19 +81,12 @@ app.whenReady().then(() => {
   createWindow();
   setupTray();
   // ensure did-finish-load
-  setTimeout(() => {
-    const db = getSqlite3();
-    win?.webContents.send(
-      "main-process-message",
-      `[better-sqlite3] ${JSON.stringify(db.pragma("journal_mode = WAL"))}`,
-    );
-    // getAuthInfo()
-    //   .then((output) => {
-    //     console.log('成功得到输出：', output)
-    //     win?.webContents.send('get-lol-auth', output)
-    //   })
-    //   .catch((error) => {
-    //     console.error('发生错误：', error)
-    //   })
-  }, 999);
+  // setTimeout(() => {
+  //   const db = getSqlite3();
+  //   win?.webContents.send(
+  //     "main-process-message",
+  //     `[better-sqlite3] ${JSON.stringify(db.pragma("journal_mode = WAL"))}`,
+  //   );
+  //
+  // }, 999);
 });

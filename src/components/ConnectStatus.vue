@@ -5,7 +5,6 @@ import { CircleCheck, CircleClose, Loading } from "@element-plus/icons-vue";
 
 const lcuStore = useLCUStore();
 const { connectStatus } = storeToRefs(lcuStore);
-const { connectLCU } = lcuStore;
 </script>
 
 <template>
@@ -29,8 +28,7 @@ const { connectLCU } = lcuStore;
           class="mx-1"
           type="danger"
           style="color: #ff0000f2"
-          @click="connectLCU"
-          >未连接, 点击重连
+          >未连接
         </el-text>
       </div>
       <div v-else-if="connectStatus === ConnectStatusEnum.connecting">
@@ -55,11 +53,6 @@ const { connectLCU } = lcuStore;
 }
 
 .disconnect {
-  cursor: pointer;
   transition: all 0.2s ease-in-out;
-}
-
-.disconnect:hover {
-  background-color: rgba(245, 112, 45, 0.63);
 }
 </style>

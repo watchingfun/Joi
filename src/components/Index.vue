@@ -4,17 +4,12 @@ import { storeToRefs } from "pinia";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import { CircleCheck, CircleClose, Loading } from "@element-plus/icons-vue";
 
-const lcuStore = useLCUStore();
-const { connectStatus } = storeToRefs(lcuStore);
-const { connectLCU,getCurrentSummoner } = lcuStore;
-
-
-
 </script>
 
 <template>
   <div>
-<!--    <el-button plain type="primary" @click="getCurrentSummoner">获取当前召唤师信息</el-button>-->
+    <!--    <el-button plain type="primary" @click="getCurrentSummoner">获取当前召唤师信息</el-button>-->
+<!--    <el-button v-for="(key, i) of func" onclick="func[key]"> key </el-button>-->
   </div>
 </template>
 

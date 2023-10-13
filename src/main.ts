@@ -6,6 +6,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { createPinia } from "pinia";
 import { ElMessage } from "element-plus";
 import "element-plus/theme-chalk/el-message.css";
+import { setupListener } from "@/listener/backgroundListener";
 
 const router = createRouter({
   //hash 模式
@@ -20,11 +21,7 @@ app.use(pinia);
 app.mount("#app").$nextTick(() => {
   postMessage({ payload: "removeLoading" }, "*");
 });
-// Use contextBridge
-// @ts-ignore
-window.ipcRenderer.on("main-process-message", (_event, message) => {
-  console.log(message);
-});
+setupListener();
 
 app.config.errorHandler = (err, vm, info) => {
   // 处理错误

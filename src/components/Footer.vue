@@ -1,27 +1,26 @@
 <script setup lang="ts">
 import ConnectStatus from "@/components/ConnectStatus.vue";
 import useAppStore from "@/store/app";
-import useLCUStore from "@/store/lcu";
 import { onMounted, onUnmounted, ref } from "vue";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import zhCN from "dayjs/locale/zh-cn";
 import { ElMessage } from "element-plus";
+import lcuApi from "@/api/lcuApi";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.locale(zhCN);
 
 const appStore = useAppStore();
-const lcuStore = useLCUStore();
 let timer: ReturnType<typeof setInterval> | null;
 const diffTime = ref();
 const visible = ref(false);
 
 const killLCURenderHandler = () => {
   visible.value = false;
-  lcuStore.killRender().then(() => ElMessage.success("kill请求已发送！"));
+  lcuApi.lcuKillRender().then(() => ElMessage.success("kill请求已发送！"));
 };
 
 onMounted(() => {

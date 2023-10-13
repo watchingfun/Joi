@@ -244,44 +244,8 @@ interface ConnectionOptions {
      */
     maxRetries?: number;
 }
-/**
- * Creates a WebSocket connection to the League Client
- * @param {ConnectionOptions} [options] Options that will be used to authenticate to the League Client
- *
- * @throws Error If the connection fails due to ECONNREFUSED
- * @throws WebSocket.ErrorEvent If the connection fails for any other reason
- */
-declare function createWebSocketConnection(options?: ConnectionOptions): Promise<LeagueWebSocket>;
 
-interface DEPRECATED_RequestOptions<T = any> {
-    /**
-     * Relative URL (relative to LCU API base url) to send api request to
-     */
-    url: string;
-    /**
-     * Http verb to use for request
-     */
-    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-    /**
-     * Optionally a body to pass to PUT/PATCH/POST/DELETE. This is typically
-     * an object type as the library will parse this into JSON and send along
-     * with the request
-     */
-    body?: T;
-}
-/**
- * Wrapper around Node-fetch Response which will deserialize JSON into the
- * proper type
- */
-declare class DEPRECATED_Response<T> extends Response {
-    constructor(parent: Response);
-    /**
-     * Deserialize the response body into T
-     */
-    json(): Promise<T>;
-}
-declare function DEPRECATED_request<T = any, R = any>(options: DEPRECATED_RequestOptions<T>, credentials?: Credentials): Promise<DEPRECATED_Response<R>>;
+declare function createWebSocketConnection(credentials: Credentials): Promise<LeagueWebSocket>;
 
-declare function DEPRECATED_connect(credentials: Credentials): Promise<LeagueWebSocket>;
 
-export { AuthenticationOptions, ClientNotFoundError, ConnectionOptions, Credentials, DEPRECATED_RequestOptions, DEPRECATED_Response, DEPRECATED_connect, DEPRECATED_request, EventCallback, EventResponse, HeaderPair, Http1Response, Http2Response, HttpRequestOptions, HttpResponse, InvalidPlatformError, JsonObjectLike, LeagueClient, LeagueClientOptions, LeagueWebSocket, authenticate, createHttp1Request, createHttp2Request, createHttpSession, createWebSocketConnection };
+export { AuthenticationOptions, ClientNotFoundError, ConnectionOptions, Credentials, EventCallback, EventResponse, HeaderPair, Http1Response, Http2Response, HttpRequestOptions, HttpResponse, InvalidPlatformError, JsonObjectLike, LeagueClient, LeagueClientOptions, LeagueWebSocket, authenticate, createHttp1Request, createHttp2Request, createHttpSession, createWebSocketConnection };

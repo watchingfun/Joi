@@ -50,6 +50,7 @@ var ClientElevatedPermsError = class extends Error {
     super("League Client has been detected but is running as administrator");
   }
 };
+
 async function authenticate(options) {
   async function tryAuthenticate() {
     const name = (options == null ? void 0 : options.name) ?? DEFAULT_NAME;
@@ -60,12 +61,20 @@ async function authenticate(options) {
     let command;
     if (!isWindows) {
       command = `ps x -o args | grep '${name}'`;
-    } else if (isWindows && (options == null ? void 0 : options.useDeprecatedWmic) === true) {
+    } else if (
+      isWindows &&
+      (options == null ? void 0 : options.useDeprecatedWmic) === true
+    ) {
       command = `wmic process where caption='${name}.exe' get commandline`;
     } else {
       command = `Get-CimInstance -Query "SELECT * from Win32_Process WHERE name LIKE '${name}.exe'" | Select-Object -ExpandProperty CommandLine`;
     }
-    const executionOptions = isWindows ? { shell: (options == null ? void 0 : options.windowsShell) ?? "powershell" } : {};
+    const executionOptions = isWindows
+      ? {
+          shell:
+            (options == null ? void 0 : options.windowsShell) ?? "powershell",
+        }
+      : {};
     try {
       const { stdout: rawStdout } = await exec(command, executionOptions);
       const stdout = rawStdout.replace(/\n|\r/g, "");
@@ -73,37 +82,52 @@ async function authenticate(options) {
       const [, password] = stdout.match(passwordRegex);
       const [, pid] = stdout.match(pidRegex);
       const unsafe = (options == null ? void 0 : options.unsafe) === true;
-      const hasCert = (options == null ? void 0 : options.certificate) !== void 0;
-      const certificate = hasCert ? options.certificate : unsafe ? void 0 : RIOT_GAMES_CERT;
+      const hasCert =
+        (options == null ? void 0 : options.certificate) !== void 0;
+      const certificate = hasCert
+        ? options.certificate
+        : unsafe
+        ? void 0
+        : RIOT_GAMES_CERT;
       return {
         port: Number(port),
         pid: Number(pid),
         password,
-        certificate
+        certificate,
       };
     } catch (err) {
       if (options == null ? void 0 : options.__internalDebug)
         console.error(err);
       if (executionOptions.shell === "powershell") {
-        const { stdout: isAdmin } = await exec(`if ((Get-Process -Name ${name} -ErrorAction SilentlyContinue | Where-Object {!$_.Handle -and !$_.Path})) {Write-Output "True"} else {Write-Output "False"}`, executionOptions);
-        if (isAdmin.includes("True"))
-          throw new ClientElevatedPermsError();
+        const { stdout: isAdmin } = await exec(
+          `if ((Get-Process -Name ${name} -ErrorAction SilentlyContinue | Where-Object {!$_.Handle -and !$_.Path})) {Write-Output "True"} else {Write-Output "False"}`,
+          executionOptions,
+        );
+        if (isAdmin.includes("True")) throw new ClientElevatedPermsError();
       }
       throw new ClientNotFoundError();
     }
   }
+
   if (!["win32", "linux", "darwin"].includes(process.platform)) {
     throw new InvalidPlatformError();
   }
   if (options == null ? void 0 : options.awaitConnection) {
     return new Promise(function self(resolve, reject) {
-      tryAuthenticate().then((result) => {
-        resolve(result);
-      }).catch((err) => {
-        if (err instanceof ClientElevatedPermsError)
-          reject(err);
-        setTimeout(self, (options == null ? void 0 : options.pollInterval) ?? DEFAULT_POLL_INTERVAL, resolve, reject);
-      });
+      tryAuthenticate()
+        .then((result) => {
+          resolve(result);
+        })
+        .catch((err) => {
+          if (err instanceof ClientElevatedPermsError) reject(err);
+          setTimeout(
+            self,
+            (options == null ? void 0 : options.pollInterval) ??
+              DEFAULT_POLL_INTERVAL,
+            resolve,
+            reject,
+          );
+        });
     });
   } else {
     return tryAuthenticate();
@@ -112,6 +136,7 @@ async function authenticate(options) {
 
 // src/client.ts
 import { EventEmitter } from "events";
+
 var DEFAULT_POLL_INTERVAL2 = 2500;
 var LeagueClient = class extends EventEmitter {
   constructor(credentials, options) {
@@ -119,8 +144,10 @@ var LeagueClient = class extends EventEmitter {
     this.options = options;
     this.credentials = credentials;
   }
+
   isListening = false;
   credentials = void 0;
+
   start() {
     if (!this.isListening) {
       this.isListening = true;
@@ -130,9 +157,11 @@ var LeagueClient = class extends EventEmitter {
       this.onTick();
     }
   }
+
   stop() {
     this.isListening = false;
   }
+
   async onTick() {
     var _a, _b, _c;
     if (this.isListening) {
@@ -142,24 +171,35 @@ var LeagueClient = class extends EventEmitter {
           this.credentials = void 0;
           this.onTick();
         } else {
-          setTimeout(() => {
-            this.onTick();
-          }, ((_a = this.options) == null ? void 0 : _a.pollInterval) ?? DEFAULT_POLL_INTERVAL2);
+          setTimeout(
+            () => {
+              this.onTick();
+            },
+            ((_a = this.options) == null ? void 0 : _a.pollInterval) ??
+              DEFAULT_POLL_INTERVAL2,
+          );
         }
       } else {
         const credentials = await authenticate({
           awaitConnection: true,
-          pollInterval: ((_b = this.options) == null ? void 0 : _b.pollInterval) ?? DEFAULT_POLL_INTERVAL2
+          pollInterval:
+            ((_b = this.options) == null ? void 0 : _b.pollInterval) ??
+            DEFAULT_POLL_INTERVAL2,
         });
         this.credentials = credentials;
         this.emit("connect", credentials);
-        setTimeout(() => {
-          this.onTick();
-        }, ((_c = this.options) == null ? void 0 : _c.pollInterval) ?? DEFAULT_POLL_INTERVAL2);
+        setTimeout(
+          () => {
+            this.onTick();
+          },
+          ((_c = this.options) == null ? void 0 : _c.pollInterval) ??
+            DEFAULT_POLL_INTERVAL2,
+        );
       }
     }
   }
 };
+
 function processExists(pid) {
   try {
     return process.kill(pid, 0);
@@ -187,24 +227,32 @@ var Http1Response = class {
   constructor(_message, _raw) {
     this._message = _message;
     this._raw = _raw;
-    assert(_message.complete, "Response constructor called with incomplete HttpIncomingMessage");
+    assert(
+      _message.complete,
+      "Response constructor called with incomplete HttpIncomingMessage",
+    );
     const code = _message.statusCode;
     this.ok = code >= 200 && code < 300;
     this.redirected = [301, 302, 303, 307, 308].includes(code);
     this.status = code;
   }
+
   ok;
   redirected;
   status;
+
   json() {
     return JSON.parse(this._raw.toString());
   }
+
   text() {
     return this._raw.toString();
   }
+
   buffer() {
     return this._raw;
   }
+
   headers() {
     const headers = [];
     for (const [key, value] of Object.entries(this._message.headers)) {
@@ -222,31 +270,40 @@ var Http1Response = class {
     return headers;
   }
 };
+
 async function createHttp1Request(options, credentials) {
-  const agentOptions = credentials.certificate === void 0 ? { rejectUnauthorized: false } : { ca: credentials.certificate };
+  const agentOptions =
+    credentials.certificate === void 0
+      ? { rejectUnauthorized: false }
+      : { ca: credentials.certificate };
   return new Promise((resolve, reject) => {
-    const request = https.request({
-      host: "127.0.0.1",
-      port: credentials.port,
-      path: "/" + trim(options.url),
-      method: options.method,
-      headers: {
-        Accept: "*/*",
-        "Content-Type": "application/json",
-        Authorization: "Basic " + Buffer.from(`riot:${credentials.password}`).toString("base64")
+    const request = https.request(
+      {
+        host: "127.0.0.1",
+        port: credentials.port,
+        path: "/" + trim(options.url),
+        method: options.method,
+        headers: {
+          Accept: "*/*",
+          "Content-Type": "application/json",
+          Authorization:
+            "Basic " +
+            Buffer.from(`riot:${credentials.password}`).toString("base64"),
+        },
+        agent: new https.Agent(agentOptions),
       },
-      agent: new https.Agent(agentOptions)
-    }, (response) => {
-      let buffer = [];
-      response.on("data", (data) => void buffer.push(data));
-      response.on("end", () => {
-        try {
-          resolve(new Http1Response(response, Buffer.concat(buffer)));
-        } catch (jsonError) {
-          reject(jsonError);
-        }
-      });
-    });
+      (response) => {
+        let buffer = [];
+        response.on("data", (data) => void buffer.push(data));
+        response.on("end", () => {
+          try {
+            resolve(new Http1Response(response, Buffer.concat(buffer)));
+          } catch (jsonError) {
+            reject(jsonError);
+          }
+        });
+      },
+    );
     if (options.body !== void 0) {
       const data = JSON.stringify(options.body);
       const body = new TextEncoder().encode(data);
@@ -261,35 +318,45 @@ async function createHttp1Request(options, credentials) {
 import http2 from "http2";
 import { TextEncoder as TextEncoder2 } from "util";
 import assert2 from "assert";
+
 async function createHttpSession(credentials) {
   const certificate = credentials.certificate ?? RIOT_GAMES_CERT;
   return http2.connect(`https://127.0.0.1:${credentials.port}`, {
-    ca: certificate
+    ca: certificate,
   });
 }
+
 var Http2Response = class {
   constructor(_headers, _stream, _raw) {
     this._headers = _headers;
     this._stream = _stream;
     this._raw = _raw;
-    assert2(_stream.closed, "Response constructor called with unclosed ClientHttp2Stream");
+    assert2(
+      _stream.closed,
+      "Response constructor called with unclosed ClientHttp2Stream",
+    );
     const code = _headers[":status"];
     this.ok = code >= 200 && code < 300;
     this.redirected = [301, 302, 303, 307, 308].includes(code);
     this.status = code;
   }
+
   ok;
   redirected;
   status;
+
   json() {
     return JSON.parse(this._raw.toString());
   }
+
   text() {
     return this._raw.toString();
   }
+
   buffer() {
     return this._raw;
   }
+
   headers() {
     const headers = [];
     for (const [key, value] of Object.entries(this._headers)) {
@@ -307,6 +374,7 @@ var Http2Response = class {
     return headers;
   }
 };
+
 async function createHttp2Request(options, session, credentials) {
   assert2(!session.closed, "createHttp2Request called on closed session");
   const request = session.request({
@@ -314,7 +382,8 @@ async function createHttp2Request(options, session, credentials) {
     ":method": options.method,
     Accept: "*/*",
     "Content-Type": "application/json",
-    Authorization: "Basic " + Buffer.from(`riot:${credentials.password}`).toString("base64")
+    Authorization:
+      "Basic " + Buffer.from(`riot:${credentials.password}`).toString("base64"),
   });
   if (options.body) {
     const data = JSON.stringify(options.body);
@@ -342,53 +411,38 @@ async function createHttp2Request(options, session, credentials) {
   });
 }
 
-// src/websocket.ts
-import https2 from "node:https";
-//import WebSocket from "ws";
-const { WebSocket } = require('ws');
-var LeagueWebSocket = class extends WebSocket {
-  subscriptions = /* @__PURE__ */ new Map();
+const { WebSocket } = require("ws");
+
+/**
+ * WebSocket extension
+ */
+class LeagueWebSocket extends WebSocket {
+  subscriptions = new Map();
+
   constructor(address, options) {
     super(address, options);
+
+    // Subscribe to Json API
     this.on("open", () => {
       this.send(JSON.stringify([5, "OnJsonApiEvent"]));
     });
-    this.on("close", ()=>{
-      var _a; const closeKey = "/close"
-      try {
-        if (this.subscriptions.has(closeKey)) {
-          (_a = this.subscriptions.get(closeKey)) == null ? void 0 : _a.forEach((cb) => {
-            cb(null);
-          });
-        }
-      } catch {
-      }
-    })
-    this.on("error", (e)=>{
-      var _a; const key = "/error"
-      try {
-        if (this.subscriptions.has(key)) {
-          (_a = this.subscriptions.get(key)) == null ? void 0 : _a.forEach((cb) => {
-            cb(e);
-          });
-        }
-      } catch {
-      }
-    })
+
+    // Attach the LeagueWebSocket subscription hook
     this.on("message", (content) => {
-      var _a;
+      // Attempt to parse into JSON and dispatch events
       try {
         const json = JSON.parse(content);
         const [res] = json.slice(2);
+
         if (this.subscriptions.has(res.uri)) {
-          (_a = this.subscriptions.get(res.uri)) == null ? void 0 : _a.forEach((cb) => {
+          this.subscriptions.get(res.uri)?.forEach((cb) => {
             cb(res.data, res);
           });
         }
-      } catch {
-      }
+      } catch {}
     });
   }
+
   subscribe(path, effect) {
     var _a;
     const p = `/${trim(path)}`;
@@ -398,118 +452,49 @@ var LeagueWebSocket = class extends WebSocket {
       (_a = this.subscriptions.get(p)) == null ? void 0 : _a.push(effect);
     }
   }
+
   unsubscribe(path) {
     const p = `/${trim(path)}`;
     this.subscriptions.delete(p);
   }
-};
-async function createWebSocketConnection(options = {}) {
-  const credentials = await authenticate(options.authenticationOptions);
+}
+
+async function createWebSocketConnection(credentials) {
   const url = `wss://riot:${credentials.password}@127.0.0.1:${credentials.port}`;
   return await new Promise((resolve, reject) => {
     const ws = new LeagueWebSocket(url, {
       headers: {
-        Authorization: "Basic " + Buffer.from(`riot:${credentials.password}`).toString("base64")
+        Authorization:
+          "Basic " +
+          Buffer.from(`riot:${credentials.password}`).toString("base64"),
       },
-      agent: new https2.Agent(typeof (credentials == null ? void 0 : credentials.certificate) === "undefined" ? {
-        rejectUnauthorized: false
-      } : {
-        ca: credentials == null ? void 0 : credentials.certificate
-      })
+      agent: new https.Agent(
+        typeof credentials?.certificate === "undefined"
+          ? {
+              rejectUnauthorized: false,
+            }
+          : {
+              ca: credentials?.certificate,
+            },
+      ),
     });
-    const errorHandler = ws.onerror = (err) => {
-      var _a;
-      options.__internalRetryCount = options.__internalRetryCount ?? 0;
-      options.pollInterval = options.pollInterval ?? 1e3;
-      options.maxRetries = options.maxRetries ?? 10;
-      if (options.__internalMockFaultyConnection && options.__internalMockCallback) {
-        if (err.message.includes("EndTestOpen") && options.__internalRetryCount >= options.maxRetries)
-          resolve(ws);
-        (_a = options.__internalMockCallback) == null ? void 0 : _a.call(options);
-      }
+    const errorHandler = (ws.onerror = (err) => {
       ws.close();
       if (err.message.includes("ECONNREFUSED")) {
-        options.__internalRetryCount++;
-        if (options.maxRetries === 0) {
-          reject(new Error("Could not connect to LCU WebSocket API"));
-        } else if (options.maxRetries > 0 && options.__internalRetryCount > options.maxRetries) {
-          reject(new Error(`Could not connect to LCU WebSocket API after ${options.__internalRetryCount - 1} retries`));
-        } else {
-          setTimeout(() => {
-            resolve(createWebSocketConnection(options));
-          }, options.pollInterval);
-        }
+        reject(new Error("Could not connect to LCU WebSocket API"));
       } else {
         reject(err);
       }
+    });
+    ws.onopen = () => {
+      ws.removeListener("error", errorHandler);
+      resolve(ws);
     };
-    if (options.__internalMockFaultyConnection) {
-      ws.onopen = () => {
-        ws.emit("error", new Error(`${options.__internalMockFaultyConnection}`));
-        ws.removeListener("error", errorHandler);
-      };
-    } else {
-      ws.onopen = () => {
-        ws.removeListener("error", errorHandler);
-        resolve(ws);
-      };
-    }
   });
 }
 
-// src/request_deprecated.ts
-import fetch, { Response as FetchResponse } from "node-fetch";
-import https3 from "https";
-var DEPRECATED_Response = class extends FetchResponse {
-  constructor(parent) {
-    super(parent.body, parent);
-  }
-  async json() {
-    const object = await super.json();
-    return object;
-  }
-};
-async function DEPRECATED_request(options, credentials) {
-  const uri = trim(options.url);
-  const url = `https://127.0.0.1:${credentials == null ? void 0 : credentials.port}/${uri}`;
-  const hasBody = options.method !== "GET" && options.body !== void 0;
-  const response = await fetch(url, {
-    method: options.method,
-    body: hasBody ? JSON.stringify(options.body) : void 0,
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: "Basic " + Buffer.from(`riot:${credentials == null ? void 0 : credentials.password}`).toString("base64")
-    },
-    agent: new https3.Agent(typeof (credentials == null ? void 0 : credentials.certificate) === "undefined" ? {
-      rejectUnauthorized: false
-    } : {
-      ca: credentials == null ? void 0 : credentials.certificate
-    })
-  });
-  return new DEPRECATED_Response(response);
-}
-
-// src/websocket_deprecated.ts
-import https4 from "https";
-async function DEPRECATED_connect(credentials) {
-  const url = `wss://riot:${credentials.password}@127.0.0.1:${credentials.port}`;
-  return new LeagueWebSocket(url, {
-    headers: {
-      Authorization: "Basic " + Buffer.from(`riot:${credentials.password}`).toString("base64")
-    },
-    agent: new https4.Agent(typeof (credentials == null ? void 0 : credentials.certificate) === "undefined" ? {
-      rejectUnauthorized: false
-    } : {
-      ca: credentials == null ? void 0 : credentials.certificate
-    })
-  });
-}
 export {
   ClientNotFoundError,
-  DEPRECATED_Response,
-  DEPRECATED_connect,
-  DEPRECATED_request,
   Http1Response,
   Http2Response,
   InvalidPlatformError,
@@ -519,6 +504,6 @@ export {
   createHttp1Request,
   createHttp2Request,
   createHttpSession,
-  createWebSocketConnection
+  createWebSocketConnection,
 };
 //# sourceMappingURL=league-connect.js.map
