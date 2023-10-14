@@ -55,4 +55,17 @@ const { connectStatus } = storeToRefs(lcuStore);
 .disconnect {
   transition: all 0.2s ease-in-out;
 }
+
+.rotate {
+  animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(365deg);
+  }
+}
 </style>

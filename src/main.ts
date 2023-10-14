@@ -1,18 +1,11 @@
 import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
-import routes from "@/router/index";
-import { createRouter, createWebHashHistory } from "vue-router";
 import { createPinia } from "pinia";
 import { ElMessage } from "element-plus";
 import "element-plus/theme-chalk/el-message.css";
 import { setupListener } from "@/listener/backgroundListener";
-
-const router = createRouter({
-  //hash 模式
-  history: createWebHashHistory(),
-  routes,
-});
+import router from "@/router/index";
 
 const app = createApp(App);
 const pinia = createPinia();

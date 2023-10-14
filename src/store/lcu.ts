@@ -1,8 +1,12 @@
 import { defineStore } from "pinia";
 import { Ref, ref } from "vue";
-import IpcRendererEvent = Electron.IpcRendererEvent;
-import { ElMessage } from "element-plus";
 import lcuApi from "@/api/lcuApi";
+import {
+  MatchHistoryQueryResult,
+  PageRange,
+  PageRanges,
+  SummonerInfo,
+} from "../../electron/lcu/interface";
 
 export enum ConnectStatusEnum {
   connecting,
@@ -15,14 +19,35 @@ const useLCUStore = defineStore("lcu", () => {
     ConnectStatusEnum.disconnect,
   ) as Ref<ConnectStatusEnum>;
 
+  const pageRange = ref<PageRange>(PageRanges[0]);
+  const summonerInfo = ref<SummonerInfo | null>(null);
+  const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
+
   async function getCurrentSummoner() {
-    if (connectStatus.value !== ConnectStatusEnum.connected) {
-      throw new Error("客户端未连接");
-    }
-    await lcuApi.getCurrentSummoner().then((data) => console.log(data));
+    summonerInfo.value = await lcuApi.getCurrentSummoner();
+    console.log(summonerInfo.value);
+    return summonerInfo.value;
   }
 
-  return { connectStatus, getCurrentSummoner };
+  async function getMatchHistoryQueryResult(puuid?: string) {
+    if (!puuid) {
+      puuid = (await getCurrentSummoner())?.puuid;
+    }
+    matchHistoryQueryResult.value = await lcuApi.queryMatchHistory(
+      puuid,
+      pageRange.value,
+    );
+    console.log(matchHistoryQueryResult.value);
+  }
+
+  return {
+    connectStatus,
+    getCurrentSummoner,
+    getMatchHistoryQueryResult,
+    pageRange,
+    summonerInfo,
+    matchHistoryQueryResult,
+  };
 });
 
 export default useLCUStore;

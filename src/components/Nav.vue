@@ -1,28 +1,31 @@
 <template>
   <el-menu
-      :default-active="activeIndex"
-      mode="horizontal"
-      background-color="transparent"
-      text-color="#fff"
-      active-text-color="#ffc276"
-      @select="handleSelect"
-      style="height: 50px"
+    router
+    :default-active="defaultActiveIndex"
+    mode="horizontal"
+    background-color="transparent"
+    text-color="#fff"
+    active-text-color="#ffc276"
+    @select="handleSelect"
+    style="height: 50px"
   >
-    <el-menu-item index="1">主页</el-menu-item>
-    <el-menu-item index="2">对局</el-menu-item>
-    <el-menu-item index="3">战绩查询</el-menu-item>
+    <el-menu-item :index="menu.key" v-for="menu in navStore.navMenus"
+      >{{ menu.name }}
+    </el-menu-item>
   </el-menu>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import useNavStore from "@/store/nav";
+import {computed, toRef, watch} from "vue";
 
-const activeIndex = ref('1')
+const navStore = useNavStore();
+const defaultActiveIndex = computed(()=>navStore.activeKey);
 const handleSelect = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
+  navStore.navMenus.find((item) => item.key === key);
+};
 </script>
 <style scoped>
-.el-menu{
-  user-select:none;
+.el-menu {
+  user-select: none;
 }
 </style>

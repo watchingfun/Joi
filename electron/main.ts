@@ -5,6 +5,10 @@ import { setupTitleBarHandler } from "./handleTitleBar";
 import { setupTray } from "./handleTray";
 import "./lcu/handleLCU";
 import { startGuardTask } from "./lcu/handleLCU";
+import installExtension from "electron-devtools-installer";
+import Input = Electron.Input;
+
+const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
@@ -64,6 +68,12 @@ export function createWindow() {
   } else {
     // win.loadFile('dist/index.html')
     win.loadFile(path.join(process.env.DIST, "index.html"));
+    //拦截快捷键Control+R
+    win.webContents.on("before-input-event", (event: Event, input: Input) => {
+      if (input.control && input.key.toLowerCase() === "r") {
+        event.preventDefault();
+      }
+    });
   }
   setupTitleBarHandler(win);
 }
@@ -80,6 +90,9 @@ ipcMain.on("open-url", (e, args) => {
 app.whenReady().then(() => {
   createWindow();
   setupTray();
+  installExtension(VUEJS3_DEVTOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log("An error occurred: ", err));
   // ensure did-finish-load
   // setTimeout(() => {
   //   const db = getSqlite3();

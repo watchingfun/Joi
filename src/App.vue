@@ -2,13 +2,20 @@
 import HeaderBar from "@/components/HeaderBar.vue";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
+import 'overlayscrollbars/overlayscrollbars.css';
+import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 </script>
 
 <template>
-  <HeaderBar></HeaderBar>
-  <Nav></Nav>
-  <router-view></router-view>
-  <Footer></Footer>
+  <div class="flex flex-col h-screen">
+    <HeaderBar></HeaderBar>
+    <Nav></Nav>
+    <overlay-scrollbars-component :options="{scrollbars:{autoHide: 'move'}}">
+      <router-view></router-view>
+    </overlay-scrollbars-component>
+    <div style="height: 25px; flex-shrink: 0"></div>
+    <Footer></Footer>
+  </div>
 </template>
 
 <style></style>

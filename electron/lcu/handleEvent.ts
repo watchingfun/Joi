@@ -1,6 +1,11 @@
-import { createHttp1Request } from "league-connect";
+import { createHttp1Request } from "../lib/league-connect";
 import { getCredentials } from "./handleLCU";
-import {getCurrentSummoner, getGameInfo, listenChampSelect, queryMatchHistory} from "./lcuRequest";
+import {
+  getCurrentSummoner,
+  getGameInfo,
+  listenChampSelect,
+  queryMatchHistory,
+} from "./lcuRequest";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -39,7 +44,7 @@ export function handelGameStart(eventKey: string) {
   if (eventKey !== "GameStart") {
     return;
   }
-  getGameInfo()
+  getGameInfo();
   if (unListenChampSelect) {
     unListenChampSelect();
   }
@@ -57,7 +62,7 @@ export function handelPreEndOfGame(eventKey: string) {
   if (eventKey !== "PreEndOfGame") {
     return;
   }
-  getCurrentSummoner().then(info=> queryMatchHistory(info.puuid))
+  getCurrentSummoner().then((info) => queryMatchHistory(info.puuid));
 }
 
 export default {

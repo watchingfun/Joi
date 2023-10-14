@@ -3,5 +3,7 @@ export const lcuConst = {
   connecting: "lcu:connecting",
   disconnect: "lcu:disconnect",
   getCurrentSummoner: "lcu:getCurrentSummoner",
+  queryGameDetails: "lcu:queryGameDetails",
+  queryMatchHistory: "lcu:queryMatchHistory",
   killRender: "lcu:killRender",
 };

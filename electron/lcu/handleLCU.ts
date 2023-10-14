@@ -1,15 +1,13 @@
 import { getAuthInfo } from "../util/authUtil";
 import { exec } from "child_process";
-import { BrowserWindow, ipcMain } from "electron";
+import { ipcMain } from "electron";
 import {
   createWebSocketConnection,
   Credentials,
-  createHttp1Request,
   LeagueWebSocket,
 } from "../lib/league-connect";
 import ProcessChecker from "../util/processChecker";
 import { sendToWebContent } from "../util/util";
-import { getCurrentSummoner } from "./lcuRequest";
 import LCUEventHandlers from "./handleEvent";
 import { lcuConst } from "../config/const";
 import * as lcuRequestModule from "./lcuRequest";
@@ -44,7 +42,7 @@ export async function startGuardTask() {
       try {
         await initLeagueWebSocket();
         sendToWebContent(lcuConst.connected);
-        console.log('connected to LeagueClient');
+        console.log("connected to LeagueClient");
       } catch (e) {
         console.debug(e);
         sendToWebContent(lcuConst.disconnect);
@@ -101,9 +99,9 @@ ipcMain.handle(lcuConst.killRender, (event, args) => {
   });
 });
 
-ipcMain.handle(lcuConst.getCurrentSummoner, (event, args) => {
-  return getCurrentSummoner();
-});
+// ipcMain.handle(lcuConst.getCurrentSummoner, (event, args) => {
+//   return getCurrentSummoner();
+// });
 
 //ws连接并监听事件
 function wsSubscribe(ws: LeagueWebSocket) {
@@ -117,7 +115,7 @@ function wsSubscribe(ws: LeagueWebSocket) {
 for (const key in lcuRequestModule) {
   console.log(key, typeof lcuRequestModule[key]);
   if (typeof lcuRequestModule[key] === "function") {
-    ipcMain.handle(key, (event, ...args) => {
+    ipcMain.handle("lcu:" + key, (event, ...args) => {
       return lcuRequestModule[key](...args);
     });
   }

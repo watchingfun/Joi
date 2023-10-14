@@ -30,6 +30,7 @@
     "better-sqlite3": "^8.6.0",
     "electron": "26.2.0",
     "electron-builder": "^24.6.3",
+    "electron-devtools-installer": "^3.2.0",
     "node-gyp": "^9.4.0",
     "postcss": "^8.4.31",
     "prettier": "3.0.3",
@@ -47,10 +48,13 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
+    "@vueuse/components": "^10.5.0",
+    "@vueuse/core": "^10.5.0",
     "dayjs": "^1.11.10",
     "electron-acrylic-window": "^0.5.11",
     "element-plus": "^2.3.14",
     "iconv-lite": "^0.6.3",
+    "overlayscrollbars-vue": "^0.5.5",
     "pinia": "^2.1.6",
     "vue-router": "^4.2.5",
     "ws": "^8.14.2"

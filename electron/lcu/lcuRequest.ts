@@ -5,40 +5,15 @@ import {
 } from "../lib/league-connect";
 import { getCredentials, getLeagueWebSocket } from "./handleLCU";
 import { ClientHttp2Session } from "http2";
-import { champDict } from "../config/lolDataConfig.js";
+import { champDict } from "../config/lolDataConfig";
 import {
-  ChampSelectPhaseSession,
+  ChampSelectPhaseSession, GameDetail,
   GameSessionData,
   MatchHistoryQueryResult,
+  PageRange,
+  SummonerInfo,
   TeamMember,
 } from "./interface";
-
-interface SummonerInfo {
-  accountId: number;
-  displayName: string;
-  gameName: string;
-  internalName: string;
-  nameChangeFlag: boolean;
-  percentCompleteForNextLevel: number;
-  privacy: string;
-  profileIconId: number;
-  puuid: string;
-  rerollPoints: RerollPoints;
-  summonerId: number;
-  summonerLevel: number;
-  tagLine: string;
-  unnamed: boolean;
-  xpSinceLastLevel: number;
-  xpUntilNextLevel: number;
-}
-
-export interface RerollPoints {
-  currentPoints: number;
-  maxRolls: number;
-  numberOfRolls: number;
-  pointsCostToRoll: number;
-  pointsToReroll: number;
-}
 
 //获取当前召唤师信息
 export async function getCurrentSummoner() {
@@ -233,7 +208,7 @@ export async function applyRune(data) {
 }
 
 // 根据召唤师ID查询信息
-export async function querySummonerInfo(summonerId) {
+export async function querySummonerInfo(summonerId: number) {
   const summonerInfo = (
     await createHttp1Request(
       {
@@ -262,7 +237,7 @@ export const cursorQueryMatchHistory = async (
   begIndex: number,
   endIndex: number,
 ) => {
-  let data = (
+  return (
     await createHttp2Request(
       {
         method: "GET",
@@ -272,20 +247,18 @@ export const cursorQueryMatchHistory = async (
       getCredentials(),
     )
   ).json() as MatchHistoryQueryResult;
-  console.log("cursorQueryMatchHistory", JSON.stringify(data));
-  return data;
 };
 
 // 根据召唤师ID查询战绩
-export const queryMatchHistory = async (puuid: string) => {
-  let specialDict = [];
+export const queryMatchHistory = async (puuid: string, page: PageRange = 1) => {
+  let specialDict: MatchHistoryQueryResult[] = [];
   const session = await createHttpSession(getCredentials());
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < page; i++) {
     const matchHistory = await cursorQueryMatchHistory(
       session,
       puuid,
       20 * i,
-      20 * (i + 1),
+      20 * (i + 1) - 1,
     );
     specialDict.push(matchHistory);
   }
@@ -293,23 +266,24 @@ export const queryMatchHistory = async (puuid: string) => {
   return specialDict;
 };
 
-// 获取一局游戏的详细数据
-export const queryGameDetails = async (gameId, credentials) => {
+//获取一局游戏的详细数据
+export const queryGameDetails = async (gameId: number) => {
   const response = (
     await createHttp1Request(
       {
         method: "GET",
         url: `/lol-match-history/v1/games/${gameId}`,
       },
-      credentials,
+      getCredentials(),
     )
-  ).json();
-  let detailsList = getParticipantsDetails(
-    response,
-    response.participants,
-    response.participantIdentities,
-  );
-  return detailsList;
+  ).json() as GameDetail;
+  // console.log("queryGameDetails", JSON.stringify(response));
+  // let detailsList = getParticipantsDetails(
+  //   response,
+  //   response.participants,
+  //   response.participantIdentities,
+  // );
+  return response;
 };
 
 // 获取召唤师participantId 和 name
@@ -324,39 +298,39 @@ const getparticipantIdAndName = (participantIdentities) => {
   return dataList;
 };
 
-// 获取召唤师participants下面的详细数据
-const getParticipantsDetails = (res, participants, participantIdentities) => {
-  const nameList = getparticipantIdAndName(participantIdentities);
-  let titleList = getDetailsTitle(res);
-  let detalisList = [];
-  let team100Kills = 0;
-  let team200Kills = 0;
-  let team100GoldEarned = 0;
-  let team200GoldEarned = 0;
-  for (let i = 0; i < 5; i++) {
-    team100Kills += participants[i].stats.kills;
-    team200Kills += participants[i + 5].stats.kills;
-    team100GoldEarned += participants[i].stats.goldEarned;
-    team200GoldEarned += participants[i + 5].stats.goldEarned;
-
-    detalisList.push([
-      analyticalData(participants[i], nameList[i].name, nameList[i].summonerId),
-      analyticalData(
-        participants[i + 5],
-        nameList[i + 5].name,
-        nameList[i + 5].summonerId,
-      ),
-    ]);
-  }
-  titleList.push(
-    team100Kills,
-    team200Kills,
-    goldToStr(team100GoldEarned),
-    goldToStr(team200GoldEarned),
-  );
-  detalisList.push(titleList);
-  return detalisList;
-};
+// // 获取召唤师participants下面的详细数据
+// const getParticipantsDetails = (res, participants, participantIdentities) => {
+//   const nameList = getparticipantIdAndName(participantIdentities);
+//   let titleList = getDetailsTitle(res);
+//   let detalisList = [];
+//   let team100Kills = 0;
+//   let team200Kills = 0;
+//   let team100GoldEarned = 0;
+//   let team200GoldEarned = 0;
+//   for (let i = 0; i < 5; i++) {
+//     team100Kills += participants[i].stats.kills;
+//     team200Kills += participants[i + 5].stats.kills;
+//     team100GoldEarned += participants[i].stats.goldEarned;
+//     team200GoldEarned += participants[i + 5].stats.goldEarned;
+//
+//     detalisList.push([
+//       analyticalData(participants[i], nameList[i].name, nameList[i].summonerId),
+//       analyticalData(
+//         participants[i + 5],
+//         nameList[i + 5].name,
+//         nameList[i + 5].summonerId,
+//       ),
+//     ]);
+//   }
+//   titleList.push(
+//     team100Kills,
+//     team200Kills,
+//     goldToStr(team100GoldEarned),
+//     goldToStr(team200GoldEarned),
+//   );
+//   detalisList.push(titleList);
+//   return detalisList;
+// };
 const goldToStr = (gold) => {
   return Number((gold / 1000).toFixed(1));
 };
