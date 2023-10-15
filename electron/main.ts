@@ -7,6 +7,7 @@ import "./lcu/handleLCU";
 import { startGuardTask } from "./lcu/handleLCU";
 import installExtension from "electron-devtools-installer";
 import Input = Electron.Input;
+import logger from "./lib/logger";
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
@@ -91,8 +92,8 @@ app.whenReady().then(() => {
   createWindow();
   setupTray();
   installExtension(VUEJS3_DEVTOOLS)
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log("An error occurred: ", err));
+    .then((name) => logger.debug(`Added Extension:  ${name}`))
+    .catch((err) => logger.debug("An error occurred: ", err));
   // ensure did-finish-load
   // setTimeout(() => {
   //   const db = getSqlite3();

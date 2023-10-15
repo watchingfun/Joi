@@ -1,6 +1,8 @@
 import { exec } from "child_process";
 import fs from "fs";
 import path from "node:path";
+import { Credentials } from "../lib/league-connect";
+import logger from "../lib/logger";
 
 //使用vbs提权，因为是新的进程执行，所以只能把查询输出写到文件然后轮询读取
 export function executeCmdAndGetOutput(
@@ -44,14 +46,12 @@ export function executeCmdAndGetOutput(
           reject("执行脚本时出错：" + cmdPath + " " + error.toString());
           return;
         }
-        console.log("脚本执行成功。" + cmdPath);
+        logger.info("脚本执行成功。" + cmdPath);
         pollForFile(); // 开始轮询
       },
     );
   });
 }
-
-import { Credentials } from "league-connect";
 
 const RIOT_GAMES_CERT = `
 -----BEGIN CERTIFICATE-----
@@ -99,7 +99,7 @@ export async function getAuthInfo(): Promise<Credentials> {
       certificate: RIOT_GAMES_CERT,
     };
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     throw new Error("提取LCU进程信息失败");
   }
 }

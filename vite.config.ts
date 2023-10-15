@@ -90,15 +90,11 @@ function bindingSqlite3(
   return {
     name: "vite-plugin-binding-sqlite3",
     config(config) {
-      console.log("config.root", config.root);
       // https://github.com/vitejs/vite/blob/v4.4.9/packages/vite/src/node/config.ts#L496-L499
       const resolvedRoot = normalizePath(
         config.root ? path.resolve(config.root) : process.cwd(),
       );
       const output = path.resolve(resolvedRoot, options.output as string);
-      console.log("resolvedRoot", resolvedRoot);
-      console.log("options.output", options.output);
-      console.log("output", output);
       const better_sqlite3 = require.resolve("better-sqlite3");
       const better_sqlite3_root = path.join(
         better_sqlite3.slice(0, better_sqlite3.lastIndexOf("node_modules")),

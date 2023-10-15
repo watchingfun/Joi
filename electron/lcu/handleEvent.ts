@@ -6,6 +6,7 @@ import {
   listenChampSelect,
   queryMatchHistory,
 } from "./lcuRequest";
+import logger from "../lib/logger";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -24,7 +25,7 @@ export function handelAutoAcceptGame(eventKey: string) {
         getCredentials(),
       );
     } catch (e) {
-      console.log(e);
+      logger.error(e);
     }
   }, setTime);
 }

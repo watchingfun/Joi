@@ -7,13 +7,15 @@ import { getCredentials, getLeagueWebSocket } from "./handleLCU";
 import { ClientHttp2Session } from "http2";
 import { champDict } from "../config/lolDataConfig";
 import {
-  ChampSelectPhaseSession, GameDetail,
+  ChampSelectPhaseSession,
+  GameDetail,
   GameSessionData,
   MatchHistoryQueryResult,
   PageRange,
   SummonerInfo,
   TeamMember,
 } from "./interface";
+import logger from "../lib/logger";
 
 //获取当前召唤师信息
 export async function getCurrentSummoner() {
@@ -35,12 +37,8 @@ export function listenChampSelect(): Function {
     "/lol-champ-select/v1/session",
     async (data: ChampSelectPhaseSession) => {
       const currentChampId = await getCurrentChampId();
-      console.log("currentChampId", currentChampId);
-      console.log(
-        "champ-select-session",
-        JSON.stringify(data),
-        "champ-select-session end",
-      );
+      logger.debug("currentChampId", currentChampId);
+      logger.debug("champ-select-session", JSON.stringify(data));
     },
   );
   return () => ws.unsubscribe("/lol-champ-select/v1/session");
@@ -85,7 +83,7 @@ export async function getGameInfo() {
     )
   ).json() as GameSessionData;
 
-  console.log("matchSession", JSON.stringify(matchSession));
+  logger.debug("matchSession", JSON.stringify(matchSession));
 
   let friendInfoList = [];
   let enemyInfoList = [];
@@ -183,7 +181,7 @@ export async function applyRune(data) {
       credentials,
     )
   ).json();
-  console.log("currentRuneList", currentRuneList);
+  logger.info("currentRuneList", currentRuneList);
   const current = currentRuneList.find((i) => i.current && i.isDeletable);
   if (current != undefined) {
     // 删除当前符文页
@@ -277,12 +275,7 @@ export const queryGameDetails = async (gameId: number) => {
       getCredentials(),
     )
   ).json() as GameDetail;
-  // console.log("queryGameDetails", JSON.stringify(response));
-  // let detailsList = getParticipantsDetails(
-  //   response,
-  //   response.participants,
-  //   response.participantIdentities,
-  // );
+  logger.debug("queryGameDetails", response);
   return response;
 };
 
@@ -409,7 +402,6 @@ const getItemImgUrl = (item) => {
 };
 // 通过召唤师id获取召唤师技能图片地址
 const getspellImgUrl = (spellId) => {
-  console.log("spellId", spellId);
   switch (spellId) {
     case 4:
       return "https://game.gtimg.cn/images/lol/act/img/spell/Summoner_flash.png";
