@@ -1,7 +1,7 @@
 <template>
   <img v-bind="$attrs" :src="url" :class="[props.itemId === 0 ? 'none' : '']" />
 </template>
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 // computed
 const url = computed(() => {

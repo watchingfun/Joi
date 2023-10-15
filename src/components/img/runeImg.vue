@@ -1,7 +1,7 @@
 <template>
   <img v-bind="$attrs" :src="url" />
 </template>
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { runes } from "@@/config/lolDataConfig";
 // props

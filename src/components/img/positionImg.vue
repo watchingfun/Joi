@@ -4,7 +4,7 @@
         :src="`./img/position/icon-position-${props.position}.svg`"
     />
 </template>
-<script setup>
+<script setup lang="ts">
 // props
 const props = defineProps(['width', 'position'])
 </script>

@@ -31,7 +31,7 @@ const useLCUStore = defineStore("lcu", () => {
 
   async function getMatchHistoryQueryResult(puuid?: string) {
     if (!puuid) {
-      puuid = (await getCurrentSummoner())?.puuid;
+      puuid = (await getCurrentSummoner()).puuid;
     }
     matchHistoryQueryResult.value = await lcuApi.queryMatchHistory(
       puuid,

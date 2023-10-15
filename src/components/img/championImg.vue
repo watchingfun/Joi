@@ -8,10 +8,10 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { champDict } from "@@/config/lolDataConfig";
 
-const imgUrl = (champId) => {
+const imgUrl = (champId: number) => {
   if (champDict[champId]) {
     return `https://game.gtimg.cn/images/lol/act/img/champion/${champDict[champId].alias}.png`;
   } else {
