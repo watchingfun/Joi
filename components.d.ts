@@ -16,9 +16,14 @@ declare module 'vue' {
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElOption: typeof import('element-plus/es')['ElOption']
+    ElPagination: typeof import('element-plus/es')['ElPagination']
     ElPopover: typeof import('element-plus/es')['ElPopover']
+    ElSelect: typeof import('element-plus/es')['ElSelect']
+    ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElText: typeof import('element-plus/es')['ElText']
+    ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Footer: typeof import('./src/components/Footer.vue')['default']
     GameInfo: typeof import('./src/components/GameInfo.vue')['default']
     GameInfoList: typeof import('./src/components/GameInfoList.vue')['default']
@@ -36,5 +41,8 @@ declare module 'vue' {
     RuneImg: typeof import('./src/components/img/runeImg.vue')['default']
     SpellImg: typeof import('./src/components/img/spellImg.vue')['default']
     VuePerfectScrollbar: typeof import('./src/components/VuePerfectScrollbar.vue')['default']
+  }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

@@ -54,6 +54,7 @@
     "electron-acrylic-window": "^0.5.11",
     "element-plus": "^2.3.14",
     "iconv-lite": "^0.6.3",
+    "lazy-load-vue3": "^2.0.1",
     "overlayscrollbars-vue": "^0.5.5",
     "pinia": "^2.1.6",
     "vue-router": "^4.2.5",

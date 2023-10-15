@@ -15,7 +15,9 @@ app.mount("#app").$nextTick(() => {
   postMessage({ payload: "removeLoading" }, "*");
 });
 setupListener();
+import LazyLoad from 'lazy-load-vue3'
 
+app.use(LazyLoad, {component: true})
 app.config.errorHandler = (err, vm, info) => {
   // 处理错误
   // `info` 是 Vue 特定的错误信息，比如错误所在的生命周期钩子

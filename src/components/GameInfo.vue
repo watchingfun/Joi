@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { queue } from "@@/config/lolDataConfig";
 import { GameDetail } from "@@/lcu/interface";
-import { toRefs } from "vue";
+import { computed, inject, toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import dayjs from "dayjs";
 import SpellImg from "@/components/img/spellImg.vue";
@@ -31,7 +31,7 @@ function hashCode(string: string) {
 //todo 不同游戏模式不同背景颜色
 const gameModeBackground = (str: string) => {
   return {
-    backgroundColor: `rgb(255 ${hashCode(str) / 255} 106 / 0.5)`,
+    backgroundColor: `rgb(10 ${hashCode(str) % 255} 255 / 0.5)`,
   };
 };
 </script>
@@ -138,7 +138,11 @@ const gameModeBackground = (str: string) => {
   align-items: center;
   cursor: pointer;
   background-color: #ffffff0f;
-  transition: all 0.3s ease-in-out;
+  transition:
+    all 0.3s ease-in-out,
+    background-position 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
+  user-select: none;
 }
 
 .row-item:hover {
@@ -162,22 +166,41 @@ const gameModeBackground = (str: string) => {
   font-size: 12px;
 }
 
-.win:hover {
+.row-item:active {
+  background-color: rgba(255, 255, 255, 0.53);
+  background-position: 0 0 !important;
+}
+
+.win {
   background-image: linear-gradient(
     45deg,
     #3aff95a1 0%,
     rgb(255 255 255 / 0%) 35%,
     rgb(255 255 255 / 0%) 100%
   );
+  background-position: -300px 0;
+  background-repeat: no-repeat;
+  box-shadow: inset #3aff95a1 8px 0 2px -2px;
 }
 
-.fail:hover {
+.fail {
   background-image: linear-gradient(
     45deg,
     rgb(255 75 75 / 90%) 0%,
     rgb(255 255 255 / 0%) 35%,
     rgb(255 255 255 / 0%) 100%
   );
+  background-position: -300px 0;
+  background-repeat: no-repeat;
+  box-shadow: inset rgb(255 75 75 / 90%) 8px 0 2px -2px;
+}
+
+.win:hover {
+  background-position: -100px 0;
+}
+
+.fail:hover {
+  background-position: -100px 0;
 }
 
 .info {
@@ -194,24 +217,6 @@ const gameModeBackground = (str: string) => {
   box-shadow:
     rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-}
-
-.win {
-  background-image: linear-gradient(
-    45deg,
-    #3aff95a1 0%,
-    rgb(255 255 255 / 0%) 15%,
-    rgb(255 255 255 / 0%) 100%
-  );
-}
-
-.fail {
-  background-image: linear-gradient(
-    45deg,
-    rgb(255 75 75 / 90%) 0%,
-    rgb(255 255 255 / 0%) 15%,
-    rgb(255 255 255 / 0%) 100%
-  );
 }
 
 .result {
@@ -238,7 +243,7 @@ const gameModeBackground = (str: string) => {
 .kda-group {
   margin-left: 20px;
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr
+  grid-template-columns: 2fr 2fr 1fr;
 }
 
 .kda-group .kda,

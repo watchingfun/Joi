@@ -10,9 +10,10 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
   <div class="flex flex-col h-screen">
     <HeaderBar></HeaderBar>
     <Nav></Nav>
-    <overlay-scrollbars-component :options="{scrollbars:{autoHide: 'move'}}">
-      <router-view></router-view>
-    </overlay-scrollbars-component>
+<!--    <overlay-scrollbars-component :options="{scrollbars:{autoHide: 'move'}}">-->
+<!--      <router-view></router-view>-->
+<!--    </overlay-scrollbars-component>-->
+    <router-view></router-view>
     <div style="height: 25px; flex-shrink: 0"></div>
     <Footer></Footer>
   </div>
