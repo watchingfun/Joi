@@ -3,9 +3,9 @@
  */
 {
   "appId": "YourAppID",
-  "asar": false,
+  "asar": true,
   "productName": "Joi",
-  "copyright": "Copyright © 2022 ${author}",
+  "copyright": "Copyright © 2023 ${author}",
   "directories": {
     "output": "release/${version}",
   },
@@ -19,9 +19,12 @@
     "target": [
       {
         "target": "nsis",
-        "arch": ["x64"]
+        "arch": [
+          "x64"
+        ]
       }
     ],
+    "requestedExecutionLevel": "highestAvailable",
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
   "nsis": {
@@ -31,11 +34,15 @@
     "deleteAppDataOnUninstall": false
   },
   "mac": {
-    "target": ["dmg"],
+    "target": [
+      "dmg"
+    ],
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "linux": {
-    "target": ["AppImage"],
+    "target": [
+      "AppImage"
+    ],
     "artifactName": "${productName}-Linux-${version}.${ext}"
   }
 }

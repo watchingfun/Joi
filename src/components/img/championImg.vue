@@ -1,7 +1,7 @@
 <template>
   <div class="relative">
     <el-avatar v-bind="$attrs" shape="square" :src="imgUrl(props.championId)">
-      <img src="./img/default.png" />
+      <img src="/img/default.png" />
     </el-avatar>
     <div class="level" v-if="props.level">
       {{ props.level }}

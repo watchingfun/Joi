@@ -34,7 +34,7 @@ export function getLeagueWebSocket() {
 
 //监听客户端是否运行, 运行就进行连接
 export async function startGuardTask() {
-  processChecker = new ProcessChecker("LeagueClient.exe", 2000);
+  processChecker = new ProcessChecker("LeagueClient.exe", 4000);
   processChecker.on("running", async () => {
     if (!ws && !wsIsConnecting) {
       wsIsConnecting = true;

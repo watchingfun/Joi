@@ -9,13 +9,30 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "skipLibCheck": true,
     "noEmit": true,
-    "paths":{
-      "@/*": ["./src/*"],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ],
+      "@@/*": [
+        "./electron/*"
+      ]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "src",
+  ],
+  "references": [
+    {
+      "path": "./electron/"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

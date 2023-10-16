@@ -1280,7 +1280,7 @@ export const mapNameFromUrl = {
   Renata: { label: "炼金男爵", name: "烈娜塔 · 戈拉斯克" },
   Nilah: { label: "不羁之悦", name: "尼菈" },
 };
-export const queue = {
+export const queue: { [key: string]: string } = {
   "-1": "自定义",
   0: "训练模式",
   2: "匹配模式",
@@ -1369,7 +1369,7 @@ export const queue = {
   2020: "Tutorial 3",
 };
 
-export const runes = {
+export const runes: { [key: number]: string } = {
   8000: "jm",
   8100: "zz",
   8200: "ws",
@@ -1377,7 +1377,7 @@ export const runes = {
   8400: "jj",
 };
 
-export const spells = {
+export const spells: { [key: number]: string } = {
   1: "SummonerBoost",
   3: "SummonerExhaust",
   4: "SummonerFlash",

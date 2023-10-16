@@ -5,7 +5,7 @@
 import { computed } from "vue";
 import { spells } from "@@/config/lolDataConfig";
 // props
-const props = defineProps({ spellId: Number });
+const props = defineProps<{ spellId: number }>();
 const url = computed(() => {
   if (spells[props.spellId] === undefined) {
     return "./img/blank.png";

@@ -7,8 +7,6 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "vite.config.ts",
-    "package.json",
-    "components.d.ts"
+    "electron"
   ]
 }

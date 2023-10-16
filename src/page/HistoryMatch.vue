@@ -14,7 +14,7 @@ const loading = ref(false);
 const matchHistoryList = computed(() => {
   loading.value = true;
   const result =
-    lcuStore.matchHistoryQueryResult?.[page.value - 1]?.games.games || [];
+    lcuStore.matchHistoryQueryResult?.[page.value - 1]?.games?.games || [];
   loading.value = false;
   return result;
 });
@@ -44,7 +44,7 @@ function jumpDetail(gameId: number) {
 </script>
 
 <template>
-  <div class="relative flex flex-col overflow-hidden">
+  <div class="relative flex flex-col overflow-hidden h-full">
     <div class="page-header items-center justify-center w-full">
       <el-tooltip
         content="一般最近20场够用了，获取超过最近20场别频繁查询，有封号风险"
@@ -86,6 +86,7 @@ function jumpDetail(gameId: number) {
     <div style="height: 56px; flex-shrink: 0"></div>
 
     <overlay-scrollbars-component
+      class="flex flex-1"
       v-loading="loading"
       :options="{ scrollbars: { autoHide: 'move' } }"
     >
@@ -93,6 +94,12 @@ function jumpDetail(gameId: number) {
         :matchHistoryList="matchHistoryList"
         @jumpDetail="jumpDetail"
       ></GameInfoList>
+      <div
+        class="flex-1 flex flex-col items-center justify-center h-full"
+        v-if="!matchHistoryList.length"
+      >
+        <div>暂无结果</div>
+      </div>
     </overlay-scrollbars-component>
   </div>
 </template>

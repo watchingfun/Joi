@@ -96,7 +96,7 @@ const gameModeBackground = (str: string) => {
                 borderRadius: index === 6 ? '50%' : '5px',
                 width: '40px',
               }"
-              :itemId="record.participants[0].stats['item' + index]"
+              :itemId="record.participants[0].stats['item' + index] as number"
             />
           </template>
         </div>

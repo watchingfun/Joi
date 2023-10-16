@@ -5,7 +5,7 @@
 import { computed } from "vue";
 import { runes } from "@@/config/lolDataConfig";
 // props
-const props = defineProps(["runeId"]);
+const props = defineProps<{ runeId: number }>();
 const url = computed(() => {
   if (runes[props.runeId] === undefined) {
     return "./img/blank.png";

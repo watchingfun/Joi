@@ -54,9 +54,7 @@ if (isDev)
     new winston.transports.Console({
       level: "debug",
       format: format.combine(
-        format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         format.colorize(),
-        combineMessageAndSplat(),
         format.printf(
           (info) => `${info.timestamp} ${info.level}: ${info.message}`,
         ),

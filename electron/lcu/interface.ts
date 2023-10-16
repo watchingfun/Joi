@@ -29,6 +29,8 @@ export interface MatchHistoryQueryResult {
   accountId: number;
   games: Games;
   platformId: string;
+  errorCode?: string;
+  message?: string;
 }
 
 export interface Games {
@@ -88,6 +90,7 @@ export interface Participant {
 }
 
 export interface Stats {
+  [key: string]: any;
   assists: number;
   causedEarlySurrender: boolean;
   champLevel: number;
@@ -540,22 +543,21 @@ export interface Properties {
 export const PageRanges = <const>[1, 2, 3, 4, 5, 6, 7, 8];
 export type PageRange = (typeof PageRanges)[number];
 
-
 export interface GameDetail {
-  gameCreation: number
-  gameCreationDate: string
-  gameDuration: number
-  gameId: number
-  gameMode: string
-  gameType: string
-  gameVersion: string
-  mapId: number
-  participantIdentities: ParticipantIdentity[]
-  participants: Participant[]
-  platformId: string
-  queueId: number
-  seasonId: number
-  teams: Team[]
+  gameCreation: number;
+  gameCreationDate: string;
+  gameDuration: number;
+  gameId: number;
+  gameMode: string;
+  gameType: string;
+  gameVersion: string;
+  mapId: number;
+  participantIdentities: ParticipantIdentity[];
+  participants: Participant[];
+  platformId: string;
+  queueId: number;
+  seasonId: number;
+  teams: Team[];
 }
 
 export interface CreepsPerMinDeltas {}
@@ -573,24 +575,24 @@ export interface XpDiffPerMinDeltas {}
 export interface XpPerMinDeltas {}
 
 export interface Team {
-  bans: Ban[]
-  baronKills: number
-  dominionVictoryScore: number
-  dragonKills: number
-  firstBaron: boolean
-  firstBlood: boolean
-  firstDargon: boolean
-  firstInhibitor: boolean
-  firstTower: boolean
-  inhibitorKills: number
-  riftHeraldKills: number
-  teamId: number
-  towerKills: number
-  vilemawKills: number
-  win: string
+  bans: Ban[];
+  baronKills: number;
+  dominionVictoryScore: number;
+  dragonKills: number;
+  firstBaron: boolean;
+  firstBlood: boolean;
+  firstDargon: boolean;
+  firstInhibitor: boolean;
+  firstTower: boolean;
+  inhibitorKills: number;
+  riftHeraldKills: number;
+  teamId: number;
+  towerKills: number;
+  vilemawKills: number;
+  win: string;
 }
 
 export interface Ban {
-  championId: number
-  pickTurn: number
+  championId: number;
+  pickTurn: number;
 }
