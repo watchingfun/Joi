@@ -11,3 +11,6 @@
 - [ ] 他人战绩查询
 - [ ] 设置项配置功能
 - [ ] 发送聊天
+
+## 截图
+![Image](https://github.com/watchingfun/Joi/blob/main/screenshot/1697559616831.png)
