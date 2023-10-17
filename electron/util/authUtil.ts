@@ -91,7 +91,7 @@ export async function getAuthInfo(): Promise<Credentials> {
     const [, port] = stdout.match(portRegex);
     const [, password] = stdout.match(passwordRegex);
     const [, pid] = stdout.match(pidRegex);
-
+    logger.info("lcu port: %s password: %s", port, password)
     return {
       port: Number(port),
       pid: Number(pid),
