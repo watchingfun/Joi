@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import useLCUStore from "@/store/lcu";
 import GameInfoList from "@/components/GameInfoList.vue";
+import GameDetailInfo from "@/components/GameDetailInfo.vue";
 import lcuApi from "@/api/lcuApi";
-import { computed, onMounted, ref } from "vue";
-import { PageRange, PageRanges } from "@@/lcu/interface";
+import { computed, onMounted, ref, watch } from "vue";
+import { GameDetail, PageRange, PageRanges } from "@@/lcu/interface";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import { Warning } from "@element-plus/icons-vue";
+import { memoize } from "lodash";
+import { LRUCache } from "lru-cache";
 
 const lcuStore = useLCUStore();
 const page = ref(1);
@@ -18,10 +21,6 @@ const matchHistoryList = computed(() => {
   loading.value = false;
   return result;
 });
-
-// let gameId = lcuStore.matchHistoryQueryResult?.[0].games.games[0].gameId;
-// let res = await lcuApi.queryGameDetails(gameId);
-// console.log(res);
 
 function refresh() {
   page.value = 1;
@@ -38,9 +37,31 @@ function fetchData() {
 
 onMounted(() => fetchData());
 
+const clickedGameId = ref(0);
+
+const gameDetail = ref<GameDetail>();
+
+const fetchDetailLoading = ref(false);
+
 function jumpDetail(gameId: number) {
-  console.log("jumpDetail", gameId);
+  clickedGameId.value = gameId;
+  drawerShow.value = true;
 }
+
+//缓存对局查询
+const cacheQueryGameDetails = memoize(lcuApi.queryGameDetails);
+cacheQueryGameDetails.cache = new LRUCache({ max: 500 });
+
+watch(clickedGameId, (value, oldValue, onCleanup) => {
+  fetchDetailLoading.value = true;
+  cacheQueryGameDetails(value)
+    .then((res) => {
+      gameDetail.value = res;
+    })
+    .finally(() => (fetchDetailLoading.value = false));
+});
+
+const drawerShow = ref(false);
 </script>
 
 <template>
@@ -101,6 +122,9 @@ function jumpDetail(gameId: number) {
         <div>暂无结果</div>
       </div>
     </overlay-scrollbars-component>
+    <el-drawer v-model="drawerShow" size="90%" :with-header="false">
+      <GameDetailInfo :detail="gameDetail as GameDetail"></GameDetailInfo>
+    </el-drawer>
   </div>
 </template>
 
@@ -109,5 +133,9 @@ function jumpDetail(gameId: number) {
   position: absolute;
   display: flex;
   flex-flow: row nowrap;
+}
+
+:deep(.el-drawer) {
+  background: #bc6d4d;
 }
 </style>

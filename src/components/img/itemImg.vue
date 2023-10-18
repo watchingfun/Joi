@@ -1,5 +1,9 @@
 <template>
-  <img v-bind="$attrs" :src="url" :class="[props.itemId === 0 ? 'none' : '']" />
+  <img
+    :width="props.width" :height="props.width"
+    :src="url"
+    :class="[props.itemId === 0 ? 'none' : '']"
+  />
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
@@ -13,7 +17,10 @@ const url = computed(() => {
     );
 });
 // props
-const props = defineProps(["itemId"]);
+const props = defineProps({
+  width: { type: Number, required: false },
+  itemId: { type: Number, required: true },
+});
 </script>
 <style scoped>
 .none {

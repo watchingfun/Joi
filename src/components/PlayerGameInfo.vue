@@ -1,102 +1,90 @@
 <script setup lang="ts">
-import { queue } from "@@/config/lolDataConfig";
-import { GameDetail } from "@@/lcu/interface";
-import { computed, inject, toRefs } from "vue";
+import { Participant, ParticipantIdentity } from "@@/lcu/interface";
+import { computed, ref, toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
-import dayjs from "dayjs";
 import SpellImg from "@/components/img/spellImg.vue";
 import RuneImg from "@/components/img/runeImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
+import { DocumentCopy } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
+import useLCUStore from "@/store/lcu";
 
-const props = defineProps<{ record: GameDetail }>();
-const { record } = toRefs(props);
+const props = defineProps<{
+  info: Participant;
+  playInfo: ParticipantIdentity;
+}>();
+const { info } = toRefs(props);
+const lcuStore = useLCUStore();
 
-const formatDate = (str: string) => {
-  return dayjs(str).format("YYYY-MM-DD");
-};
-const formatTime = (str: string) => {
-  return dayjs(str).format("HH:mm");
-};
+const currentSummonerId = computed(() => lcuStore.summonerInfo?.summonerId);
 
-function hashCode(string: string) {
-  let hash = 0;
-  for (let i = 0; i < string.length; i++) {
-    let code = string.charCodeAt(i);
-    hash = (hash << 5) - hash + code;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash;
+function copyName(name: string) {
+  navigator.clipboard
+    .writeText(name)
+    .then(() => ElMessage.success(`昵称[${name}]已复制`));
 }
-
-//todo 不同游戏模式不同背景颜色
-const gameModeBackground = (str: string) => {
-  return {
-    backgroundColor: `rgb(10 ${hashCode(str) % 255} 255 / 0.5)`,
-  };
-};
 </script>
 
 <template>
   <div class="relative">
     <div
-      :class="['row-item', record.participants[0].stats.win ? 'win' : 'fail']"
+      :class="[
+        'row-item',
+        info?.stats.win ? 'win' : 'fail',
+        playInfo?.player?.summonerId === currentSummonerId ? 'me' : '',
+      ]"
     >
       <div class="ml-[10px]">
         <champion-img
-          style="width: 50px; height: 50px"
-          :level="record.participants[0].stats.champLevel"
-          :champion-id="record.participants[0].championId"
+          style="width: 40px; height: 40px"
+          :level="info?.stats.champLevel"
+          :champion-id="info?.championId"
         ></champion-img>
       </div>
-      <div class="info">
+      <div class="relative inline-flex" style="width: 145px">
         <div
-          class="game-mode"
-          :style="gameModeBackground(queue[record.queueId])"
+          style="width: 100px; font-size: 12px"
+          :title="playInfo.player.summonerName"
+          :class="[
+            'inline-block',
+            'truncate',
+            'result',
+            'summonerName',
+            info?.stats.win ? 'win-result' : 'fail-result',
+          ]"
         >
-          {{ queue[record.queueId] }}
+          {{ playInfo.player.summonerName }}
         </div>
-        <div class="creation-date min-text">
-          开始时间: {{ formatTime(record.gameCreationDate) }}
-        </div>
-        <div class="duration-time min-text">
-          比赛时长: {{ Math.round(record.gameDuration / 60) }} 分钟
-        </div>
+        <el-icon
+          @click="() => copyName(playInfo.player.summonerName)"
+          class="mr-2 copy"
+          style="position: absolute; top: 0; right: 0; font-size: 18px"
+        >
+          <DocumentCopy />
+        </el-icon>
       </div>
-      <div
-        :style="{
-          color: record.participants[0].stats.win
-            ? '#3aff95a1'
-            : 'rgb(255 0 35)',
-        }"
-        :class="[
-          'result',
-          record.participants[0].stats.win ? 'win-result' : 'fail-result',
-        ]"
-      >
-        {{ record.participants[0].stats.win ? "胜利" : "失败" }}
-      </div>
+
       <div class="item-group">
         <div class="spell">
-          <spell-img :spell-id="record.participants[0].spell1Id"></spell-img>
-          <spell-img :spell-id="record.participants[0].spell2Id"></spell-img>
+          <spell-img :width="10" :spell-id="info?.spell1Id"></spell-img>
+          <spell-img :width="10" :spell-id="info?.spell2Id"></spell-img>
         </div>
         <div class="rune">
           <rune-img
-            :rune-id="record.participants[0].stats.perkPrimaryStyle"
+            :width="10"
+            :rune-id="info?.stats.perkPrimaryStyle"
           ></rune-img>
-          <rune-img
-            :rune-id="record.participants[0].stats.perkSubStyle"
-          ></rune-img>
+          <rune-img :width="10" :rune-id="info?.stats.perkSubStyle"></rune-img>
         </div>
         <div class="item-group">
           <template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">
             <itemImg
               class="item ml-1"
+              :width="20"
               :style="{
                 borderRadius: index === 6 ? '50%' : '5px',
-                width: '40px',
               }"
-              :itemId="record.participants[0].stats['item' + index] as number"
+              :itemId="info?.stats['item' + index] as number"
             />
           </template>
         </div>
@@ -105,38 +93,35 @@ const gameModeBackground = (str: string) => {
         <div class="title">KDA</div>
         <div class="title">金钱</div>
         <div class="title">补兵</div>
+        <div class="title">伤害</div>
         <div class="kda">
-          {{ record.participants[0].stats.kills }} /
-          <span class="text-red-600">{{
-            record.participants[0].stats.deaths
-          }}</span>
+          {{ info?.stats.kills }} /
+          <span class="text-red-600">{{ info?.stats.deaths }}</span>
           /
-          {{ record.participants[0].stats.assists }}
+          {{ info?.stats.assists }}
         </div>
         <div class="gold">
-          {{ record.participants[0].stats.goldEarned }}
+          {{ info?.stats.goldEarned }}
         </div>
         <div class="minions">
           {{
-            record.participants[0].stats.totalMinionsKilled +
-            record.participants[0].stats.neutralMinionsKilled
+            info?.stats.totalMinionsKilled + info?.stats.neutralMinionsKilled
           }}
         </div>
+        <div class="damage">
+          {{ info?.stats.totalDamageDealtToChampions }}
+        </div>
       </div>
-    </div>
-    <div class="date-info min-text">
-      {{ formatDate(record.gameCreationDate) }}
     </div>
   </div>
 </template>
 
 <style scoped>
 .row-item {
-  height: 100px;
+  height: 55px;
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  cursor: pointer;
   background-color: #ffffff0f;
   transition:
     all 0.3s ease-in-out,
@@ -154,7 +139,7 @@ const gameModeBackground = (str: string) => {
   top: 0;
   right: 0;
   color: #e5e5e5d1;
-  margin: 3px 5px 0 0;
+  margin: 10px 12px 0 0;
 }
 
 .min-text {
@@ -238,17 +223,18 @@ const gameModeBackground = (str: string) => {
 .kda-group {
   margin-left: 20px;
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr;
+  grid-template-columns: 2fr 2fr 2fr 2fr;
 }
 
 .kda-group .kda,
 .gold,
-.minions {
+.minions,
+.damage {
   font-size: 12px;
 }
 
 .kda-group .title {
-  font-size: 14px;
+  font-size: 12px;
   color: #fbc8b3;
 }
 
@@ -260,5 +246,27 @@ const gameModeBackground = (str: string) => {
   display: flex;
   flex-flow: row nowrap;
   align-self: center;
+}
+
+.row-item:hover .copy {
+  display: inline-block;
+  cursor: pointer;
+}
+
+.copy {
+  display: none;
+}
+
+.me {
+  background: #ffffff5c;
+  cursor: unset;
+}
+
+.summonerName {
+  cursor: pointer;
+}
+
+.me .summonerName {
+  cursor: unset;
 }
 </style>

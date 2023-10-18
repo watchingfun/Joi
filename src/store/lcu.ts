@@ -25,7 +25,6 @@ const useLCUStore = defineStore("lcu", () => {
 
   async function getCurrentSummoner() {
     summonerInfo.value = await lcuApi.getCurrentSummoner();
-    console.log(summonerInfo.value);
     return summonerInfo.value;
   }
 

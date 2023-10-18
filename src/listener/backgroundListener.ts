@@ -20,6 +20,7 @@ export function setupListener() {
     lcuConst.connected,
     (event: IpcRendererEvent, ...args: any[]) => {
       lcuStore.connectStatus = ConnectStatusEnum.connected;
+      lcuStore.getCurrentSummoner();
     },
   );
 }

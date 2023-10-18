@@ -1,6 +1,10 @@
 <template>
   <div class="relative">
-    <el-avatar v-bind="$attrs" shape="square" :src="imgUrl(props.championId)">
+    <el-avatar
+      :width="props.width" :height="props.width"
+      shape="square"
+      :src="imgUrl(props.championId)"
+    >
       <img src="/img/default.png" />
     </el-avatar>
     <div class="level" v-if="props.level">
@@ -20,7 +24,12 @@ const imgUrl = (champId: number) => {
 };
 
 // props
-const props = defineProps(["level", "championId"]);
+const props = defineProps({
+  level: { type: Number, required: false },
+  width: { type: Number, required: false },
+  championId: { type: Number, required: true },
+});
+
 </script>
 <style scoped>
 .level {

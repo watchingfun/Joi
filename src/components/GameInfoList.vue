@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { GameDetail } from "@@/lcu/interface";
-import { computed, toRefs } from "vue";
+import { toRefs } from "vue";
 import GameInfo from "@/components/GameInfo.vue";
-import { Loading } from "@element-plus/icons-vue";
 
 const props = defineProps({
   matchHistoryList: { type: Array<GameDetail>, default: [] },
