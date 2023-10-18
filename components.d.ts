@@ -23,7 +23,6 @@ declare module 'vue' {
     ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     Footer: typeof import('./src/components/Footer.vue')['default']
-    GameDetail: typeof import('./src/components/GameDetail.vue')['default']
     GameDetailInfo: typeof import('./src/components/GameDetailInfo.vue')['default']
     GameInfo: typeof import('./src/components/GameInfo.vue')['default']
     GameInfoList: typeof import('./src/components/GameInfoList.vue')['default']

@@ -3,7 +3,7 @@
  */
 {
   "appId": "YourAppID",
-  "asar": true,
+  "asar": false,
   "productName": "Joi",
   "copyright": "Copyright © 2023 ${author}",
   "directories": {
