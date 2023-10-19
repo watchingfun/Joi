@@ -63,7 +63,7 @@ export function createWindow() {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
     startGuardTask();
   });
-  win.webContents.openDevTools();
+
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
     //win.webContents.openDevTools();
