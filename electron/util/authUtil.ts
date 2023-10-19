@@ -3,6 +3,13 @@ import fs from "fs";
 import path from "node:path";
 import { Credentials } from "../lib/league-connect";
 import logger from "../lib/logger";
+import { getPath } from "./util";
+import { app } from "electron";
+
+const UNPACK_PUBLIC = path.join(
+  getPath(true),
+  `../${app.isPackaged ? "dist" : "public"}`,
+);
 
 //使用vbs提权，因为是新的进程执行，所以只能把查询输出写到文件然后轮询读取
 export function executeCmdAndGetOutput(
@@ -11,7 +18,7 @@ export function executeCmdAndGetOutput(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     let attempts = 0;
-    const outputFile = path.join(process.env.VITE_PUBLIC, "cmd_output");
+    const outputFile = path.join(UNPACK_PUBLIC, "cmd_output");
 
     function pollForFile() {
       attempts++;
@@ -37,19 +44,16 @@ export function executeCmdAndGetOutput(
       });
     }
 
-    const cmdPath = `${path.join(process.env.VITE_PUBLIC, "getAuth.bat")}`;
+    const cmdPath = `${path.join(UNPACK_PUBLIC, "getAuth.bat")}`;
     // 执行cmd脚本
-    exec(
-      `cd ${process.env.VITE_PUBLIC} && getAuth.bat`,
-      (error, stdout, stderr) => {
-        if (error) {
-          reject("执行脚本时出错：" + cmdPath + " " + error.toString());
-          return;
-        }
-        logger.info("脚本执行成功。" + cmdPath);
-        pollForFile(); // 开始轮询
-      },
-    );
+    exec(`cd ${UNPACK_PUBLIC} && getAuth.bat`, (error, stdout, stderr) => {
+      if (error) {
+        reject("执行脚本时出错：" + cmdPath + " " + error.toString());
+        return;
+      }
+      logger.info("脚本执行成功。" + cmdPath);
+      pollForFile(); // 开始轮询
+    });
   });
 }
 
@@ -91,7 +95,7 @@ export async function getAuthInfo(): Promise<Credentials> {
     const [, port] = stdout.match(portRegex);
     const [, password] = stdout.match(passwordRegex);
     const [, pid] = stdout.match(pidRegex);
-    logger.info("lcu port: %s password: %s", port, password)
+    logger.info("lcu port: %s password: %s", port, password);
     return {
       port: Number(port),
       pid: Number(pid),

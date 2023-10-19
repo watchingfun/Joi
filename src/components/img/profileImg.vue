@@ -2,7 +2,7 @@
   <el-avatar
     :width="props.width" :height="props.width"
     :src="
-      'http://ddragon.leagueoflegends.com/cdn/13.14.1/img/profileicon/' +
+      'https://ddragon.leagueoflegends.com/cdn/13.14.1/img/profileicon/' +
       profileIconId +
       '.png'
     "

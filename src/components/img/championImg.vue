@@ -1,11 +1,10 @@
 <template>
   <div class="relative">
     <el-avatar
-      :width="props.width" :height="props.width"
       shape="square"
       :src="imgUrl(props.championId)"
     >
-      <img src="/img/default.png" />
+      <img :src="defaultImg" />
     </el-avatar>
     <div class="level" v-if="props.level">
       {{ props.level }}
@@ -15,6 +14,7 @@
 <script setup lang="ts">
 import { champDict } from "@@/config/lolDataConfig";
 
+const defaultImg = "./img/default.png";
 const imgUrl = (champId: number) => {
   if (champDict[champId]) {
     return `https://game.gtimg.cn/images/lol/act/img/champion/${champDict[champId].alias}.png`;
@@ -26,16 +26,14 @@ const imgUrl = (champId: number) => {
 // props
 const props = defineProps({
   level: { type: Number, required: false },
-  width: { type: Number, required: false },
   championId: { type: Number, required: true },
 });
-
 </script>
 <style scoped>
 .level {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  text-shadow: 3px 1px 4px rgba(0, 0, 0, 0.4);
+  bottom: -4px;
+  right: -6px;
+  text-shadow: 3px 2px 4px rgb(0 0 0 / 64%)
 }
 </style>

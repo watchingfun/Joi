@@ -8,6 +8,7 @@ import { startGuardTask } from "./lcu/handleLCU";
 import installExtension from "electron-devtools-installer";
 import Input = Electron.Input;
 import logger from "./lib/logger";
+import { getPath } from "./util/util";
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
@@ -23,7 +24,7 @@ const BrowserWindow = require("electron-acrylic-window").BrowserWindow;
 // │ ├── index.html
 // │ ├── ...other-static-files-from-public
 // │
-process.env.DIST = path.join(__dirname, "../dist");
+process.env.DIST = path.join(getPath(), "../dist");
 process.env.VITE_PUBLIC = app.isPackaged
   ? process.env.DIST
   : path.join(process.env.DIST, "../public");
@@ -62,7 +63,7 @@ export function createWindow() {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
     startGuardTask();
   });
-
+  win.webContents.openDevTools();
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
     //win.webContents.openDevTools();

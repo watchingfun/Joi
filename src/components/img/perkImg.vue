@@ -1,7 +1,7 @@
 <template>
     <img
         :width="props.width" :height="props.width"
-        :src="'/img/perk/emblem-' + props.tier.toLowerCase() + '.png'"
+        :src="'./img/perk/emblem-' + props.tier.toLowerCase() + '.png'"
     />
 </template>
 <script setup lang="ts">

@@ -3,7 +3,8 @@
  */
 {
   "appId": "YourAppID",
-  "asar": false,
+  "asar": true,
+  "asarUnpack": ["dist/*.bat"],
   "productName": "Joi",
   "copyright": "Copyright © 2023 ${author}",
   "directories": {

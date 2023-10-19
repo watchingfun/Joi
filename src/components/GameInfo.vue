@@ -43,7 +43,7 @@ const gameModeBackground = (str: string) => {
     >
       <div class="ml-[10px]">
         <champion-img
-          style="width: 50px; height: 50px"
+            width="40px" height="40px"
           :level="record.participants[0].stats.champLevel"
           :champion-id="record.participants[0].championId"
         ></champion-img>
@@ -200,8 +200,8 @@ const gameModeBackground = (str: string) => {
 
 .info {
   font-size: 12px;
-  width: 120px;
-  margin-left: 10px;
+  width: 110px;
+  margin-left: 20px;
 }
 
 .info .game-mode {
