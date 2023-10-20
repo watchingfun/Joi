@@ -7,7 +7,7 @@ import {
   LeagueWebSocket,
 } from "../lib/league-connect";
 import ProcessChecker from "../util/processChecker";
-import { sendToWebContent } from "../util/util";
+import { executeCommand, sendToWebContent } from "../util/util";
 import LCUEventHandlers from "./handleEvent";
 import { lcuConst } from "../config/const";
 import * as lcuRequestModule from "./lcuRequest";
@@ -33,7 +33,11 @@ export function getLeagueWebSocket() {
 }
 
 //监听客户端是否运行, 运行就进行连接
-export async function startGuardTask() {
+export function startGuardTask() {
+  if (processChecker) {
+    processChecker.stop();
+    processChecker = null;
+  }
   processChecker = new ProcessChecker("LeagueClient.exe", 4000);
   processChecker.on("running", async () => {
     if (!ws && !wsIsConnecting) {
@@ -57,7 +61,8 @@ export async function startGuardTask() {
     credentials = null;
     sendToWebContent(lcuConst.disconnect);
   });
-  processChecker.start();
+  processChecker.start(true);
+  return processChecker;
 }
 
 export async function initLeagueWebSocket() {
@@ -83,20 +88,15 @@ export function setupLCUHandler() {}
 //处理killRender进程请求
 ipcMain.handle(lcuConst.killRender, (event, args) => {
   return new Promise((resolve, reject) => {
-    exec(
-      `cd ${process.env.VITE_PUBLIC} && killLCURender.bat`,
-      (error, stdout, stderr) => {
-        if (error) {
-          logger.error(
-            `无法杀死进程 LeagueClientUxRender.exe: ${error.message}`,
-          );
-          reject(error.message);
-        } else {
-          logger.info(`成功杀死进程 LeagueClientUxRender.exe`);
-          resolve(null);
-        }
-      },
-    );
+    executeCommand("taskkill /F /IM LeagueClientUxRender.exe")
+      .then(() => {
+        logger.info(`成功杀死进程 LeagueClientUxRender.exe`);
+        resolve(null);
+      })
+      .catch((e) => {
+        logger.error(`无法杀死进程 LeagueClientUxRender.exe: ${e.message}`);
+        reject(e.message);
+      });
   });
 });
 

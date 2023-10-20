@@ -107,7 +107,7 @@ const drawerShow = ref(false);
     <div style="height: 56px; flex-shrink: 0"></div>
 
     <overlay-scrollbars-component
-      class="flex flex-1"
+      class="flex flex-1 scroll-wrapper"
       v-loading="loading"
       :options="{ scrollbars: { autoHide: 'move' } }"
     >
@@ -137,5 +137,9 @@ const drawerShow = ref(false);
 
 :deep(.el-drawer) {
   background: #bc6d4d;
+}
+
+.scroll-wrapper :deep(div[data-overlayscrollbars-contents]) {
+  height: 100%;
 }
 </style>

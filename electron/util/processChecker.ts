@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import { EventEmitter } from "events";
+import logger from "../lib/logger";
 
 class ProcessChecker extends EventEmitter {
   pid: number;
@@ -20,17 +21,19 @@ class ProcessChecker extends EventEmitter {
     this.timer = null;
   }
 
-  start() {
+  start(immediate: boolean = false) {
     if (this.timer === null) {
+      logger.debug("start processChecker");
       this.timer = setInterval(() => {
         this.checkProcess();
       }, this.pollInterval);
-      this.checkProcess(); // Check immediately when starting
+      if (immediate) this.checkProcess(); // Check immediately when starting
     }
   }
 
   stop() {
     if (this.timer !== null) {
+      logger.debug("stop processChecker");
       clearInterval(this.timer);
       this.timer = null;
     }

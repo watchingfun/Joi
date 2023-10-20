@@ -1,61 +1,6 @@
-import { exec } from "child_process";
-import fs from "fs";
-import path from "node:path";
 import { Credentials } from "../lib/league-connect";
 import logger from "../lib/logger";
-import { getPath } from "./util";
-import { app } from "electron";
-
-const UNPACK_PUBLIC = path.join(
-  getPath(true),
-  `../${app.isPackaged ? "dist" : "public"}`,
-);
-
-//使用vbs提权，因为是新的进程执行，所以只能把查询输出写到文件然后轮询读取
-export function executeCmdAndGetOutput(
-  maxAttempts = 3,
-  pollInterval = 1000,
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let attempts = 0;
-    const outputFile = path.join(UNPACK_PUBLIC, "cmd_output");
-
-    function pollForFile() {
-      attempts++;
-      fs.access(outputFile, fs.constants.F_OK, (err) => {
-        if (!err) {
-          // 输出文件存在，读取并返回内容
-          fs.readFile(outputFile, "utf16le", (err, data) => {
-            if (!err) {
-              fs.unlink(outputFile, () => {});
-              resolve(data);
-            } else {
-              reject("无法读取输出文件：" + err);
-            }
-          });
-        } else {
-          // 输出文件不存在，继续轮询或停止
-          if (attempts < maxAttempts) {
-            setTimeout(pollForFile, pollInterval);
-          } else {
-            reject("达到最大尝试次数，停止轮询。");
-          }
-        }
-      });
-    }
-
-    const cmdPath = `${path.join(UNPACK_PUBLIC, "getAuth.bat")}`;
-    // 执行cmd脚本
-    exec(`cd ${UNPACK_PUBLIC} && getAuth.bat`, (error, stdout, stderr) => {
-      if (error) {
-        reject("执行脚本时出错：" + cmdPath + " " + error.toString());
-        return;
-      }
-      logger.info("脚本执行成功。" + cmdPath);
-      pollForFile(); // 开始轮询
-    });
-  });
-}
+import { executeCommand } from "./util";
 
 const RIOT_GAMES_CERT = `
 -----BEGIN CERTIFICATE-----
@@ -87,7 +32,9 @@ XWehWA==
 
 export async function getAuthInfo(): Promise<Credentials> {
   try {
-    const rawStdout = await executeCmdAndGetOutput();
+    const rawStdout = await executeCommand(
+      "wmic PROCESS WHERE name='LeagueClientUx.exe' GET commandline /value",
+    );
     const portRegex = /--app-port=([0-9]+)(?= *"| --)/;
     const passwordRegex = /--remoting-auth-token=(.+?)(?= *"| --)/;
     const pidRegex = /--app-pid=([0-9]+)(?= *"| --)/;
@@ -103,7 +50,7 @@ export async function getAuthInfo(): Promise<Credentials> {
       certificate: RIOT_GAMES_CERT,
     };
   } catch (e) {
-    logger.error(e);
+    logger.error("getAuthInfo", e);
     throw new Error("提取LCU进程信息失败");
   }
 }

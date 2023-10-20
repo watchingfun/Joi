@@ -6,7 +6,7 @@ import {
   PageRange,
   PageRanges,
   SummonerInfo,
-} from "../../electron/lcu/interface";
+} from "@@/lcu/interface";
 
 export enum ConnectStatusEnum {
   connecting,
@@ -20,7 +20,7 @@ const useLCUStore = defineStore("lcu", () => {
   ) as Ref<ConnectStatusEnum>;
 
   const pageRange = ref<PageRange>(PageRanges[0]);
-  const summonerInfo = ref<SummonerInfo | null>(null);
+  const summonerInfo = ref<SummonerInfo>();
   const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
 
   async function getCurrentSummoner() {
@@ -29,14 +29,11 @@ const useLCUStore = defineStore("lcu", () => {
   }
 
   async function getMatchHistoryQueryResult(puuid?: string) {
-    if (!puuid) {
-      puuid = (await getCurrentSummoner()).puuid;
+    if (!puuid && connectStatus.value === ConnectStatusEnum.connected) {
+      puuid = summonerInfo.value?.puuid || (await getCurrentSummoner())?.puuid;
     }
-    matchHistoryQueryResult.value = await lcuApi.queryMatchHistory(
-      puuid,
-      pageRange.value,
-    );
-    console.log(matchHistoryQueryResult.value);
+    matchHistoryQueryResult.value =
+      (await lcuApi.queryMatchHistory(puuid as string, pageRange.value)) || [];
   }
 
   return {

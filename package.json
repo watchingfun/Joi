@@ -4,8 +4,7 @@
   "main": "dist-electron/main.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/watchingfun/Joi",
-    "directory": "better-sqlite3-main-process"
+    "url": "https://github.com/watchingfun/Joi"
   },
   "description": "Another League of Legends assistant tool",
   "author": "watchingfun",
@@ -15,11 +14,14 @@
       "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
     }
   },
+  "engines": {
+    "node": ">=16",
+    "npm": ">=8"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
-    "rebuild": "electron rebuild.js",
-    "postinstall": "npm run rebuild"
+    "rebuild": "electron rebuild.js"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
@@ -59,9 +61,13 @@
     "lru-cache": "^10.0.1",
     "overlayscrollbars-vue": "^0.5.5",
     "pinia": "^2.1.6",
+    "sudo-prompt": "^9.2.1",
     "vue-router": "^4.2.5",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1",
     "ws": "^8.14.2"
+  },
+  "overrides": {
+    "node-gyp": "^9.4.0"
   }
 }
