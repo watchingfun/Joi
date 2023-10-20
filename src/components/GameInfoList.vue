@@ -8,7 +8,7 @@ const props = defineProps({
 });
 const { matchHistoryList } = toRefs(props);
 const emit = defineEmits<{
-  jumpDetail: [id: number];
+  jumpDetail: [record: GameDetail];
 }>();
 </script>
 
@@ -21,7 +21,7 @@ const emit = defineEmits<{
         </template>
         <GameInfo
           :record="record"
-          @click="() => emit('jumpDetail', record.gameId)"
+          @click="() => emit('jumpDetail', record)"
         ></GameInfo>
       </lazy-component>
       <div class="divider" v-if="index + 1 !== matchHistoryList?.length" />

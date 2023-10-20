@@ -26,7 +26,7 @@ export function executeCommand(cmd: string): Promise<string> {
       } else if (stderr) {
         reject(stderr);
       } else {
-        resolve(stdout?.toString());
+        resolve(stdout?.toString() || "");
       }
     });
   });

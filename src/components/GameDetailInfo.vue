@@ -14,10 +14,10 @@ const { detail } = toRefs(props);
         v-for="(data, i) in detail?.participants"
         :key="data.participantId"
       >
-        <PlayerGameInfo
-          :info="data"
-          :play-info="detail.participantIdentities[i]"
-        ></PlayerGameInfo>
+          <PlayerGameInfo
+            :info="data"
+            :play-info="detail.participantIdentities[i]"
+          ></PlayerGameInfo>
         <el-divider v-if="i === 4"></el-divider>
       </template>
     </div>

@@ -8,7 +8,7 @@ import useNavStore from "@/store/nav";
 const routes = [
   {
     path: "/",
-    redirect: '/index'
+    redirect: "/index",
   },
   {
     path: "/index",
@@ -16,7 +16,12 @@ const routes = [
     component: Index,
   },
   { path: "/inGame", name: "inGame", component: InGame },
-  { path: "/historyMatch", name: "historyMatch", component: HistoryMatch },
+  {
+    path: "/historyMatch/:search?",
+    name: "historyMatch",
+    props: true,
+    component: HistoryMatch,
+  },
   { path: "/setting", name: "setting", component: Setting },
 ] as RouteRecordRaw[];
 const router = createRouter({
@@ -27,7 +32,7 @@ const router = createRouter({
 
 router.afterEach((to) => {
   const navStore = useNavStore();
-  navStore.updateActiveKey(to.path);
+  navStore.updateActiveKey(to.name as string);
   console.log("to", to);
 });
 export default router;

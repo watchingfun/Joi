@@ -42,4 +42,10 @@ export default {
     captureError<GameDetail>(
       window.ipcRenderer.invoke(lcuConst.queryGameDetails, gameId),
     ),
+  queryConnectStatus: () =>
+    window.ipcRenderer.invoke(lcuConst.queryConnectStatus) as Promise<boolean>,
+  getSummonerByName: (nickname: string) =>
+    captureError<SummonerInfo>(
+      window.ipcRenderer.invoke(lcuConst.getSummonerByName, nickname),
+    ),
 };

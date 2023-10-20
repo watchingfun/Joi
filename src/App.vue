@@ -2,10 +2,11 @@
 import HeaderBar from "@/components/HeaderBar.vue";
 import Nav from "@/components/Nav.vue";
 import Footer from "@/components/Footer.vue";
+import "overlayscrollbars/overlayscrollbars.css";
 </script>
 
 <template>
-  <div class="flex flex-col h-screen">
+  <div class="flex flex-col h-screen" style="{'--x':200, '--y':200}">
     <HeaderBar></HeaderBar>
     <Nav></Nav>
     <router-view v-slot="{ Component }">

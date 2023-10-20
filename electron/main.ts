@@ -51,7 +51,7 @@ export function createWindow() {
     fullscreenable: false,
     //transparent:true,
     vibrancy: {
-      theme: "#F5692DA3",
+      theme: "dark",
       effect: "acrylic",
       useCustomWindowRefreshMethod: false,
       disableOnBlur: false,
@@ -59,8 +59,9 @@ export function createWindow() {
   });
 
   // 当窗口准备完毕
-  win.webContents.on("did-finish-load", () => {
+  win.webContents.once("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
+    startGuardTask();
   });
 
   if (process.env.VITE_DEV_SERVER_URL) {
@@ -91,7 +92,6 @@ ipcMain.on("open-url", (e, args) => {
 app.whenReady().then(() => {
   createWindow();
   setupTray();
-  startGuardTask();
   installExtension(VUEJS3_DEVTOOLS)
     .then((name) => logger.debug(`Added Extension:  ${name}`))
     .catch((err) => logger.debug("An error occurred: ", err));

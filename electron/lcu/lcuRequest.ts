@@ -2,6 +2,7 @@ import {
   createHttp1Request,
   createHttp2Request,
   createHttpSession,
+  EventResponse,
 } from "../lib/league-connect";
 import { getCredentials, getLeagueWebSocket } from "./handleLCU";
 import { ClientHttp2Session } from "http2";
@@ -30,12 +31,28 @@ export async function getCurrentSummoner() {
   ).json() as SummonerInfo;
 }
 
+//通过昵称召唤师信息
+export async function getSummonerByName(nickname: string) {
+  return (
+    await createHttp1Request(
+      {
+        method: "GET",
+        url: `/lol-summoner/v1/summoners/?name=${encodeURI(nickname)}`,
+      },
+      getCredentials(),
+    )
+  ).json() as SummonerInfo;
+}
+
 //监听选择的英雄
 export function listenChampSelect(): Function {
   const ws = getLeagueWebSocket();
   ws.subscribe(
     "/lol-champ-select/v1/session",
-    async (data: ChampSelectPhaseSession) => {
+    async <ChampSelectPhaseSession>(
+      data: ChampSelectPhaseSession,
+      event: EventResponse<ChampSelectPhaseSession>,
+    ) => {
       const currentChampId = await getCurrentChampId();
       logger.debug("currentChampId", currentChampId);
       logger.debug("champ-select-session", JSON.stringify(data));
@@ -169,64 +186,41 @@ const getPosition = (selectedPosition) => {
 
 //todo 符文类型确认
 //应用符文
-export async function applyRune(data) {
-  let credentials = getCredentials();
-  // 获取符文页信息
-  const currentRuneList = (
-    await createHttp1Request(
-      {
-        method: "GET",
-        url: "lol-perks/v1/pages",
-      },
-      credentials,
-    )
-  ).json();
-  logger.info("currentRuneList", currentRuneList);
-  const current = currentRuneList.find((i) => i.current && i.isDeletable);
-  if (current != undefined) {
-    // 删除当前符文页
-    await createHttp1Request(
-      {
-        method: "DELETE",
-        url: `lol-perks/v1/pages/${current.id}`,
-      },
-      credentials,
-    );
-  }
-  // 写入新的符文页
-  await createHttp1Request(
-    {
-      method: "POST",
-      url: "lol-perks/v1/pages",
-      body: data,
-    },
-    credentials,
-  );
-  return true;
-}
-
-// 根据召唤师ID查询信息
-export async function querySummonerInfo(summonerId: number) {
-  const summonerInfo = (
-    await createHttp1Request(
-      {
-        method: "GET",
-        url: `/lol-summoner/v1/summoners/${summonerId}`,
-      },
-      getCredentials(),
-    )
-  ).json() as SummonerInfo;
-  const imgUrl = `https://wegame.gtimg.com/g.26-r.c2d3c/helper/lol/assis/images/resources/usericon/${summonerInfo.profileIconId}.png`;
-  return {
-    name: summonerInfo.displayName,
-    imgUrl,
-    lv: summonerInfo.summonerLevel,
-    xpSL: summonerInfo.xpSinceLastLevel,
-    xpNL: summonerInfo.xpUntilNextLevel,
-    puuid: summonerInfo.puuid,
-    summonerId: summonerInfo.summonerId,
-  };
-}
+// export async function applyRune(data) {
+//   let credentials = getCredentials();
+//   // 获取符文页信息
+//   const currentRuneList = (
+//     await createHttp1Request(
+//       {
+//         method: "GET",
+//         url: "lol-perks/v1/pages",
+//       },
+//       credentials,
+//     )
+//   ).json();
+//   logger.info("currentRuneList", currentRuneList);
+//   const current = currentRuneList.find((i) => i.current && i.isDeletable);
+//   if (current != undefined) {
+//     // 删除当前符文页
+//     await createHttp1Request(
+//       {
+//         method: "DELETE",
+//         url: `lol-perks/v1/pages/${current.id}`,
+//       },
+//       credentials,
+//     );
+//   }
+//   // 写入新的符文页
+//   await createHttp1Request(
+//     {
+//       method: "POST",
+//       url: "lol-perks/v1/pages",
+//       body: data,
+//     },
+//     credentials,
+//   );
+//   return true;
+// }
 
 // 根据召唤师ID 游标查询战绩
 export const cursorQueryMatchHistory = async (
@@ -275,6 +269,6 @@ export const queryGameDetails = async (gameId: number) => {
       getCredentials(),
     )
   ).json() as GameDetail;
-  logger.debug('queryGameDetails invoke');
+  logger.debug("queryGameDetails invoke");
   return res;
 };

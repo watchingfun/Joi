@@ -78,10 +78,10 @@ export async function initLeagueWebSocket() {
   wsSubscribe(ws);
 }
 
-//处理连接请求
-// ipcMain.handle("lcu:connect", async (event, args) => {
-//   await initLeagueWebSocket();
-// });
+//处理查询连接状态请求
+ipcMain.handle(lcuConst.queryConnectStatus, (event, args) => {
+  return !!ws;
+});
 
 export function setupLCUHandler() {}
 

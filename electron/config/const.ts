@@ -1,3 +1,5 @@
+import { getSummonerByName } from "@@/lcu/lcuRequest";
+
 export const lcuConst = {
   connected: "lcu:connected",
   connecting: "lcu:connecting",
@@ -6,4 +8,6 @@ export const lcuConst = {
   queryGameDetails: "lcu:queryGameDetails",
   queryMatchHistory: "lcu:queryMatchHistory",
   killRender: "lcu:killRender",
+  queryConnectStatus: "lcu:queryConnectStatus",
+  getSummonerByName: "lcu:getSummonerByName",
 };

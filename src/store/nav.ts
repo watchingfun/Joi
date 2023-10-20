@@ -5,15 +5,15 @@ import router from "@/router";
 const useNavStore = defineStore("nav", () => {
   const navMenus = ref([
     {
-      key: "/index",
+      key: "index",
       name: "主页",
     },
     {
-      key: "/inGame",
+      key: "inGame",
       name: "对局",
     },
     {
-      key: "/historyMatch",
+      key: "historyMatch",
       name: "历史战绩",
     },
   ]);

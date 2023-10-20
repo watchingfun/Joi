@@ -3,28 +3,33 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light dark;
-  color: #fff;
-  /*background-color: transparent;*/
-  font-family: 'NotoSansSC-Regular', sans-serif;
-  -webkit-font-smoothing: antialiased; /*chrome、safari*/
-  -moz-osx-font-smoothing: grayscale; /*firefox*/
+    color-scheme: light dark;
+    color: #fff;
+    /*background-color: transparent;*/
+    font-family: 'NotoSansSC-Regular', sans-serif;
+    -webkit-font-smoothing: antialiased; /*chrome、safari*/
+    -moz-osx-font-smoothing: grayscale; /*firefox*/
 }
 
 @font-face {
-  font-family: 'NotoSansSC-Regular';
-  font-style: normal;
-  font-display: swap;
-  src: url('/fonts/NotoSansSC-Regular.woff2') format('woff2');
+    font-family: 'NotoSansSC-Regular';
+    font-style: normal;
+    font-display: swap;
+    src: url('/fonts/NotoSansSC-Regular.woff2') format('woff2');
 }
 
 .title-bar {
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
+    -webkit-user-select: none;
+    -webkit-app-region: drag;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 html, body {
-  height: 100%;
-  padding: 0;
-  margin: 0;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+    background-image: linear-gradient(130deg, #575cad7a 0%, #ffffff00 100%);
 }

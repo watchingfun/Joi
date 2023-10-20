@@ -21,6 +21,8 @@ const useLCUStore = defineStore("lcu", () => {
 
   const pageRange = ref<PageRange>(PageRanges[0]);
   const summonerInfo = ref<SummonerInfo>();
+  const querySummonerInfo = ref<SummonerInfo>();
+  const search = ref("");
   const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
 
   async function getCurrentSummoner() {
@@ -28,12 +30,33 @@ const useLCUStore = defineStore("lcu", () => {
     return summonerInfo.value;
   }
 
-  async function getMatchHistoryQueryResult(puuid?: string) {
-    if (!puuid && connectStatus.value === ConnectStatusEnum.connected) {
-      puuid = summonerInfo.value?.puuid || (await getCurrentSummoner())?.puuid;
+  async function getMatchHistoryQueryResult(summonerName?: string) {
+    let puuid;
+    if (summonerName) {
+      if (querySummonerInfo.value?.displayName === summonerName) {
+        puuid = querySummonerInfo.value?.puuid;
+      } else {
+        querySummonerInfo.value = await lcuApi.getSummonerByName(summonerName);
+        puuid = querySummonerInfo.value?.puuid;
+        if (!puuid) {
+          ElMessage.warning(`查询不到召唤师${summonerName}`);
+        }
+      }
+    } else {
+      querySummonerInfo.value = await lcuApi.getCurrentSummoner();
+      puuid = querySummonerInfo.value?.puuid;
     }
+
     matchHistoryQueryResult.value =
       (await lcuApi.queryMatchHistory(puuid as string, pageRange.value)) || [];
+  }
+
+  function refreshConnectStatus() {
+    lcuApi.queryConnectStatus().then((connected: boolean = false) => {
+      connectStatus.value = connected
+        ? ConnectStatusEnum.connected
+        : ConnectStatusEnum.disconnect;
+    });
   }
 
   return {
@@ -43,6 +66,9 @@ const useLCUStore = defineStore("lcu", () => {
     pageRange,
     summonerInfo,
     matchHistoryQueryResult,
+    refreshConnectStatus,
+    querySummonerInfo,
+    search,
   };
 });
 
