@@ -43,7 +43,8 @@ const useLCUStore = defineStore("lcu", () => {
         }
       }
     } else {
-      querySummonerInfo.value = await lcuApi.getCurrentSummoner();
+      querySummonerInfo.value =
+        summonerInfo.value || (await getCurrentSummoner());
       puuid = querySummonerInfo.value?.puuid;
     }
 

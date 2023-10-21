@@ -12,12 +12,11 @@ import { LRUCache } from "lru-cache";
 import ProfileImg from "@/components/img/profileImg.vue";
 import router from "@/router";
 import { ElMessage } from "element-plus";
+import { onBeforeRouteUpdate } from "vue-router";
 
 const lcuStore = useLCUStore();
 const page = ref(1);
 const loading = ref(false);
-
-const props = defineProps<{ search?: string }>();
 
 const matchHistoryList = computed(() => {
   return lcuStore.matchHistoryQueryResult?.[page.value - 1]?.games?.games || [];
@@ -26,16 +25,16 @@ const matchHistoryList = computed(() => {
 function refresh() {
   page.value = 1;
   lcuStore.pageRange = 1;
-  fetchData();
+  fetchData(lcuStore.querySummonerInfo?.displayName);
 }
 
-function fetchData() {
-  console.log("search", props.search);
+function fetchData(search?: string) {
+  console.log("search", search);
   if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
     return;
   }
   loading.value = true;
-  lcuStore.getMatchHistoryQueryResult(props.search).finally(() => {
+  lcuStore.getMatchHistoryQueryResult(search).finally(() => {
     //setTimeout(() => (loading.value = false), 500);
     loading.value = false;
   });
@@ -66,12 +65,11 @@ cacheQueryGameDetails.cache = new LRUCache({ max: 500 });
 
 onMounted(() => fetchData());
 
-watch(
-  () => props.search,
-  (value, oldValue, onCleanup) => {
-    fetchData();
-  },
-);
+onBeforeRouteUpdate((to, from, next) => {
+  const { params } = to;
+  fetchData(params.search as string);
+  next();
+});
 
 watch(
   () => clickedGameInfo.value?.gameId,

@@ -21,7 +21,6 @@ const routes = [
       {
         path: "historyMatch/:search?",
         name: "historyMatch",
-        props: true,
         component: HistoryMatch,
       },
       { path: "setting", name: "setting", component: Setting },
@@ -42,6 +41,5 @@ const router = createRouter({
 router.afterEach((to) => {
   const navStore = useNavStore();
   navStore.updateActiveKey(to.name as string);
-  console.log("to", to);
 });
 export default router;
