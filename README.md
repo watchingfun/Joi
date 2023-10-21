@@ -8,10 +8,13 @@
 - [x] 个人战绩查询
 - [ ] sqlite3存储配置项
 - [x] 战绩详情查询
-- [ ] 他人战绩查询
-- [ ] 设置项配置功能
+- [x] 他人战绩查询
+- [x] 设置项配置功能
 - [ ] 发送聊天
+- [ ] 小黑屋功能
+- [ ] 对局分析
 
 ## 截图
-![Image](https://github.com/watchingfun/Joi/blob/main/screenshot/1697559616831.png)
-![Image](https://github.com/watchingfun/Joi/blob/main/screenshot/1697647278059.png)
+![Image](./screenshot/1697890042876.png)
+![Image](./screenshot/1697890056461.png)
+![Image](./screenshot/1697890067570.png)
