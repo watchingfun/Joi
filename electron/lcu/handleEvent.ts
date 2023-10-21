@@ -11,7 +11,10 @@ import { setting } from "../config";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
-  if (eventKey !== "ReadyCheck" && setting.model.autoAccept) {
+  if (eventKey !== "ReadyCheck") {
+    return;
+  }
+  if (!setting.model.autoAccept) {
     return;
   }
   const setTime = setting.model.autoAcceptDelay;
