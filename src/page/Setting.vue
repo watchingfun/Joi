@@ -40,7 +40,7 @@ function goBack() {
           <div style="line-height: 20px; height: 26px">
             {{ settingModel.autoAcceptDelay }}ms
           </div>
-          <el-slider
+          <el-slider :max="900"
             v-model="settingModel.autoAcceptDelay"
             style="padding: 20px 10px"
           ></el-slider>

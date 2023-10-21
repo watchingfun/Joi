@@ -162,6 +162,7 @@ const footerStyle = computed(() => {
   animation: backgroundBar-4896eafd 1s linear infinite;
   opacity: 0;
   transition: opacity 1s ease;
+  pointer-events: none;
 }
 
 .footer.loaderBar:after {
