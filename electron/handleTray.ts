@@ -24,7 +24,7 @@ export function setupTray() {
     {
       label: "主页",
       click: () => {
-        showMainWindow();
+        showMainWindow({ name: "index" });
       },
     },
     {
