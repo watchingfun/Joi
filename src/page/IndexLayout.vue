@@ -13,11 +13,11 @@ const route = useRoute();
     <HeaderBar></HeaderBar>
     <Nav :class="[route.name !== 'setting' ? '' : 'h-0 overflow-hidden']"></Nav>
     <router-view v-slot="{ Component }">
-      <keep-alive>
-        <transition-slide :offset="[-16, 0]" mode="out-in">
+      <transition-slide :offset="[-16, 0]" mode="out-in">
+        <keep-alive>
           <component :is="Component" />
-        </transition-slide>
-      </keep-alive>
+        </keep-alive>
+      </transition-slide>
     </router-view>
     <div style="height: 25px; flex-shrink: 0"></div>
     <Footer></Footer>
