@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import ConnectStatus from "@/components/ConnectStatus.vue";
 import useAppStore from "@/store/app";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import zhCN from "dayjs/locale/zh-cn";
 import { ElMessage } from "element-plus";
 import lcuApi from "@/api/lcuApi";
+import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -34,11 +35,30 @@ onUnmounted(() => {
     timer = null;
   }
 });
+const lcuStore = useLCUStore();
+
+const footerStyle = computed(() => {
+  if (lcuStore.connectStatus === ConnectStatusEnum.disconnect) {
+    return {
+      backgroundColor: "rgba(211,86,86,0.88)",
+    };
+  } else {
+    return {};
+  }
+});
 </script>
 
 <template>
-  <div class="footer">
-    <el-divider style="margin: 0" />
+  <div
+    class="footer"
+    :class="[
+      lcuStore.connectStatus === ConnectStatusEnum.connecting
+        ? 'loaderBar'
+        : '',
+    ]"
+    :style="footerStyle"
+  >
+    <!--    <el-divider style="margin: 0" />-->
     <div class="info flex flex-row flex-nowrap items-center justify-between">
       <div class="ml-2">
         已运行时间:
@@ -82,7 +102,10 @@ onUnmounted(() => {
             ></path>
           </svg>
         </div>
-        <ConnectStatus class="mr-1"></ConnectStatus>
+        <ConnectStatus
+          class="mr-1"
+          :connect-status="lcuStore.connectStatus"
+        ></ConnectStatus>
       </div>
     </div>
   </div>
@@ -98,6 +121,10 @@ onUnmounted(() => {
   line-height: 1;
   display: flex;
   flex-flow: column nowrap;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition:
+    opacity,
+    background-color 0.4s ease;
 }
 
 .info {
@@ -119,5 +146,34 @@ onUnmounted(() => {
   display: block;
   margin-right: 12px;
   cursor: pointer;
+}
+
+.footer:after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-image: linear-gradient(
+    90deg,
+    #ffffff00 0%,
+    #d179457a 50%,
+    #ffffff00 100%
+  );
+  animation: backgroundBar-4896eafd 1s linear infinite;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.footer.loaderBar:after {
+  opacity: 1;
+}
+
+@keyframes backgroundBar {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: 800px;
+  }
 }
 </style>

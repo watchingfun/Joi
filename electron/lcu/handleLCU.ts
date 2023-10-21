@@ -1,5 +1,4 @@
 import { getAuthInfo } from "../util/authUtil";
-import { exec } from "child_process";
 import { ipcMain } from "electron";
 import {
   createWebSocketConnection,
@@ -9,7 +8,7 @@ import {
 import ProcessChecker from "../util/processChecker";
 import { executeCommand, sendToWebContent } from "../util/util";
 import LCUEventHandlers from "./handleEvent";
-import { lcuConst } from "../config/const";
+import { lcuConst } from "../const/const";
 import * as lcuRequestModule from "./lcuRequest";
 import logger from "../lib/logger";
 

@@ -1,5 +1,3 @@
-import { getSummonerByName } from "@@/lcu/lcuRequest";
-
 export const lcuConst = {
   connected: "lcu:connected",
   connecting: "lcu:connecting",

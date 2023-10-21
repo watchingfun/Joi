@@ -1,4 +1,4 @@
-import { lcuConst } from "@@/config/const";
+import { lcuConst } from "@@/const/const";
 import {
   GameDetail,
   MatchHistoryQueryResult,

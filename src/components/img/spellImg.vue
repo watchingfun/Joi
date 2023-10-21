@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
 import { computed, PropType } from "vue";
-import { spells } from "@@/config/lolDataConfig";
+import { spells } from "@@/const/lolDataConfig";
 // props
 const props = defineProps({
   spellId: { type: Number, required: true },

@@ -1,35 +1,29 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
-import { CircleCheck, CircleClose, Loading } from "@element-plus/icons-vue";
+import { ConnectStatusEnum } from "@/store/lcu";
+import { CircleCheck, Loading } from "@element-plus/icons-vue";
+import Plugs from "@/components/img/plugs.vue";
+import { toRefs } from "vue";
 
-const lcuStore = useLCUStore();
-const { connectStatus } = storeToRefs(lcuStore);
+const props = defineProps<{ connectStatus: ConnectStatusEnum }>();
+const { connectStatus } = toRefs(props);
 </script>
 
 <template>
   <div class="flex flex-row items-center">
     <div>客户端连接状态:</div>
-    <div class="status-info">
+    <div class="status-info" style="font-size: 18px">
       <div v-if="connectStatus === ConnectStatusEnum.connected">
-        <el-icon style="color: #00ff00">
+        <el-icon style="color: rgb(76 255 124 / 87%)">
           <CircleCheck />
         </el-icon>
-        <el-text class="mx-1" type="success">已连接</el-text>
       </div>
       <div
         v-else-if="connectStatus === ConnectStatusEnum.disconnect"
         class="disconnect"
       >
-        <el-icon style="color: #ff0000f2">
-          <CircleClose />
+        <el-icon>
+          <Plugs />
         </el-icon>
-        <el-text
-          class="mx-1"
-          type="danger"
-          style="color: #ff0000f2"
-          >未连接
-        </el-text>
       </div>
       <div v-else-if="connectStatus === ConnectStatusEnum.connecting">
         <el-icon class="rotate">
@@ -42,7 +36,7 @@ const { connectStatus } = storeToRefs(lcuStore);
 </template>
 
 <style scoped>
-.status-info :deep(.el-text){
+.status-info :deep(.el-text) {
   font-size: 12px;
 }
 

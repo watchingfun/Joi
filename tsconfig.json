@@ -26,6 +26,7 @@
   },
   "include": [
     "src",
+    "auto-imports.d.ts"
   ],
   "references": [
     {

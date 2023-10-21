@@ -9,6 +9,7 @@ import installExtension from "electron-devtools-installer";
 import Input = Electron.Input;
 import logger from "./lib/logger";
 import { getPath } from "./util/util";
+import { setupSettingHandler, setting } from "./config";
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
@@ -59,8 +60,9 @@ export function createWindow() {
   });
 
   // 当窗口准备完毕
-  win.webContents.once("did-finish-load", () => {
-    win?.webContents.send("main-process-message", new Date().toLocaleString());
+  win.webContents.once("did-finish-load", async () => {
+    //win?.webContents.send("main-process-message", new Date().toLocaleString());
+    await setting.init
     startGuardTask();
   });
 
@@ -91,6 +93,7 @@ ipcMain.on("open-url", (e, args) => {
 
 app.whenReady().then(() => {
   createWindow();
+  setupSettingHandler();
   setupTray();
   installExtension(VUEJS3_DEVTOOLS)
     .then((name) => logger.debug(`Added Extension:  ${name}`))

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { Close, Minus, Setting } from "@element-plus/icons-vue";
 import Logo from "@/components/Logo.vue";
+import router from "@/router";
 
 const minimizeHandler = () => {
-  window.ipcRenderer.invoke('titleBarControl:minimize')
+  window.ipcRenderer.invoke("titleBarControl:minimize");
 };
 const settingHandler = () => {
-  window.ipcRenderer.invoke('titleBarControl:setting')
+  router.push({ name: "setting" });
 };
 const closeHandler = () => {
-  window.ipcRenderer.invoke('titleBarControl:close')
+  window.ipcRenderer.invoke("titleBarControl:close");
 };
 </script>
 
@@ -69,12 +70,14 @@ const closeHandler = () => {
 
 /* latin */
 @font-face {
-  font-family: 'Audiowide';
+  font-family: "Audiowide";
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/Audiowide.woff2') format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+  src: url("/fonts/Audiowide.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 .rise {

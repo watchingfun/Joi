@@ -6,7 +6,7 @@ import {
 } from "../lib/league-connect";
 import { getCredentials, getLeagueWebSocket } from "./handleLCU";
 import { ClientHttp2Session } from "http2";
-import { champDict } from "../config/lolDataConfig";
+import { champDict } from "../const/lolDataConfig";
 import {
   ChampSelectPhaseSession,
   GameDetail,

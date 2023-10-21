@@ -1,6 +1,6 @@
 {
   "name": "joi",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "main": "dist-electron/main.js",
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
+    "@morev/vue-transitions": "^2.3.6",
     "@vueuse/components": "^10.5.0",
     "@vueuse/core": "^10.5.0",
     "dayjs": "^1.11.10",

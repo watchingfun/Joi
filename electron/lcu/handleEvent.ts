@@ -7,13 +7,14 @@ import {
   queryMatchHistory,
 } from "./lcuRequest";
 import logger from "../lib/logger";
+import { setting } from "../config";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
-  if (eventKey !== "ReadyCheck") {
+  if (eventKey !== "ReadyCheck" && setting.model.autoAccept) {
     return;
   }
-  const setTime = 600;
+  const setTime = setting.model.autoAcceptDelay;
   setTimeout(async () => {
     try {
       await createHttp1Request(
@@ -45,7 +46,7 @@ export function handelGameStart(eventKey: string) {
   if (eventKey !== "GameStart") {
     return;
   }
-  getGameInfo();
+  //getGameInfo();
   if (unListenChampSelect) {
     unListenChampSelect();
   }

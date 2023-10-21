@@ -24,6 +24,10 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
+.title-bar,.footer{
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
 html, body {
     height: 100%;
     padding: 0;
@@ -32,4 +36,5 @@ html, body {
 
 body {
     background-image: linear-gradient(130deg, #575cad7a 0%, #ffffff00 100%);
+    user-select: none;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { queue } from "@@/config/lolDataConfig";
+import { queue } from "@@/const/lolDataConfig";
 import { GameDetail } from "@@/lcu/interface";
 import { computed, inject, toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";

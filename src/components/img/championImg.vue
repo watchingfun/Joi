@@ -12,7 +12,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { champDict } from "@@/config/lolDataConfig";
+import { champDict } from "@@/const/lolDataConfig";
 
 const defaultImg = "./img/default.png";
 const imgUrl = (champId: number) => {

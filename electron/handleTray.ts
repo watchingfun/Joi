@@ -1,12 +1,16 @@
 import { app, BrowserWindow, Tray, Menu } from "electron";
 import path from "node:path";
 import { createWindow } from "./main";
+import { sendToWebContent } from "./util/util";
 
-function showMainWindow(){
+function showMainWindow(route?: string | { name: string }) {
   // 获取当前的窗口  目前程序只做一个窗口
   const windows = BrowserWindow.getAllWindows();
   if (windows.length) {
     const win = windows.at(0);
+    if (route) {
+      win.webContents.send("jumpRoute", route);
+    }
     win.restore();
     win.show();
   }
@@ -20,16 +24,20 @@ export function setupTray() {
     {
       label: "主页",
       click: () => {
-        showMainWindow()
+        showMainWindow();
       },
     },
     {
       label: "战绩查询",
-      click: () => {},
+      click: () => {
+        showMainWindow({ name: "historyMatch" });
+      },
     },
     {
       label: "设置",
-      click: () => {},
+      click: () => {
+        showMainWindow({ name: "setting" });
+      },
     },
     {
       label: "退出",
@@ -43,7 +51,7 @@ export function setupTray() {
   tray.setToolTip("Joi 你的英雄联盟助手");
   tray.setContextMenu(contextMenu);
   // 添加双击事件监听器
-  tray.on('click', () => {
-    showMainWindow()
+  tray.on("click", () => {
+    showMainWindow();
   });
 }

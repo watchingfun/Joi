@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Participant, ParticipantIdentity } from "@@/lcu/interface";
+import { Participant, ParticipantIdentity, Player } from "@@/lcu/interface";
 import { computed, ref, toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import SpellImg from "@/components/img/spellImg.vue";
@@ -23,6 +23,8 @@ function copyName(name: string) {
     .writeText(name)
     .then(() => ElMessage.success(`昵称[${name}]已复制`));
 }
+
+const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 </script>
 
 <template>
@@ -34,14 +36,15 @@ function copyName(name: string) {
         playInfo?.player?.summonerId === currentSummonerId ? 'me' : '',
       ]"
     >
-      <div class="ml-[10px]">
+      <div class="ml-[10px] avatar cursor-pointer" title="点击头像查看最近战绩">
         <champion-img
+          @click="() => emit('jumpSummoner', playInfo?.player)"
           style="width: 40px; height: 40px"
           :level="info?.stats.champLevel"
           :champion-id="info?.championId"
         ></champion-img>
       </div>
-      <div class="relative inline-flex" style="width: 145px">
+      <div class="relative inline-flex cursor-pointer" style="width: 145px" @click="() => copyName(playInfo.player.summonerName)">
         <div
           style="width: 100px; font-size: 12px"
           :title="playInfo.player.summonerName"
@@ -56,7 +59,6 @@ function copyName(name: string) {
           {{ playInfo.player.summonerName }}
         </div>
         <el-icon
-          @click="() => copyName(playInfo.player.summonerName)"
           class="mr-2 copy"
           style="position: absolute; top: 0; right: 0; font-size: 18px"
         >

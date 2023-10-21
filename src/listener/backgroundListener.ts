@@ -1,9 +1,12 @@
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import IpcRendererEvent = Electron.IpcRendererEvent;
-import { lcuConst } from "../../electron/config/const";
+import { lcuConst } from "@@/const/const";
+import router from "@/router";
+import useSettingStore from "@/store/setting";
 
-export function setupListener() {
+export async function setupListener() {
   const lcuStore = useLCUStore();
+  const settingStore = useSettingStore();
   window.ipcRenderer.on(
     lcuConst.disconnect,
     (event: IpcRendererEvent, ...args: any[]) => {
@@ -23,4 +26,11 @@ export function setupListener() {
       lcuStore.getCurrentSummoner();
     },
   );
+  window.ipcRenderer.on(
+    "jumpRoute",
+    (event: IpcRendererEvent, ...args: any[]) => {
+      router.push(args[0] as string | { name: string });
+    },
+  );
+  window.ipcRenderer.send("updateSetting", JSON.stringify(await settingStore.getSetting()));
 }

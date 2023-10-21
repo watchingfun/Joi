@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import useLCUStore from "@/store/lcu";
+import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import GameInfoList from "@/components/GameInfoList.vue";
 import GameDetailInfo from "@/components/GameDetailInfo.vue";
 import lcuApi from "@/api/lcuApi";
 import { computed, onMounted, ref, watch } from "vue";
-import { GameDetail, PageRanges } from "@@/lcu/interface";
+import { GameDetail, PageRanges, Player } from "@@/lcu/interface";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import { Warning } from "@element-plus/icons-vue";
 import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";
 import ProfileImg from "@/components/img/profileImg.vue";
+import router from "@/router";
+import { ElMessage } from "element-plus";
 
 const lcuStore = useLCUStore();
 const page = ref(1);
@@ -18,19 +20,8 @@ const loading = ref(false);
 const props = defineProps<{ search?: string }>();
 
 const matchHistoryList = computed(() => {
-  loading.value = true;
-  const result =
-    lcuStore.matchHistoryQueryResult?.[page.value - 1]?.games?.games || [];
-  loading.value = false;
-  return result;
+  return lcuStore.matchHistoryQueryResult?.[page.value - 1]?.games?.games || [];
 });
-
-watch(
-  () => props.search,
-  (value, oldValue, onCleanup) => {
-    fetchData();
-  },
-);
 
 function refresh() {
   page.value = 1;
@@ -39,14 +30,16 @@ function refresh() {
 }
 
 function fetchData() {
-  console.log(props.search);
+  console.log("search", props.search);
+  if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
+    return;
+  }
   loading.value = true;
   lcuStore.getMatchHistoryQueryResult(props.search).finally(() => {
-    setTimeout(() => (loading.value = false), 500);
+    //setTimeout(() => (loading.value = false), 500);
+    loading.value = false;
   });
 }
-
-onMounted(() => fetchData());
 
 const clickedGameInfo = ref<GameDetail>();
 
@@ -55,13 +48,30 @@ const gameDetail = ref<GameDetail>();
 const fetchDetailLoading = ref(false);
 
 function jumpDetail(gameRecord: GameDetail) {
-  clickedGameInfo.value = gameRecord;
   drawerShow.value = true;
+  clickedGameInfo.value = gameRecord;
+}
+
+function jumpSummoner(player: Player) {
+  drawerShow.value = false;
+  router.push({
+    name: "historyMatch",
+    params: { search: player.summonerName },
+  });
 }
 
 //缓存对局查询
 const cacheQueryGameDetails = memoize(lcuApi.queryGameDetails);
 cacheQueryGameDetails.cache = new LRUCache({ max: 500 });
+
+onMounted(() => fetchData());
+
+watch(
+  () => props.search,
+  (value, oldValue, onCleanup) => {
+    fetchData();
+  },
+);
 
 watch(
   () => clickedGameInfo.value?.gameId,
@@ -76,17 +86,35 @@ watch(
   },
 );
 
+function copy(name: string) {
+  navigator.clipboard
+    .writeText(name)
+    .then(() => ElMessage.success(`昵称[${name}]已复制`));
+}
+
 const drawerShow = ref(false);
 </script>
 
 <template>
   <div class="relative flex flex-col overflow-hidden h-full">
-    <div class="page-header items-center justify-center w-full">
-      <div class="flex flex-row items-center">
+    <div class="page-header items-center justify-center w-full select-none">
+      <div class="flex flex-row items-center" v-if="lcuStore.querySummonerInfo">
+        <el-tag
+          >{{
+            lcuStore.querySummonerInfo?.privacy === "PUBLIC"
+              ? "生涯公开"
+              : "生涯隐藏"
+          }}
+        </el-tag>
         <profile-img
-          :profile-icon-id="lcuStore.querySummonerInfo?.profileIconId as number"
+          class="m-2"
+          :profile-icon-id="lcuStore.querySummonerInfo.profileIconId"
         ></profile-img>
-        <div class="truncate" :title="lcuStore.querySummonerInfo?.displayName">
+        <div
+          class="truncate cursor-pointer"
+          :title="lcuStore.querySummonerInfo.displayName"
+          @click="() => copy(lcuStore.querySummonerInfo?.displayName as string)"
+        >
           {{ lcuStore.querySummonerInfo?.displayName }}
         </div>
       </div>
@@ -137,6 +165,7 @@ const drawerShow = ref(false);
     <overlay-scrollbars-component
       class="flex flex-1 scroll-wrapper"
       v-loading="loading"
+      element-loading-background="rgba(122, 122, 122, 0.6)"
       :options="{ scrollbars: { autoHide: 'move' } }"
     >
       <GameInfoList
@@ -156,7 +185,10 @@ const drawerShow = ref(false);
       :with-header="false"
       :class="[clickedGameInfo?.participants[0].stats.win ? 'win' : 'fail']"
     >
-      <GameDetailInfo :detail="gameDetail as GameDetail"></GameDetailInfo>
+      <GameDetailInfo
+        :detail="gameDetail as GameDetail"
+        @JumpSummoner="jumpSummoner"
+      ></GameDetailInfo>
     </el-drawer>
   </div>
 </template>
@@ -195,5 +227,10 @@ const drawerShow = ref(false);
 
 .scroll-wrapper :deep(div[data-overlayscrollbars-contents]) {
   height: 100%;
+}
+
+:deep(.el-loading-mask) {
+  background-color: rgb(74 76 105 / 95%) !important;
+  backdrop-filter: blur(2px);
 }
 </style>

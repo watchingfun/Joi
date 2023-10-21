@@ -17,6 +17,7 @@ app.mount("#app").$nextTick(() => {
 setupListener();
 import LazyLoad from "lazy-load-vue3";
 import useLCUStore from "@/store/lcu";
+import '@morev/vue-transitions/styles';
 
 app.use(LazyLoad, { component: true });
 app.config.errorHandler = (err, vm, info) => {

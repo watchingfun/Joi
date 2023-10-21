@@ -5,7 +5,7 @@ export interface SummonerInfo {
   internalName: string;
   nameChangeFlag: boolean;
   percentCompleteForNextLevel: number;
-  privacy: string;
+  privacy: "PRIVATE" | "PUBLIC";
   profileIconId: number;
   puuid: string;
   rerollPoints: RerollPoints;
@@ -91,6 +91,7 @@ export interface Participant {
 
 export interface Stats {
   [key: string]: any;
+
   assists: number;
   causedEarlySurrender: boolean;
   champLevel: number;

@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { runes } from "@@/config/lolDataConfig";
+import { runes } from "@@/const/lolDataConfig";
 // props
 const props = defineProps({
   width: { type: Number, required: false },
