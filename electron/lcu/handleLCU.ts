@@ -5,8 +5,10 @@ import {
   Credentials,
   LeagueWebSocket,
 } from "../lib/league-connect";
-import ProcessChecker from "../util/processChecker";
-import { executeCommand, sendToWebContent } from "../util/util";
+import ProcessChecker, {
+  checkProcessExistByName,
+} from "../util/processChecker";
+import { executeCommand, retryWrapper, sendToWebContent } from "../util/util";
 import LCUEventHandlers from "./handleEvent";
 import { lcuConst } from "../const/const";
 import * as lcuRequestModule from "./lcuRequest";
@@ -16,6 +18,8 @@ let credentials: Credentials | null;
 let ws: LeagueWebSocket | null;
 let processChecker: ProcessChecker | null;
 let wsIsConnecting = false;
+//重试包装
+const createWebSocketConnectionRetry = retryWrapper(createWebSocketConnection);
 
 export function getCredentials() {
   if (!credentials) {
@@ -37,10 +41,16 @@ export function startGuardTask() {
     processChecker.stop();
     processChecker = null;
   }
-  processChecker = new ProcessChecker("LeagueClient.exe", 4000);
+  processChecker = new ProcessChecker("LeagueClient.exe", 3000);
   processChecker.on("running", async () => {
     if (!ws && !wsIsConnecting) {
       wsIsConnecting = true;
+      //等待1.5s检测下进程再尝试连接，因为lcu客户端退出先关闭ws连接，但是进程还未推出
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (!(await checkProcessExistByName("LeagueClient.exe"))) {
+        wsIsConnecting = false;
+        return;
+      }
       logger.info("guardTask", "LeagueClient is running, try connect");
       sendToWebContent(lcuConst.connecting);
       try {
@@ -48,7 +58,7 @@ export function startGuardTask() {
         sendToWebContent(lcuConst.connected);
         logger.info("guardTask", "connected to LeagueClient");
       } catch (e) {
-        logger.error("guardTask", e);
+        logger.error("guardTask", e instanceof Error ? e.message : e);
         sendToWebContent(lcuConst.disconnect);
       }
       wsIsConnecting = false;
@@ -69,7 +79,8 @@ export async function initLeagueWebSocket() {
     return;
   }
   credentials = await getAuthInfo();
-  ws = await createWebSocketConnection(credentials);
+  //使用重试包装的版本，客户端刚启动的时候可能没法直接连上，因为lcu客户端可能还未初始化ws
+  ws = await createWebSocketConnectionRetry(credentials);
   ws.onclose = () => {
     sendToWebContent(lcuConst.disconnect);
     ws = null;

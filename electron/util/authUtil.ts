@@ -52,7 +52,7 @@ export async function getAuthInfo(): Promise<Credentials> {
       certificate: RIOT_GAMES_CERT,
     };
   } catch (e) {
-    logger.error("getAuthInfo", e);
+    logger.error("getAuthInfo", e instanceof Error ? e.message : e);
     throw new Error("提取LCU进程信息失败");
   }
 }

@@ -1,4 +1,9 @@
-export interface SummonerInfo {
+interface RPC {
+  errorCode?: string;
+  message?: string;
+}
+
+export interface SummonerInfo extends RPC {
   accountId: number;
   displayName: string;
   gameName: string;
@@ -25,12 +30,10 @@ export interface RerollPoints {
   pointsToReroll: number;
 }
 
-export interface MatchHistoryQueryResult {
+export interface MatchHistoryQueryResult extends RPC {
   accountId: number;
   games: Games;
   platformId: string;
-  errorCode?: string;
-  message?: string;
 }
 
 export interface Games {

@@ -31,6 +31,7 @@ function refresh() {
 function fetchData(search?: string) {
   console.log("search", search);
   if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
+    ElMessage.error("未连接客户端！");
     return;
   }
   loading.value = true;
@@ -96,7 +97,10 @@ const drawerShow = ref(false);
 <template>
   <div class="relative flex flex-col overflow-hidden h-full">
     <div class="page-header items-center justify-center w-full select-none">
-      <div class="flex flex-row items-center" v-if="lcuStore.querySummonerInfo">
+      <div
+        class="flex flex-row items-center"
+        v-if="lcuStore.querySummonerInfo?.displayName"
+      >
         <el-tag
           >{{
             lcuStore.querySummonerInfo?.privacy === "PUBLIC"
