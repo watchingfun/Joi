@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { Ref, ref } from "vue";
 import { ArrowLeft } from "@element-plus/icons-vue";
 import useSettingStore from "@/store/setting";
 import { storeToRefs } from "pinia";
-import { SettingModel } from "@@/config/type";
 
 const router = useRouter();
 
@@ -18,7 +16,7 @@ function goBack() {
 <template>
   <div class="p-4">
     <el-page-header @back="goBack" :icon="ArrowLeft">
-      <template #title >
+      <template #title>
         <span> 返回 </span>
       </template>
       <template #content>
@@ -40,7 +38,8 @@ function goBack() {
           <div style="line-height: 20px; height: 26px">
             {{ settingModel.autoAcceptDelay }}ms
           </div>
-          <el-slider :max="900"
+          <el-slider
+            :max="9000"
             v-model="settingModel.autoAcceptDelay"
             style="padding: 20px 10px"
           ></el-slider>
