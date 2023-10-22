@@ -159,7 +159,7 @@ const footerStyle = computed(() => {
     #d179457a 50%,
     #ffffff00 100%
   );
-  animation: backgroundBar-4896eafd 1s linear infinite;
+  animation: backgroundBar 1s linear infinite;
   opacity: 0;
   transition: opacity 1s ease;
   pointer-events: none;
