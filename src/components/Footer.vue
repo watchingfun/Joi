@@ -65,11 +65,9 @@ const footerStyle = computed(() => {
         {{ diffTime }}
       </div>
       <div>
-        <n-popconfirm
-            @positive-click="killLCURenderHandler" width="340"
-        >
+        <n-popconfirm @positive-click="killLCURenderHandler" width="340">
           <template #trigger>
-            重启LCURender进程
+            <n-button text> 重启LCURender进程 </n-button>
           </template>
           <p>
             此操作通过杀掉LeagueClientUxRender.exe进程来让客户端重启界面进程，可以解决各种黑屏，显示不全等问题。

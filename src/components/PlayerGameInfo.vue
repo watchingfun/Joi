@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { Participant, ParticipantIdentity, Player } from "@@/lcu/interface";
-import { computed, ref, toRefs } from "vue";
+import { computed, toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import SpellImg from "@/components/img/spellImg.vue";
 import RuneImg from "@/components/img/runeImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
-import { DocumentCopy } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import { DocumentCopy16Regular } from "@vicons/fluent";
 import useLCUStore from "@/store/lcu";
 
 const props = defineProps<{
@@ -17,11 +16,12 @@ const { info } = toRefs(props);
 const lcuStore = useLCUStore();
 
 const currentSummonerId = computed(() => lcuStore.summonerInfo?.summonerId);
+const message = useMessage();
 
 function copyName(name: string) {
   navigator.clipboard
     .writeText(name)
-    .then(() => ElMessage.success(`昵称[${name}]已复制`));
+    .then(() => message.success(`昵称[${name}]已复制`));
 }
 
 const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
@@ -44,7 +44,11 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
           :champion-id="info?.championId"
         ></champion-img>
       </div>
-      <div class="relative inline-flex cursor-pointer" style="width: 145px" @click="() => copyName(playInfo.player.summonerName)">
+      <div
+        class="relative inline-flex cursor-pointer"
+        style="width: 145px"
+        @click="() => copyName(playInfo.player.summonerName)"
+      >
         <div
           style="width: 100px; font-size: 12px"
           :title="playInfo.player.summonerName"
@@ -58,12 +62,12 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
         >
           {{ playInfo.player.summonerName }}
         </div>
-        <el-icon
+        <div
           class="mr-2 copy"
           style="position: absolute; top: 0; right: 0; font-size: 18px"
         >
-          <DocumentCopy />
-        </el-icon>
+          <DocumentCopy16Regular />
+        </div>
       </div>
 
       <div class="item-group">
@@ -257,6 +261,12 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 
 .copy {
   display: none;
+  font-size: 16px;
+}
+
+.copy svg {
+  width: 1em;
+  height: 1em;
 }
 
 .me {

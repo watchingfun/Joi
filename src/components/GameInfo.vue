@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { queue } from "@@/const/lolDataConfig";
 import { GameDetail } from "@@/lcu/interface";
-import { computed, inject, toRefs } from "vue";
+import { toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import dayjs from "dayjs";
 import SpellImg from "@/components/img/spellImg.vue";
@@ -43,7 +43,7 @@ const gameModeBackground = (str: string) => {
     >
       <div class="ml-[10px]">
         <champion-img
-            width="40px" height="40px"
+          :style="{ width: '40px', height: '40px' }"
           :level="record.participants[0].stats.champLevel"
           :champion-id="record.participants[0].championId"
         ></champion-img>

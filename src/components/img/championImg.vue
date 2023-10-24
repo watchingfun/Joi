@@ -1,11 +1,12 @@
 <template>
   <div class="relative">
-    <el-avatar
+    <n-avatar
+      :fallback-src="defaultImg"
+      style="height: 100%; width: 100%"
       shape="square"
       :src="imgUrl(props.championId)"
     >
-      <img :src="defaultImg" />
-    </el-avatar>
+    </n-avatar>
     <div class="level" v-if="props.level">
       {{ props.level }}
     </div>
@@ -34,6 +35,6 @@ const props = defineProps({
   position: absolute;
   bottom: -4px;
   right: -6px;
-  text-shadow: 3px 2px 4px rgb(0 0 0 / 64%)
+  text-shadow: 3px 2px 4px rgb(0 0 0 / 64%);
 }
 </style>

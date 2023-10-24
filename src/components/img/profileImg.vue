@@ -1,9 +1,11 @@
 <template>
-  <el-avatar
+  <n-avatar
+    :fallback-src="defaultImg"
+    lazy
+    v-bind="$attrs"
     :src="`https://wegame.gtimg.com/g.26-r.c2d3c/helper/lol/assis/images/resources/usericon/${profileIconId}.png`"
   >
-    <img :src="defaultImg" />
-  </el-avatar>
+  </n-avatar>
 </template>
 <script setup lang="ts">
 // props

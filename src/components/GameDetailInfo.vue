@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlayerGameInfo from "@/components/PlayerGameInfo.vue";
-import { ref, toRefs } from "vue";
+import { toRefs } from "vue";
 import { GameDetail } from "@@/lcu/interface";
 
 const props = defineProps<{ detail: GameDetail }>();
@@ -22,14 +22,14 @@ defineOptions({
           :info="data"
           :play-info="detail.participantIdentities[i]"
         ></PlayerGameInfo>
-        <el-divider v-if="i === 4"></el-divider>
+        <n-divider v-if="i === 4"></n-divider>
       </template>
     </div>
   </div>
 </template>
 
 <style scoped>
-:deep(.el-divider) {
-  margin: 4px;
+:deep(.n-divider) {
+  margin: 8px;
 }
 </style>

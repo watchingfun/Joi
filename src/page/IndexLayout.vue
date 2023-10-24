@@ -11,7 +11,7 @@ const route = useRoute();
 <template>
   <div class="flex flex-col h-screen">
     <HeaderBar></HeaderBar>
-    <Nav :class="[route.name !== 'setting' ? '' : 'h-0 overflow-hidden']"></Nav>
+    <Nav v-show="route.name !== 'setting'"></Nav>
     <router-view v-slot="{ Component }">
       <transition-slide :offset="[-16, 0]" mode="out-in">
         <keep-alive>
