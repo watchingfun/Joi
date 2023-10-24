@@ -1,22 +1,17 @@
 <template>
   <div class="relative">
-    <el-menu
-      class="shiny"
-      :default-active="defaultActiveIndex"
-      mode="horizontal"
-      background-color="transparent"
-      text-color="#fff"
-      active-text-color="#ffc276"
-      @select="handleSelect"
-      style="height: 50px; flex-shrink: 0"
-    >
-      <el-menu-item :index="menu.key" v-for="menu in navStore.navMenus"
-        >{{ menu.name }}
-      </el-menu-item>
-    </el-menu>
-    <el-input
-      class="inline-block search"
-      size="large"
+    <n-tabs type="line" v-model:value="navStore.activeKey" animated>
+      <n-tab
+        v-for="menu in navStore.navMenus"
+        :key="menu.key"
+        :name="menu.key"
+        @click="() => handleSelect(menu.key)"
+      >
+        {{ menu.name }}
+      </n-tab>
+    </n-tabs>
+    <n-input-group
+      class="search"
       style="
         width: 180px;
         margin-right: 20px;
@@ -24,12 +19,15 @@
         top: 5px;
         right: 0;
       "
-      clearable
-      placeholder="输入召唤师昵称"
-      :suffix-icon="Search"
-      @keyup.native.enter="search"
-      v-model="searchVal"
-    />
+    >
+      <n-input
+        clearable
+        @keyup.native.enter="search"
+        v-model="searchVal"
+        placeholder="输入召唤师昵称"
+      />
+      <n-button type="primary" ghost> 搜索</n-button>
+    </n-input-group>
   </div>
 </template>
 <script setup lang="ts">
@@ -49,7 +47,7 @@ import { storeToRefs } from "pinia";
 const parentEl = useParentElement();
 const navStore = useNavStore();
 const defaultActiveIndex = computed(() => navStore.activeKey);
-const handleSelect = (key: string, keyPath: string[]) => {
+const handleSelect = (key: string) => {
   //navStore.navMenus.find((item) => item.key === key);
   router.push({ name: key });
 };

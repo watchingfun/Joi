@@ -65,25 +65,17 @@ const footerStyle = computed(() => {
         {{ diffTime }}
       </div>
       <div>
-        <el-popover :visible="visible" placement="top" :width="350">
+        <n-popconfirm
+            @positive-click="killLCURenderHandler" width="340"
+        >
+          <template #trigger>
+            重启LCURender进程
+          </template>
           <p>
             此操作通过杀掉LeagueClientUxRender.exe进程来让客户端重启界面进程，可以解决各种黑屏，显示不全等问题。
-            确认继续?
+            确认执行?
           </p>
-          <div style="text-align: right; margin: 0">
-            <el-button size="small" text @click="visible = false"
-              >取消
-            </el-button>
-            <el-button size="small" type="primary" @click="killLCURenderHandler"
-              >确认
-            </el-button>
-          </div>
-          <template #reference>
-            <div class="kill-btn" @click="visible = true">
-              重启LCURender进程
-            </div>
-          </template>
-        </el-popover>
+        </n-popconfirm>
       </div>
       <div class="flex flex-row items-center">
         <div

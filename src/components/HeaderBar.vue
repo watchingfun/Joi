@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import { Close, Minus, Setting } from "@element-plus/icons-vue";
+import {
+  Subtract16Regular,
+  Settings16Regular,
+  Dismiss16Regular,
+} from "@vicons/fluent";
+import { Icon } from "@vicons/utils";
 import Logo from "@/components/Logo.vue";
 import router from "@/router";
 
@@ -17,30 +23,34 @@ const closeHandler = () => {
 <template>
   <div class="title-bar relative">
     <div class="center-title rise">Joi</div>
-    <div class="flex flex-row flex-nowrap justify-between items-center">
+    <div class="flex flex-row flex-nowrap justify-between items-center bar">
       <div class="pl-[10px]">
         <Logo class="w-5 h-5"></Logo>
       </div>
       <div class="flex flex-row controls">
-        <el-icon id="minimize" @click="minimizeHandler">
-          <Minus />
-        </el-icon>
-        <el-icon id="setting" @click="settingHandler">
-          <Setting />
-        </el-icon>
-        <el-icon id="close" @click="closeHandler">
-          <Close />
-        </el-icon>
+        <div id="minimize" @click="minimizeHandler">
+          <Subtract16Regular />
+        </div>
+        <div id="setting" @click="settingHandler">
+          <Settings16Regular />
+        </div>
+        <div id="close" @click="closeHandler">
+          <Dismiss16Regular />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.controls :deep(.el-icon) {
-  width: unset;
-  height: unset;
+.controls div {
+  font-size: 16px;
   padding: 10px;
+}
+
+.controls svg {
+  width: 1em;
+  height: 1em;
 }
 
 .center-title {
@@ -63,7 +73,7 @@ const closeHandler = () => {
   background-color: rgba(255, 0, 0, 0.45);
 }
 
-.controls > .el-icon {
+.controls > div {
   -webkit-app-region: no-drag;
   transition: 0.2s ease-in-out background-color;
 }

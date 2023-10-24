@@ -9,6 +9,7 @@ import pkg from "./package.json";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import svgLoader from "vite-svg-loader";
 
 export default defineConfig(({ command }) => {
@@ -28,10 +29,20 @@ export default defineConfig(({ command }) => {
       vue(),
       svgLoader(),
       AutoImport({
-        resolvers: [ElementPlusResolver({ importStyle: "sass" })],
+        imports: [
+          'vue',
+          {
+            'naive-ui': [
+              'useDialog',
+              'useMessage',
+              'useNotification',
+              'useLoadingBar'
+            ]
+          }
+        ],
       }),
       Components({
-        resolvers: [ElementPlusResolver({ importStyle: "sass" })],
+        resolvers: [NaiveUiResolver()]
       }),
       electron({
         main: {

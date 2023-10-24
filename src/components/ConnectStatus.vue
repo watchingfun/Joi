@@ -2,6 +2,12 @@
 import { ConnectStatusEnum } from "@/store/lcu";
 import { CircleCheck, Loading } from "@element-plus/icons-vue";
 import Plugs from "@/components/img/plugs.vue";
+import {
+  PlugDisconnected20Regular,
+  CheckmarkCircle16Regular,
+  ArrowSync16Regular,
+} from "@vicons/fluent";
+import { Icon } from "@vicons/utils";
 import { toRefs } from "vue";
 
 const props = defineProps<{ connectStatus: ConnectStatusEnum }>();
@@ -13,23 +19,22 @@ const { connectStatus } = toRefs(props);
     <div>客户端连接状态:</div>
     <div class="status-info" style="font-size: 18px">
       <div v-if="connectStatus === ConnectStatusEnum.connected">
-        <el-icon style="color: rgb(76 255 124 / 87%)">
-          <CircleCheck />
-        </el-icon>
+        <Icon style="color: rgb(76 255 124 / 87%)">
+          <CheckmarkCircle16Regular />
+        </Icon>
       </div>
       <div
         v-else-if="connectStatus === ConnectStatusEnum.disconnect"
         class="disconnect"
       >
-        <el-icon>
-          <Plugs />
-        </el-icon>
+        <Icon>
+          <PlugDisconnected20Regular />
+        </Icon>
       </div>
       <div v-else-if="connectStatus === ConnectStatusEnum.connecting">
-        <el-icon class="rotate">
-          <Loading />
-        </el-icon>
-        <el-text class="mx-1" type="info">连接中</el-text>
+        <Icon class="rotate">
+          <ArrowSync16Regular />
+        </Icon>
       </div>
     </div>
   </div>
