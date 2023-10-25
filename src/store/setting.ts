@@ -40,7 +40,7 @@ function getCache<T>(key: string) {
 const SETTING_KEY = "JOI-SETTING";
 
 const useSettingStore = defineStore("setting", () => {
-  const settingModel = ref() as Ref<SettingModel>;
+  const settingModel = ref(settingModelDefault) as Ref<SettingModel>;
 
   const initSettingModel = async (): Promise<SettingModel> => {
     settingModel.value = (await getCache(SETTING_KEY)) || settingModelDefault;
@@ -63,6 +63,6 @@ const useSettingStore = defineStore("setting", () => {
     },
   );
 
-  return { settingModel, getSetting };
+  return { settingModel, initSettingModel, getSetting };
 });
 export default useSettingStore;

@@ -5,12 +5,13 @@ import {
   PageRange,
   SummonerInfo,
 } from "@@/lcu/interface";
-import { ElMessage } from "element-plus";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
+import useAppStore from "@/store/app";
 
 async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
+  const { message } = useAppStore();
   if (useLCUStore().connectStatus !== ConnectStatusEnum.connected) {
-    ElMessage.error("客户端未连接，LCU api不可用！");
+    message.error("客户端未连接，LCU api不可用！");
     return;
   }
   if (func instanceof Promise) {
@@ -18,7 +19,7 @@ async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
       return await func;
     } catch (err) {
       if (err instanceof Error) {
-        ElMessage.error(err.message);
+        message.error(err.message);
       }
       throw err;
     }

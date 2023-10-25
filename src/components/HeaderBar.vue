@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { Close, Minus, Setting } from "@element-plus/icons-vue";
 import {
-  Subtract16Regular,
-  Settings16Regular,
   Dismiss16Regular,
+  Settings16Regular,
+  Subtract16Regular,
 } from "@vicons/fluent";
-import { Icon } from "@vicons/utils";
 import Logo from "@/components/Logo.vue";
 import router from "@/router";
+import useSettingStore from "@/store/setting";
+
+const showModal = ref(false);
 
 const minimizeHandler = () => {
   window.ipcRenderer.invoke("titleBarControl:minimize");
@@ -16,7 +17,42 @@ const settingHandler = () => {
   router.push({ name: "setting" });
 };
 const closeHandler = () => {
-  window.ipcRenderer.invoke("titleBarControl:close");
+  showModal.value = true;
+};
+const settingStore = useSettingStore();
+
+const unAsk = computed({
+  get() {
+    return !settingStore.settingModel.exitAsk;
+  },
+  set(newValue: boolean) {
+    settingStore.settingModel.exitAsk = !newValue;
+  },
+});
+const handleCloseConfirm = async () => {
+  showModal.value = false;
+  initWait(); //确认弹窗关闭后再关闭窗口，避免恢复窗口第一帧图像展示弹窗
+  await leaveWait.value.wait;
+  if (settingStore.settingModel.exitDirectly) {
+    window.ipcRenderer.invoke("titleBarControl:close");
+  } else {
+    window.ipcRenderer.invoke("titleBarControl:close", "hide");
+  }
+};
+
+const leaveWait = ref<{ wait: Promise<void>; done: Function }>({
+  wait: Promise.resolve(),
+  done: () => {},
+});
+
+function initWait() {
+  leaveWait.value.wait = new Promise(
+    (resolve) => (leaveWait.value.done = resolve),
+  );
+}
+
+const afterLeave = () => {
+  leaveWait.value.done();
 };
 </script>
 
@@ -40,6 +76,42 @@ const closeHandler = () => {
       </div>
     </div>
   </div>
+  <Teleport to="body">
+    <n-modal
+      v-model:show="showModal"
+      transform-origin="center"
+      :auto-focus="false"
+      display-directive="show"
+      :on-after-leave="afterLeave"
+    >
+      <n-card
+        style="width: 400px"
+        class="closeAskDialog"
+        title="关闭提示"
+        aria-modal="true"
+      >
+        <div>
+          <n-radio-group v-model:value="settingStore.settingModel.exitDirectly">
+            <n-space>
+              <n-radio :value="false"> 最小化到系统托盘</n-radio>
+              <n-radio :value="true"> 直接退出</n-radio>
+            </n-space>
+          </n-radio-group>
+        </div>
+        <template #action>
+          <div class="flex flex-row justify-between items-center">
+            <n-checkbox v-model:checked="unAsk">不再提示</n-checkbox>
+            <n-space>
+              <n-button @click="() => (showModal = false)">取消</n-button>
+              <n-button type="primary" @click="handleCloseConfirm"
+                >确认
+              </n-button>
+            </n-space>
+          </div>
+        </template>
+      </n-card>
+    </n-modal>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -102,5 +174,10 @@ const closeHandler = () => {
   to {
     opacity: 90%;
   }
+}
+</style>
+<style>
+.closeAskDialog .n-card__action {
+  padding: 10px 20px;
 }
 </style>

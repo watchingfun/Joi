@@ -2,7 +2,7 @@ import { defineComponent, h } from "vue";
 
 export default defineComponent({
   emits: ["leave", "enter", "change", "disconnect"],
-  name: "deferred",
+  name: "lazy-deferred",
 
   render() {
     return h(
@@ -10,7 +10,7 @@ export default defineComponent({
       {
         class: "placeholder",
       },
-      this.hidden ? this.$slots : "",
+      this.show ? this.$slots : undefined,
     );
   },
 
@@ -43,7 +43,7 @@ export default defineComponent({
   },
 
   computed: {
-    hidden(): boolean {
+    show(): boolean {
       return this.autoHide ? this.loaded : true;
     },
   },

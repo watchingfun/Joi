@@ -10,7 +10,7 @@ import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";
 import ProfileImg from "@/components/img/profileImg.vue";
 import router from "@/router";
-import LazyDeferred from "@/components/Lazy-deferred";
+import LazyDeferred from "@/components/LazyDeferred";
 import { onBeforeRouteUpdate } from "vue-router";
 import EpicLoading from "@/components/EpicLoading.vue";
 
@@ -37,7 +37,6 @@ function fetchData(search?: string) {
   }
   loading.value = true;
   lcuStore.getMatchHistoryQueryResult(search).finally(() => {
-    //setTimeout(() => (loading.value = false), 500);
     loading.value = false;
   });
 }

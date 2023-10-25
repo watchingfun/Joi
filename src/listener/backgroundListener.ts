@@ -4,7 +4,7 @@ import { lcuConst } from "@@/const/const";
 import router from "@/router";
 import useSettingStore from "@/store/setting";
 
-export async function setupListener() {
+export function setupListener() {
   const lcuStore = useLCUStore();
   const settingStore = useSettingStore();
   window.ipcRenderer.on(
@@ -32,5 +32,4 @@ export async function setupListener() {
       router.push(args[0] as string | { name: string });
     },
   );
-  window.ipcRenderer.send("updateSetting", JSON.stringify(await settingStore.getSetting()));
 }

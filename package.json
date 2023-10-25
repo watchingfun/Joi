@@ -52,15 +52,12 @@
     "vue-tsc": "^1.8.8"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.1.0",
     "@morev/vue-transitions": "^2.3.6",
     "@vueuse/components": "^10.5.0",
     "@vueuse/core": "^10.5.0",
     "dayjs": "^1.11.10",
     "electron-acrylic-window": "^0.5.11",
-    "element-plus": "^2.3.14",
     "epic-spinners": "^2.0.0",
-    "iconv-lite": "^0.6.3",
     "lazy-load-vue3": "^2.0.1",
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.1",

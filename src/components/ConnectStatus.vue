@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ConnectStatusEnum } from "@/store/lcu";
-import { CircleCheck, Loading } from "@element-plus/icons-vue";
-import Plugs from "@/components/img/plugs.vue";
 import {
-  PlugDisconnected20Regular,
-  CheckmarkCircle16Regular,
   ArrowSync16Regular,
+  CheckmarkCircle16Regular,
+  PlugDisconnected20Regular,
 } from "@vicons/fluent";
 import { Icon } from "@vicons/utils";
 import { toRefs } from "vue";

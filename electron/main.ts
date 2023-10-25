@@ -1,6 +1,5 @@
 import path from "path";
 import { app, ipcMain, shell } from "electron";
-import { getSqlite3 } from "./better-sqlite3";
 import { setupTitleBarHandler } from "./handleTitleBar";
 import { setupTray } from "./handleTray";
 import "./lcu/handleLCU";
@@ -9,7 +8,7 @@ import installExtension from "electron-devtools-installer";
 import Input = Electron.Input;
 import logger from "./lib/logger";
 import { getPath } from "./util/util";
-import { setupSettingHandler, setting } from "./config";
+import { initDb } from "./db";
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
@@ -58,11 +57,11 @@ export function createWindow() {
       disableOnBlur: false,
     },
   });
-
   // 当窗口准备完毕
   win.webContents.once("did-finish-load", async () => {
     //win?.webContents.send("main-process-message", new Date().toLocaleString());
-    await setting.init
+    logger.debug("webContents did-finish-load");
+    initDb();
     startGuardTask();
   });
 
@@ -93,7 +92,6 @@ ipcMain.on("open-url", (e, args) => {
 
 app.whenReady().then(() => {
   createWindow();
-  setupSettingHandler();
   setupTray();
   installExtension(VUEJS3_DEVTOOLS)
     .then((name) => logger.debug(`Added Extension:  ${name}`))

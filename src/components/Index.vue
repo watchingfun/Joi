@@ -1,10 +1,4 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import { storeToRefs } from "pinia";
-import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
-import { CircleCheck, CircleClose, Loading } from "@element-plus/icons-vue";
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div>
