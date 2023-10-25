@@ -27,7 +27,7 @@ function goBack() {
       <div>
         <h2 class="text-sm">自动接收对局：</h2>
         <n-switch
-          v-model="settingModel.autoAccept"
+          v-model:value="settingModel.autoAccept"
           style="padding: 20px 0"
         ></n-switch>
         <h2 class="text-sm">自动接收对局延时：</h2>
@@ -38,7 +38,7 @@ function goBack() {
           <n-slider
             :max="9000"
             :format-tooltip="(s: string) => `${s}ms`"
-            v-model="settingModel.autoAcceptDelay"
+            v-model:value="settingModel.autoAcceptDelay"
             style="padding: 20px 10px"
           ></n-slider>
         </div>

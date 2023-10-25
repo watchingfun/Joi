@@ -18,7 +18,6 @@ app.use(pinia);
 app.use(LazyLoad, { component: true });
 setupListener();
 const appStore = useAppStore();
-await useSettingStore().initSettingModel();
 app.mount("#app").$nextTick(() => {
   postMessage({ payload: "removeLoading" }, "*");
 });
@@ -34,4 +33,5 @@ app.config.errorHandler = (err, vm, info) => {
 window.onload = () => {
   //解决开发模式重载网页时状态不同步
   useLCUStore().refreshConnectStatus();
+  useSettingStore().initSettingModel();
 };

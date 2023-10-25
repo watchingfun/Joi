@@ -1,31 +1,31 @@
 import { ipcMain } from "electron";
 import { SettingModel, settingModelDefault } from "./type";
+import settingDB from "../db/setting";
 
 class Setting {
   model: SettingModel;
-  init: Promise<unknown>;
-  _initCall?: Function;
 
-  constructor() {
-    this.model = settingModelDefault;
-    let _this = this;
-    this.init = new Promise((resolve, reject) => {
-      _this._initCall = resolve;
-    });
+  constructor(setting: SettingModel) {
+    this.model = setting;
+  }
+
+  setSetting(setting: SettingModel) {
+    this.model = setting;
   }
 
   updateSetting(setting: SettingModel) {
-    typeof this._initCall === "function" &&
-      this._initCall() &&
-      (this._initCall = undefined);
     this.model = setting;
+    settingDB.updateSetting("app", setting);
   }
 }
 
-export const setting = new Setting();
+export const setting = new Setting(settingModelDefault);
 
-export const setupSettingHandler = () => {
-  ipcMain.on("updateSetting", (event, ...args) => {
-    return setting.updateSetting(JSON.parse(args[0] as string) as SettingModel);
-  });
-};
+ipcMain.on("updateSetting", (event, ...args) => {
+  console.log("updateSetting", args[0]);
+  return setting.updateSetting(JSON.parse(args[0] as string) as SettingModel);
+});
+ipcMain.handle("getSetting", () => {
+  setting.setSetting(settingDB.getSetting());
+  return setting.model;
+});

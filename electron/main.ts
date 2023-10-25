@@ -5,15 +5,19 @@ import { setupTray } from "./handleTray";
 import "./lcu/handleLCU";
 import { startGuardTask } from "./lcu/handleLCU";
 import installExtension from "electron-devtools-installer";
-import Input = Electron.Input;
 import logger from "./lib/logger";
 import { getPath } from "./util/util";
 import { initDb } from "./db";
+import Input = Electron.Input;
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
+process.on("uncaughtException", (err) => {
+  logger.error(err);
+  throw err;
+});
 const BrowserWindow = require("electron-acrylic-window").BrowserWindow;
 // The built directory structure
 //
