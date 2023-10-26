@@ -10,6 +10,7 @@ import { darkTheme, zhCN } from "naive-ui";
     :theme="darkTheme"
     :theme-overrides="darkThemeOverrides"
   >
+    <n-global-style />
     <n-message-provider>
       <router-view v-slot="{ Component }">
         <keep-alive>

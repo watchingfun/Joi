@@ -19,7 +19,6 @@ const route = useRoute();
         </keep-alive>
       </transition-slide>
     </router-view>
-    <div style="height: 25px; flex-shrink: 0"></div>
     <Footer></Footer>
   </div>
 </template>

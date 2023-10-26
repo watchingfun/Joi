@@ -1,15 +1,15 @@
 import fs from "node:fs";
 import path from "node:path";
-import { type Plugin, defineConfig, normalizePath } from "vite";
+import { defineConfig, normalizePath, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
+import vueJsx from "@vitejs/plugin-vue-jsx";
 import renderer from "vite-plugin-electron-renderer";
 import electron from "vite-plugin-electron/simple";
 import pkg from "./package.json";
 
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
-import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 import svgLoader from "vite-svg-loader";
 
 export default defineConfig(({ command }) => {
@@ -27,22 +27,23 @@ export default defineConfig(({ command }) => {
     },
     plugins: [
       vue(),
+      vueJsx(),
       svgLoader(),
       AutoImport({
         imports: [
-          'vue',
+          "vue",
           {
-            'naive-ui': [
-              'useDialog',
-              'useMessage',
-              'useNotification',
-              'useLoadingBar'
-            ]
-          }
+            "naive-ui": [
+              "useDialog",
+              "useMessage",
+              "useNotification",
+              "useLoadingBar",
+            ],
+          },
         ],
       }),
       Components({
-        resolvers: [NaiveUiResolver()]
+        resolvers: [NaiveUiResolver()],
       }),
       electron({
         main: {

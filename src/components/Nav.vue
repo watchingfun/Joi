@@ -17,15 +17,18 @@
         {{ menu.name }}
       </n-tab>
     </n-tabs>
-    <n-input-group
+    <div
       class="search"
       style="
-        width: 200px;
+        display: flex;
+        flex-flow: row nowrap;
+        width: 204px;
         margin-right: 20px;
         position: absolute;
         top: 50%;
         transform: translateY(-54%);
         right: 0;
+        gap: 4px;
       "
     >
       <n-input
@@ -35,7 +38,7 @@
         placeholder="输入召唤师昵称"
       />
       <n-button type="primary" quaternary @click="search"> 搜索</n-button>
-    </n-input-group>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -102,6 +105,7 @@ function search() {
 .shiny :deep(.n-tabs-bar) {
   box-shadow: #f8a982 0px 4px 20px 5px;
 }
+
 .shiny {
   --x: 0;
   --y: 0;

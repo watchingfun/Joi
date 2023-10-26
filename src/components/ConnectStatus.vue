@@ -13,7 +13,7 @@ const { connectStatus } = toRefs(props);
 </script>
 
 <template>
-  <div class="flex flex-row items-center">
+  <div class="flex flex-row items-center" style="gap: 2px">
     <div>客户端连接状态:</div>
     <div class="status-info" style="font-size: 18px">
       <div v-if="connectStatus === ConnectStatusEnum.connected">

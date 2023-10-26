@@ -1,12 +1,10 @@
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
-import IpcRendererEvent = Electron.IpcRendererEvent;
 import { lcuConst } from "@@/const/const";
 import router from "@/router";
-import useSettingStore from "@/store/setting";
+import IpcRendererEvent = Electron.IpcRendererEvent;
 
 export function setupListener() {
   const lcuStore = useLCUStore();
-  const settingStore = useSettingStore();
   window.ipcRenderer.on(
     lcuConst.disconnect,
     (event: IpcRendererEvent, ...args: any[]) => {

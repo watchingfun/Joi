@@ -1,5 +1,5 @@
 export const dom = `
-  <div class='container'>
+  <div class='loading-container'>
     <svg class='diamond small' viewBox="0 0 30 30">
       <path class='path' d="M1.56502 15L15 1.56502L28.4351 15L15 28.4351L1.56502 15Z"/>
     </svg>
@@ -16,16 +16,10 @@ export const dom = `
 
     <div class='circle centered'></div>
   </div>
-`
+`;
 
 export const style = `
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
+.loading-container {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -131,4 +125,4 @@ export const style = `
     stroke-dashoffset: -200;
   }
 }
-`
+`;

@@ -63,7 +63,6 @@ export function createWindow() {
   });
   // 当窗口准备完毕
   win.webContents.once("did-finish-load", async () => {
-    //win?.webContents.send("main-process-message", new Date().toLocaleString());
     logger.debug("webContents did-finish-load");
     initDb();
     startGuardTask();

@@ -41,7 +41,7 @@ export function startGuardTask() {
     processChecker.stop();
     processChecker = null;
   }
-  processChecker = new ProcessChecker("LeagueClient.exe", 3000);
+  processChecker = new ProcessChecker("LeagueClient.exe", 4000);
   processChecker.on("running", async () => {
     if (!ws && !wsIsConnecting) {
       wsIsConnecting = true;

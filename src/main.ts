@@ -18,9 +18,7 @@ app.use(pinia);
 app.use(LazyLoad, { component: true });
 setupListener();
 const appStore = useAppStore();
-app.mount("#app").$nextTick(() => {
-  postMessage({ payload: "removeLoading" }, "*");
-});
+app.mount("#app");
 
 app.config.errorHandler = (err, vm, info) => {
   // 处理错误
@@ -31,7 +29,13 @@ app.config.errorHandler = (err, vm, info) => {
   }
 };
 window.onload = () => {
+  console.debug("window.onload");
   //解决开发模式重载网页时状态不同步
   useLCUStore().refreshConnectStatus();
-  useSettingStore().initSettingModel();
+  //初始化设置
+  useSettingStore()
+    .initSettingModel()
+    .finally(() => {
+      postMessage({ payload: "removeLoading" }, "*");
+    });
 };
