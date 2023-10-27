@@ -26,17 +26,23 @@ const matchHistoryList = computed(() => {
 function refresh() {
   page.value = 1;
   lcuStore.pageRange = 1;
-  fetchData(lcuStore.querySummonerInfo?.displayName);
+  fetchData({ puuid: lcuStore.querySummonerInfo?.puuid });
 }
 
-function fetchData(search?: string) {
-  console.log("search", search);
+function fetchData({
+  summonerName,
+  puuid,
+}: {
+  summonerName?: string;
+  puuid?: string;
+} = {}) {
+  console.log("fetchData", { summonerName, puuid });
   if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
     message.error("未连接客户端！");
     return;
   }
   loading.value = true;
-  lcuStore.getMatchHistoryQueryResult(search).finally(() => {
+  lcuStore.getMatchHistoryQueryResult({ summonerName, puuid }).finally(() => {
     loading.value = false;
   });
 }
@@ -56,7 +62,7 @@ function jumpSummoner(player: Player) {
   drawerShow.value = false;
   router.push({
     name: "historyMatch",
-    params: { search: player.summonerName },
+    params: { puuid: player.puuid },
   });
 }
 
@@ -68,7 +74,7 @@ onMounted(() => fetchData());
 
 onBeforeRouteUpdate((to, from, next) => {
   const { params } = to;
-  fetchData(params.search as string);
+  fetchData(params);
   next();
 });
 
@@ -105,7 +111,11 @@ const drawerShow = ref(false);
       >
         <n-tag
           :bordered="false"
-          :type="lcuStore.querySummonerInfo?.privacy ? 'info' : 'warning'"
+          :type="
+            lcuStore.querySummonerInfo?.privacy === 'PUBLIC'
+              ? 'info'
+              : 'warning'
+          "
           >{{
             lcuStore.querySummonerInfo?.privacy === "PUBLIC"
               ? "生涯公开"

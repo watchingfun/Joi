@@ -1,21 +1,8 @@
-import {
-  createHttp1Request,
-  createHttp2Request,
-  createHttpSession,
-  EventResponse,
-} from "../lib/league-connect";
-import { getCredentials, getLeagueWebSocket } from "./handleLCU";
-import { ClientHttp2Session } from "http2";
-import { champDict } from "../const/lolDataConfig";
-import {
-  ChampSelectPhaseSession,
-  GameDetail,
-  GameSessionData,
-  MatchHistoryQueryResult,
-  PageRange,
-  SummonerInfo,
-  TeamMember,
-} from "./interface";
+import {createHttp1Request, createHttp2Request, createHttpSession, EventResponse,} from "../lib/league-connect";
+import {getCredentials, getLeagueWebSocket} from "./handleLCU";
+import {ClientHttp2Session} from "http2";
+import {champDict} from "../const/lolDataConfig";
+import {GameDetail, GameSessionData, MatchHistoryQueryResult, PageRange, SummonerInfo, TeamMember,} from "./interface";
 import logger from "../lib/logger";
 
 //获取当前召唤师信息
@@ -41,6 +28,19 @@ export async function getSummonerByName(nickname: string) {
       },
       getCredentials(),
     )
+  ).json() as SummonerInfo;
+}
+
+//通过puuid查询召唤师信息
+export async function getSummonerByPuuid(puuid: string) {
+  return (
+      await createHttp1Request(
+          {
+            method: "GET",
+            url: `/lol-summoner/v2/summoners/puuid/${puuid}`,
+          },
+          getCredentials(),
+      )
   ).json() as SummonerInfo;
 }
 

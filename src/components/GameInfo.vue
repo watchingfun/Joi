@@ -18,20 +18,40 @@ const formatTime = (str: string) => {
   return dayjs(str).format("HH:mm");
 };
 
-function hashCode(string: string) {
-  let hash = 0;
-  for (let i = 0; i < string.length; i++) {
-    let code = string.charCodeAt(i);
-    hash = (hash << 5) - hash + code;
-    hash = hash & hash; // Convert to 32bit integer
+function hashCode(str: string) {
+  let hash = 0,
+    i,
+    chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+    chr = str.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash |= 0; // Convert to 32bit integer
   }
   return hash;
 }
 
-//todo 不同游戏模式不同背景颜色
+const colorMap = new Map([
+  ["人机对战", "rgba(255,215,227,0.3)"],
+  ["无限火力", "rgba(255,202,116,0.5)"],
+  ["斗魂竞技场", "rgba(255, 61, 0, 0.5)"],
+  ["终极魔典", "rgba(255, 0, 122, 0.5)"],
+  ["极限闪击", "rgb(114,59,155)"],
+  ["克隆模式", "rgba(61,131,112,0.5)"],
+  ["单双排位", "rgba(59,248,162,0.5)"],
+  ["匹配模式", "rgba(94, 119, 122, 0.5)"],
+  ["灵活组排", "rgba(0,252,252,0.5)"],
+  ["极地乱斗", "rgba(0, 122, 235, 0.5)"],
+  ["训练模式", "rgba(197, 217, 235, 0.5)"],
+]);
+
 const gameModeBackground = (str: string) => {
   return {
-    backgroundColor: `rgb(10 ${hashCode(str) % 255} 255 / 0.5)`,
+    backgroundColor:
+      colorMap.get(str) ||
+      `rgb(${hashCode(String(hashCode(str))) % 255} ${
+        hashCode(str) % 100
+      }  255} / 0.5)`,
   };
 };
 </script>

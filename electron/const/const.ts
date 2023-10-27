@@ -8,4 +8,5 @@ export const lcuConst = {
   killRender: "lcu:killRender",
   queryConnectStatus: "lcu:queryConnectStatus",
   getSummonerByName: "lcu:getSummonerByName",
+  getSummonerByPuuid: "lcu:getSummonerByPuuid",
 };

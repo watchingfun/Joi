@@ -49,4 +49,8 @@ export default {
     captureError<SummonerInfo>(
       window.ipcRenderer.invoke(lcuConst.getSummonerByName, nickname),
     ),
+  getSummonerByPuuid: (puuid: string) =>
+    captureError<SummonerInfo>(
+      window.ipcRenderer.invoke(lcuConst.getSummonerByPuuid, puuid),
+    ),
 };

@@ -31,9 +31,25 @@ const useLCUStore = defineStore("lcu", () => {
     return summonerInfo.value;
   }
 
-  async function getMatchHistoryQueryResult(summonerName?: string) {
-    let puuid;
-    if (summonerName) {
+  async function getMatchHistoryQueryResult({
+    summonerName,
+    puuid,
+  }: {
+    summonerName?: string;
+    puuid?: string;
+  }) {
+    //优先通过puuid查询,如果没有就用名字查询
+    if (puuid) {
+      if (querySummonerInfo.value?.puuid === puuid) {
+      } else {
+        querySummonerInfo.value = await lcuApi.getSummonerByPuuid(puuid);
+        if (!querySummonerInfo.value) {
+          useAppStore().message.warning(`查询不到召唤师[${puuid}]`);
+          matchHistoryQueryResult.value = [];
+          return;
+        }
+      }
+    } else if (summonerName) {
       if (querySummonerInfo.value?.displayName === summonerName) {
         puuid = querySummonerInfo.value?.puuid;
       } else {
@@ -46,6 +62,7 @@ const useLCUStore = defineStore("lcu", () => {
         }
       }
     } else {
+      //如果名字和puuid都没传，那就是查询自己
       querySummonerInfo.value =
         summonerInfo.value || (await getCurrentSummoner());
       puuid = querySummonerInfo.value?.puuid;

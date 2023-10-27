@@ -23,6 +23,11 @@ const routes = [
         name: "historyMatch",
         component: HistoryMatch,
       },
+      {
+        path: "historyMatch/puuid/:puuid?",
+        name: "historyMatch",
+        component: HistoryMatch,
+      },
       { path: "setting", name: "setting", component: Setting },
     ],
   },
