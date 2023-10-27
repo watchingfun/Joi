@@ -13,4 +13,11 @@ export function setupTitleBarHandler(win: BrowserWindow) {
       app.quit();
     }
   });
+  // ipcMain.handle("titleBarControl:maximizeOrUnmaximize", () => {
+  //   if (!win.isMaximized()) {
+  //     win.maximize();
+  //   } else {
+  //     win.unmaximize();
+  //   }
+  // });
 }

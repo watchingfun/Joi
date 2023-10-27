@@ -7,6 +7,7 @@ import {
   PageRanges,
   SummonerInfo,
 } from "@@/lcu/interface";
+import useAppStore from "@/store/app";
 
 export enum ConnectStatusEnum {
   connecting,
@@ -39,7 +40,9 @@ const useLCUStore = defineStore("lcu", () => {
         querySummonerInfo.value = await lcuApi.getSummonerByName(summonerName);
         puuid = querySummonerInfo.value?.puuid;
         if (!puuid) {
-          ElMessage.warning(`查询不到召唤师${summonerName}`);
+          useAppStore().message.warning(`查询不到召唤师[${summonerName}]`);
+          matchHistoryQueryResult.value = [];
+          return;
         }
       }
     } else {

@@ -6,7 +6,7 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import renderer from "vite-plugin-electron-renderer";
 import electron from "vite-plugin-electron/simple";
 import pkg from "./package.json";
-
+import { notBundle } from 'vite-plugin-electron/plugin'
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
@@ -16,7 +16,7 @@ export default defineConfig(({ command }) => {
   fs.rmSync("dist-electron", { recursive: true, force: true });
   const isServe = command === "serve";
   const isBuild = command === "build";
-  const sourcemap = isServe || !!process.env.VSCODE_DEBUG;
+  const sourcemap = isServe;
 
   return {
     resolve: {
@@ -50,11 +50,17 @@ export default defineConfig(({ command }) => {
           entry: "electron/main.ts",
           vite: {
             build: {
-              minify: false,
+              sourcemap,
+              minify: isBuild,
               commonjsOptions: {
                 ignoreDynamicRequires: true,
               },
             },
+            plugins: [
+              // This is just an option to improve build performance, it's non-deterministic!
+              // e.g. `import log from 'electron-log'` -> `const log = require('electron-log')`
+              isServe && notBundle(),
+            ],
           },
         },
         preload: {
@@ -65,23 +71,7 @@ export default defineConfig(({ command }) => {
       renderer(),
       bindingSqlite3(),
     ],
-    server:
-      process.env.VSCODE_DEBUG &&
-      (() => {
-        const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL);
-        return {
-          host: url.hostname,
-          port: +url.port,
-        };
-      })(),
     clearScreen: false,
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `@use "@/styles/element/index.scss" as *;`,
-        },
-      },
-    },
   };
 });
 

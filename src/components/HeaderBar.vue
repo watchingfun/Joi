@@ -10,6 +10,9 @@ import useSettingStore from "@/store/setting";
 
 const showModal = ref(false);
 
+// const handleMaxOrUnMax = ()=>{
+//   window.ipcRenderer.invoke("titleBarControl:maximizeOrUnmaximize");
+// }
 const minimizeHandler = () => {
   window.ipcRenderer.invoke("titleBarControl:minimize");
 };

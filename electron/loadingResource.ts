@@ -27,6 +27,8 @@ export const style = `
   top: 50%;
   translate: -50% -50%;
   background-color: hsl(200deg,100%,4%);
+  opacity: 1;
+  transition: opacity 1s ease-out
 }
 
 .square {

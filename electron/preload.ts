@@ -61,6 +61,9 @@ function useLoading() {
   const className = `loaders-css__square-spin`;
   const oStyle = document.createElement("style");
   const oDiv = document.createElement("div");
+  //防止闪烁
+  const oStyle2 = document.createElement("style");
+  oStyle2.innerHTML = ".loading-container{opacity:0;}";
 
   oStyle.id = "app-loading-style";
   oStyle.innerHTML = style;
@@ -72,9 +75,14 @@ function useLoading() {
       safeDOM.append(document.head, oStyle);
       safeDOM.append(document.body, oDiv);
     },
-    removeLoading() {
-      safeDOM.remove(document.head, oStyle);
-      safeDOM.remove(document.body, oDiv);
+    async removeLoading() {
+      //await wait;
+      safeDOM.append(document.head, oStyle2);
+      setTimeout(()=>{
+        safeDOM.remove(document.head, oStyle);
+        safeDOM.remove(document.head, oStyle2);
+        safeDOM.remove(document.body, oDiv);
+      },1500)
     },
   };
 }
@@ -84,7 +92,7 @@ function useLoading() {
 const { appendLoading, removeLoading } = useLoading();
 domReady().then(appendLoading);
 
-window.onmessage = (ev) => {
+window.onmessage = (ev: MessageEvent) => {
   ev.data.payload === "removeLoading" && removeLoading();
 };
 

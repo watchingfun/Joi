@@ -2,11 +2,11 @@
   "compilerOptions": {
     "composite": true,
     "module": "NodeNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "electron"
+    "./**/*.ts"
   ]
 }
