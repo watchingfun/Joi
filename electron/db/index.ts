@@ -1,7 +1,7 @@
-import { getDB } from "./better-sqlite3";
 import settingDB from "./setting";
 import tableVersionDB from "./tableVersion";
 import logger from "../lib/logger";
+import runesDB from "./runes";
 
 export interface DBConfig {
   initTableIfNotExists: Function;
@@ -10,8 +10,17 @@ export interface DBConfig {
   initData?: () => void;
 }
 
+export interface PageObj<T> {
+  total: number;
+  data: T[];
+}
+
+export interface PageQuery {
+  start: number;
+  size: number;
+}
+
 export const initDb = () => {
-  let db = getDB();
   //tableVersion表的本身的版本：数据库表发生变动了就+1，其他表的版本：当前表变动后版本+1
   if (tableVersionDB.tableExist(tableVersionDB.tableName)) {
     const ver = tableVersionDB.getTableVersion(tableVersionDB.tableName);
@@ -28,7 +37,7 @@ export const initDb = () => {
   logger.info("数据库开始初始化");
   tableVersionDB.initTableIfNotExists();
   //每个表都手动记录版本号，为以后表结构变更更新提供信息
-  const DBConfigs = [settingDB, tableVersionDB];
+  const DBConfigs = [settingDB, tableVersionDB, runesDB];
   DBConfigs.forEach((item: DBConfig) => {
     const result = tableVersionDB.initTableVersionRecord(item.tableName, 1);
     if (result.changes) {

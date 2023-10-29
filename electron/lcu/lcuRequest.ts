@@ -4,6 +4,7 @@ import {ClientHttp2Session} from "http2";
 import {champDict} from "../const/lolDataConfig";
 import {GameDetail, GameSessionData, MatchHistoryQueryResult, PageRange, SummonerInfo, TeamMember,} from "./interface";
 import logger from "../lib/logger";
+import {RuneConfig} from "../config/type";
 
 //获取当前召唤师信息
 export async function getCurrentSummoner() {
@@ -184,43 +185,43 @@ const getPosition = (selectedPosition) => {
   }
 };
 
-//todo 符文类型确认
 //应用符文
-// export async function applyRune(data) {
-//   let credentials = getCredentials();
-//   // 获取符文页信息
-//   const currentRuneList = (
-//     await createHttp1Request(
-//       {
-//         method: "GET",
-//         url: "lol-perks/v1/pages",
-//       },
-//       credentials,
-//     )
-//   ).json();
-//   logger.info("currentRuneList", currentRuneList);
-//   const current = currentRuneList.find((i) => i.current && i.isDeletable);
-//   if (current != undefined) {
-//     // 删除当前符文页
-//     await createHttp1Request(
-//       {
-//         method: "DELETE",
-//         url: `lol-perks/v1/pages/${current.id}`,
-//       },
-//       credentials,
-//     );
-//   }
-//   // 写入新的符文页
-//   await createHttp1Request(
-//     {
-//       method: "POST",
-//       url: "lol-perks/v1/pages",
-//       body: data,
-//     },
-//     credentials,
-//   );
-//   return true;
-// }
+export async function applyRune(data: RuneConfig) {
+  let credentials = getCredentials();
+  // 获取符文页信息
+  const currentRuneList = (
+      await createHttp1Request(
+          {
+            method: "GET",
+            url: "lol-perks/v1/pages",
+          },
+          credentials,
+      )
+  ).json();
+  logger.info("currentRuneList", currentRuneList);
+  //@ts-ignore
+  const current = currentRuneList.find((i) => i.current && i.isDeletable);
+  if (current != undefined) {
+    // 删除当前符文页
+    await createHttp1Request(
+        {
+          method: "DELETE",
+          url: `lol-perks/v1/pages/${current.id}`,
+        },
+        credentials,
+    );
+  }
+  // 写入新的符文页
+  await createHttp1Request(
+      {
+        method: "POST",
+        url: "lol-perks/v1/pages",
+        body: data,
+      },
+      credentials,
+  );
+  return true;
+}
 
 // 根据召唤师ID 游标查询战绩
 export const cursorQueryMatchHistory = async (

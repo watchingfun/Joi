@@ -1,11 +1,16 @@
 import IndexLayout from "@/page/IndexLayout.vue";
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import {
+  createRouter,
+  createWebHashHistory,
+  type RouteRecordRaw,
+} from "vue-router";
 import InGame from "@/page/InGame.vue";
 import HistoryMatch from "@/page/HistoryMatch.vue";
 import Setting from "@/page/Setting.vue";
 import useNavStore from "@/store/nav";
 import { flatMap } from "lodash";
 import Profile from "@/page/Profile.vue";
+import Rune from "@/page/Rune.vue";
 
 const routes = [
   {
@@ -16,19 +21,27 @@ const routes = [
         path: "",
         name: "index",
         component: Profile,
-      },
-      { path: "inGame", name: "inGame", component: InGame },
-      {
-        path: "historyMatch/:search?",
-        name: "historyMatch",
-        component: HistoryMatch,
+        meta: { title: "主页" },
       },
       {
-        path: "historyMatch/puuid/:puuid?",
+        path: "inGame",
+        name: "inGame",
+        component: InGame,
+        meta: { title: "对局" },
+      },
+      {
+        path: "historyMatch/:summonerName?/:puuid?",
         name: "historyMatch",
         component: HistoryMatch,
+        meta: { title: "历史战绩" },
       },
       { path: "setting", name: "setting", component: Setting },
+      {
+        path: "rune",
+        name: "rune",
+        component: Rune,
+        meta: { title: "符文" },
+      },
     ],
   },
 ] as RouteRecordRaw[];

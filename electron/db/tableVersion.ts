@@ -18,7 +18,7 @@ export interface TableVersionDB extends DBConfig {
 
 const useDB = (db: Database.Database): TableVersionDB => ({
   tableName: "table_version",
-  tableVersion: 1,
+  tableVersion: 2,
   initTableIfNotExists() {
     db.exec(`CREATE TABLE IF NOT EXISTS table_version
 (

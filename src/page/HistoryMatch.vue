@@ -29,6 +29,10 @@ function refresh() {
   fetchData({ puuid: lcuStore.querySummonerInfo?.puuid });
 }
 
+function changeQueryRange() {
+  fetchData({ puuid: lcuStore.querySummonerInfo?.puuid });
+}
+
 function fetchData({
   summonerName,
   puuid,
@@ -144,7 +148,7 @@ const drawerShow = ref(false);
             style="width: 80px"
             size="small"
             v-model:value="lcuStore.pageRange"
-            @on-update:value="fetchData"
+            @update:value="changeQueryRange"
             placeholder="Select"
             :options="PageRanges.map((i) => ({ label: i * 20, value: i }))"
           >

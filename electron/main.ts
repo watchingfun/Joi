@@ -1,13 +1,14 @@
 import path from "path";
 import { app, ipcMain, shell } from "electron";
-import { setupTitleBarHandler } from "./handleTitleBar";
-import { setupTray } from "./handleTray";
+import { setupTitleBarHandler } from "./handle/handleTitleBar";
+import { setupTray } from "./handle/handleTray";
 import "./lcu/handleLCU";
 import { startGuardTask } from "./lcu/handleLCU";
 import installExtension from "electron-devtools-installer";
 import logger from "./lib/logger";
 import { getPath } from "./util/util";
 import { initDb } from "./db";
+import { setupRunesListener } from "./handle/handleRunes";
 import Input = Electron.Input;
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
@@ -42,7 +43,7 @@ if (!app.requestSingleInstanceLock()) {
   app.on("second-instance", (event, commandLine, workingDirectory) => {
     // Someone tried to run a second instance, we should focus our window.
     if (win) {
-      win.show()
+      win.show();
     }
   });
 }
@@ -69,9 +70,9 @@ export function createWindow() {
     show: false,
   });
   //在加载页面时，渲染进程第一次完成绘制时，如果窗口还没有被显示，渲染进程会发出 ready-to-show 事件 。 在此事件后显示窗口将没有视觉闪烁：
-  win.once('ready-to-show', () => {
-    win.show()
-  })
+  win.once("ready-to-show", () => {
+    win.show();
+  });
   // 当窗口准备完毕
   win.webContents.once("did-finish-load", async () => {
     logger.debug("webContents did-finish-load");
@@ -106,6 +107,7 @@ ipcMain.on("open-url", (e, args) => {
 app.whenReady().then(() => {
   createWindow();
   setupTray();
+  setupRunesListener();
   installExtension(VUEJS3_DEVTOOLS)
     .then((name) => logger.debug(`Added Extension:  ${name}`))
     .catch((err) => logger.debug("An error occurred: ", err));

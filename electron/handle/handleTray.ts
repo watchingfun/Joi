@@ -1,7 +1,5 @@
-import { app, BrowserWindow, Tray, Menu } from "electron";
+import { app, BrowserWindow, Menu, Tray } from "electron";
 import path from "node:path";
-import { createWindow } from "./main";
-import { sendToWebContent } from "./util/util";
 
 function showMainWindow(route?: string | { name: string }) {
   // 获取当前的窗口  目前程序只做一个窗口

@@ -94,7 +94,10 @@ watch(
 const searchVal = storeToRefs(useLCUStore()).search;
 
 function search() {
-  router.push({ name: "historyMatch", params: { search: searchVal.value } });
+  router.push({
+    name: "historyMatch",
+    params: { summonerName: searchVal.value },
+  });
 }
 </script>
 <style scoped>

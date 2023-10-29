@@ -6,6 +6,7 @@ import { darkTheme, zhCN } from "naive-ui";
 
 <template>
   <n-config-provider
+    :inline-theme-disabled="true"
     :locale="zhCN"
     :theme="darkTheme"
     :theme-overrides="darkThemeOverrides"
