@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, PropType, ref, Ref } from "vue";
+import { computed, PropType, reactive } from "vue";
 import runesConfigJson from "@/assets/runesReforged.json";
 import { CustomRune } from "@@/config/type";
 import { runesStatMods } from "@/assets/runesStatMods";
 import RoleSelect from "@/components/RoleSelect.vue";
 import PositionSelect from "@/components/PositionSelect.vue";
 import GameModeSelect from "@/components/GameModeSelect.vue";
+import { ReactiveVariable } from "vue/macros";
 
 type editType = "add" | "edit";
 
@@ -27,7 +28,7 @@ const close = () => {
   emit("update:show", false);
 };
 
-const runeConfig = ref({
+const runeConfig = reactive({
   id: 0,
   primary_page_id: 8100,
   primary_rune_ids: [0, 0, 0, 0],
@@ -38,10 +39,10 @@ const runeConfig = ref({
   position: [],
   mode: [],
   role: [],
-}) as Ref<CustomRune>;
+}) as ReactiveVariable<CustomRune>;
 
 const mainRuneConfig = computed(() => {
-  let id = runeConfig.value.primary_page_id;
+  let id = runeConfig.primary_page_id;
   if (id) {
     return runesConfigJson.find((rune) => rune.id === id)?.slots;
   }
@@ -49,7 +50,7 @@ const mainRuneConfig = computed(() => {
 });
 
 const secondaryRunePageConfig = computed(() => {
-  let id = runeConfig.value.primary_page_id;
+  let id = runeConfig.primary_page_id;
   if (id) {
     return runesConfigJson.filter((rune) => rune.id !== id) || [];
   }
@@ -57,7 +58,7 @@ const secondaryRunePageConfig = computed(() => {
 });
 
 const secondaryRuneConfig = computed(() => {
-  let id = runeConfig.value.secondary_page_id;
+  let id = runeConfig.secondary_page_id;
   if (id) {
     return runesConfigJson.find((rune) => rune.id === id)?.slots.slice(1) || [];
   }
@@ -66,45 +67,48 @@ const secondaryRuneConfig = computed(() => {
 
 const selectPage = (id: number, mainPage: boolean) => {
   if (mainPage) {
-    if (runeConfig.value.primary_page_id !== id) {
-      runeConfig.value.primary_rune_ids = [0, 0, 0, 0];
+    if (runeConfig.primary_page_id !== id) {
+      runeConfig.primary_rune_ids = [0, 0, 0, 0];
     }
     //清空副系
-    if (runeConfig.value.secondary_page_id === id) {
-      runeConfig.value.secondary_page_id = 0;
-      runeConfig.value.secondary_rune_ids = [0, 0];
+    if (runeConfig.secondary_page_id === id) {
+      runeConfig.secondary_page_id = 0;
+      runeConfig.secondary_rune_ids = [0, 0];
       secondaryRuneIndex = 0;
       secondaryRowSelect = {};
     }
-    runeConfig.value.primary_page_id = id;
+    runeConfig.primary_page_id = id;
   } else {
-    if (runeConfig.value.secondary_page_id !== id) {
-      runeConfig.value.secondary_rune_ids = [0, 0];
+    if (runeConfig.secondary_page_id !== id) {
+      runeConfig.secondary_rune_ids = [0, 0];
     }
-    runeConfig.value.secondary_page_id = id;
+    runeConfig.secondary_page_id = id;
   }
 };
 
 const selectMainRune = (id: number, index: number) => {
-  runeConfig.value.primary_rune_ids =
-    runeConfig.value.primary_rune_ids.toSpliced(index, 1, id);
+  runeConfig.primary_rune_ids = runeConfig.primary_rune_ids.toSpliced(
+    index,
+    1,
+    id,
+  );
   if (index === 0) {
-    runeConfig.value.id = id;
+    runeConfig.id = id;
   }
 };
 
 let secondaryRuneIndex = 0;
 let secondaryRowSelect: Record<number, number> = {};
 const selectSecondaryRune = (id: number, index: number) => {
-  let selectIds = runeConfig.value.secondary_rune_ids;
+  let selectIds = runeConfig.secondary_rune_ids;
   if (secondaryRowSelect[index]) {
     let i = selectIds.indexOf(secondaryRowSelect[index]);
-    runeConfig.value.secondary_rune_ids = selectIds.toSpliced(i, 1, id);
+    runeConfig.secondary_rune_ids = selectIds.toSpliced(i, 1, id);
   } else {
     if (secondaryRuneIndex > 1) {
       secondaryRuneIndex = 0;
     }
-    runeConfig.value.secondary_rune_ids = selectIds.toSpliced(
+    runeConfig.secondary_rune_ids = selectIds.toSpliced(
       secondaryRuneIndex,
       1,
       id,
@@ -115,18 +119,14 @@ const selectSecondaryRune = (id: number, index: number) => {
 };
 
 const selectStatMod = (id: number, index: number) => {
-  runeConfig.value.stat_mod_ids = runeConfig.value.stat_mod_ids.toSpliced(
-    index,
-    1,
-    id,
-  );
+  runeConfig.stat_mod_ids = runeConfig.stat_mod_ids.toSpliced(index, 1, id);
 };
 
 const check = () => {
   return !(
-    runeConfig.value.primary_rune_ids.indexOf(0) < 0 ||
-    runeConfig.value.stat_mod_ids.indexOf(0) < 0 ||
-    runeConfig.value.secondary_rune_ids.length !== 2
+    runeConfig.primary_rune_ids.indexOf(0) < 0 ||
+    runeConfig.stat_mod_ids.indexOf(0) < 0 ||
+    runeConfig.secondary_rune_ids.length !== 2
   );
 };
 
@@ -136,7 +136,7 @@ const save = () => {
     message.error("符文未配置完整");
     return;
   } else {
-    emit("save", JSON.parse(JSON.stringify(unref(runeConfig))));
+    emit("save", toRaw(runeConfig));
   }
 };
 </script>
