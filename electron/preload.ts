@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from "electron";
-import { dom, style } from "./loadingResource";
+import {contextBridge, ipcRenderer} from "electron";
+import {dom, style} from "./loadingResource";
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
@@ -76,13 +76,12 @@ function useLoading() {
       safeDOM.append(document.body, oDiv);
     },
     async removeLoading() {
-      //await wait;
       safeDOM.append(document.head, oStyle2);
       setTimeout(()=>{
         safeDOM.remove(document.head, oStyle);
         safeDOM.remove(document.head, oStyle2);
         safeDOM.remove(document.body, oDiv);
-      },1500)
+      }, 1200)
     },
   };
 }

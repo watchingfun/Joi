@@ -7,6 +7,7 @@ import RoleSelect from "@/components/RoleSelect.vue";
 import PositionSelect from "@/components/PositionSelect.vue";
 import GameModeSelect from "@/components/GameModeSelect.vue";
 import { ReactiveVariable } from "vue/macros";
+import { TransitionSlide } from "@morev/vue-transitions";
 
 type editType = "add" | "edit";
 
@@ -32,7 +33,7 @@ const runeConfig = reactive({
   id: 0,
   primary_page_id: 8100,
   primary_rune_ids: [0, 0, 0, 0],
-  secondary_page_id: 8200,
+  secondary_page_id: 0,
   secondary_rune_ids: [],
   stat_mod_ids: [0, 0, 0],
   enabled: true,
@@ -70,17 +71,16 @@ const selectPage = (id: number, mainPage: boolean) => {
     if (runeConfig.primary_page_id !== id) {
       runeConfig.primary_rune_ids = [0, 0, 0, 0];
     }
-    //清空副系
     if (runeConfig.secondary_page_id === id) {
       runeConfig.secondary_page_id = 0;
       runeConfig.secondary_rune_ids = [0, 0];
-      secondaryRuneIndex = 0;
-      secondaryRowSelect = {};
+      queue = [];
     }
     runeConfig.primary_page_id = id;
   } else {
     if (runeConfig.secondary_page_id !== id) {
       runeConfig.secondary_rune_ids = [0, 0];
+      queue = [];
     }
     runeConfig.secondary_page_id = id;
   }
@@ -97,25 +97,19 @@ const selectMainRune = (id: number, index: number) => {
   }
 };
 
-let secondaryRuneIndex = 0;
-let secondaryRowSelect: Record<number, number> = {};
+let queue: Record<number, number>[] = [];
 const selectSecondaryRune = (id: number, index: number) => {
-  let selectIds = runeConfig.secondary_rune_ids;
-  if (secondaryRowSelect[index]) {
-    let i = selectIds.indexOf(secondaryRowSelect[index]);
-    runeConfig.secondary_rune_ids = selectIds.toSpliced(i, 1, id);
-  } else {
-    if (secondaryRuneIndex > 1) {
-      secondaryRuneIndex = 0;
-    }
-    runeConfig.secondary_rune_ids = selectIds.toSpliced(
-      secondaryRuneIndex,
-      1,
-      id,
-    );
-    secondaryRuneIndex++;
+  let sameRowIndex = queue.findIndex((i) =>
+    Object.keys(i).includes(String(index)),
+  );
+  if (sameRowIndex !== -1) {
+    queue = queue.toSpliced(sameRowIndex, 1);
   }
-  secondaryRowSelect[index] = id;
+  if (queue.length === 2) {
+    queue.shift();
+  }
+  queue.push({ [index]: id });
+  runeConfig.secondary_rune_ids = queue.flatMap((i) => Object.values(i));
 };
 
 const selectStatMod = (id: number, index: number) => {
@@ -200,22 +194,36 @@ const save = () => {
             ></n-image>
           </div>
 
-          <div
-            class="flex flex-row primary_rune w-full"
-            v-for="({ runes }, i) of mainRuneConfig"
-            :key="i"
+          <transition-slide
+            mode="out-in"
+            class="flex-1 flex flex-col justify-between"
+            :offset="[-16, 0]"
           >
-            <n-image
-              preview-disabled
-              v-for="rune of runes"
-              :key="rune.key"
-              :src="rune.icon.toLowerCase()"
-              :class="[
-                runeConfig.primary_rune_ids.includes(rune.id) ? 'active' : '',
-              ]"
-              @click="() => selectMainRune(rune.id, i)"
-            ></n-image>
-          </div>
+            <div
+              :key="runeConfig.primary_page_id"
+              class="flex-1 flex flex-col justify-between"
+            >
+              <div
+                class="flex flex-row primary_rune w-full"
+                v-for="({ runes }, i) of mainRuneConfig"
+                :key="i + runeConfig.primary_page_id"
+                :class="i === 0 ? 'base-rune' : ''"
+              >
+                <n-image
+                  preview-disabled
+                  v-for="rune of runes"
+                  :key="rune.key"
+                  :src="rune.icon.toLowerCase()"
+                  :class="[
+                    runeConfig.primary_rune_ids.includes(rune.id)
+                      ? 'active'
+                      : '',
+                  ]"
+                  @click="() => selectMainRune(rune.id, i)"
+                ></n-image>
+              </div>
+            </div>
+          </transition-slide>
         </div>
 
         <div class="flex flex-col second_type_page">
@@ -233,24 +241,43 @@ const save = () => {
               @click="() => selectPage(secondaryRune.id, false)"
             ></n-image>
           </div>
-          <div
-            class="flex flex-row second_rune"
-            v-for="({ runes }, i) of secondaryRuneConfig"
-            :key="i"
-          >
-            <n-image
-              preview-disabled
-              v-for="rune of runes"
-              :key="rune.key"
-              :src="rune.icon.toLowerCase()"
-              :class="[
-                runeConfig.secondary_rune_ids.includes(rune.id) ? 'active' : '',
-              ]"
-              @click="() => selectSecondaryRune(rune.id, i)"
-            ></n-image>
-          </div>
 
-          <div>
+          <transition-slide
+            mode="out-in"
+            class="flex-1 flex flex-col"
+            :offset="[-16, 0]"
+          >
+            <template v-if="secondaryRuneConfig.length">
+              <div
+                :key="runeConfig.secondary_page_id"
+                class="flex-1 flex flex-col justify-between"
+              >
+                <div
+                  class="flex flex-row second_rune"
+                  v-for="({ runes }, i) of secondaryRuneConfig"
+                  :key="i + runeConfig.secondary_page_id"
+                >
+                  <n-image
+                    preview-disabled
+                    v-for="rune of runes"
+                    :key="rune.key"
+                    :src="rune.icon.toLowerCase()"
+                    :class="[
+                      runeConfig.secondary_rune_ids.includes(rune.id)
+                        ? 'active'
+                        : '',
+                    ]"
+                    @click="() => selectSecondaryRune(rune.id, i)"
+                  ></n-image>
+                </div>
+              </div>
+            </template>
+            <div v-else class="flex-1 flex">
+              <span class="m-auto">请在上方选择副系符文</span>
+            </div>
+          </transition-slide>
+
+          <div class="flex flex-col gap-[10px]">
             <div
               class="flex flex-row statmods"
               v-for="(statMods, i) of runesStatMods"
@@ -281,7 +308,7 @@ const save = () => {
 
 .content {
   height: 361px;
-  transition: all 0.5s ease-in-out;
+  transition: filter 0.5s ease-in-out;
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
@@ -296,7 +323,6 @@ const save = () => {
 }
 
 :deep(.n-image.active) {
-  box-shadow: rgb(39 105 175) 0px 0px 30px 0px;
   border-radius: 50%;
   filter: unset;
 }
@@ -327,12 +353,71 @@ const save = () => {
   width: 40px;
 }
 
-.primary_rune:nth-child(2):deep(img) {
+.primary_rune.base-rune :deep(img) {
   width: 60px;
 }
 
 .primary_rune :deep(img),
 .second_rune :deep(img) {
   width: 35px;
+}
+
+:deep(img) {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+:deep(.n-image) {
+  position: relative;
+  border-radius: 50%;
+}
+
+:deep(.n-image::before) {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  transition: 0.5s;
+  transform: scale(0.9);
+  border: 2px solid rgb(51 150 255);
+  z-index: -1;
+}
+
+:deep(.n-image.active::before) {
+  transform: scale(1.4);
+  box-shadow: 0 0 20px 4px rgb(39 105 175);
+}
+
+.base-rune:deep(.n-image::before) {
+  border: 3px solid rgb(51 150 255);
+  transform: scale(0.8);
+}
+
+.base-rune:deep(.n-image:hover::before) {
+  transform: scale(1);
+}
+
+.statmods:deep(.n-image::before) {
+  transform: scale(0.9);
+}
+
+.statmods:deep(.n-image:hover::before) {
+  transform: scale(1);
+}
+
+:deep(.n-image:hover::before) {
+  transform: scale(1.4);
+  box-shadow: 0 0 15px rgb(39 105 175);
+}
+
+:deep(.n-image:hover) {
+  text-shadow: 0 0 5px rgb(39 105 175);
+  filter: unset;
 }
 </style>
