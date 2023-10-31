@@ -44,12 +44,7 @@
 <script setup lang="ts">
 import useNavStore from "@/store/nav";
 import { onMounted, ref, Ref } from "vue";
-import {
-  useMouse,
-  UseMouseEventExtractor,
-  useParentElement,
-  watchThrottled,
-} from "@vueuse/core";
+import { useMouse, useParentElement, watchThrottled } from "@vueuse/core";
 import router from "@/router";
 import useLCUStore from "@/store/lcu";
 import { storeToRefs } from "pinia";
@@ -62,6 +57,7 @@ const handleSelect = (key: string) => {
   router.push({ name: key });
 };
 
+//todo 鼠标移除后暂停监听
 const { x, y } = useMouse({ target: parentEl, type: "page" });
 
 watchThrottled(

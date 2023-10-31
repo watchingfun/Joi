@@ -1,13 +1,18 @@
 import Database from "better-sqlite3";
-import { DBConfig, PageQuery } from "./index";
-import {CustomRune, PageObj, RunesDBObj, RunesPageQuery} from "../config/type";
+import { DBConfig } from "./index";
+import {
+  CustomRune,
+  PageObj,
+  PageQuery,
+  RunesDBObj,
+  RunesPageQuery,
+} from "../config/type";
 import { getDB } from "./better-sqlite3";
 
 const defaultPageQuery = {
   start: 0,
   size: 50,
 };
-
 
 const emptyPageObj: PageObj<RunesDBObj> = {
   total: 0,
@@ -75,6 +80,7 @@ const useDB = (db: Database.Database): RunesDB => ({
     const stmt = db.prepare(
       "SELECT id, value " + baseSql + " limit :start,:size",
     );
+    pageQuery.start = pageQuery.start * pageQuery.size;
     const list = stmt
       .all(pageQuery)
       .map((i: any) => ({ id: i.id, value: JSON.parse(i.value) }));

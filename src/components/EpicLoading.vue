@@ -6,7 +6,7 @@ const props = defineProps<{ loading: boolean }>();
 </script>
 
 <template>
-  <div style="position: relative">
+  <div class="relative">
     <transition-fade :offset="[0, 0]" mode="out-in">
       <div
         v-if="props.loading"

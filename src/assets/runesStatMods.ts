@@ -1,4 +1,12 @@
-export const runesStatMods = [
+import { flatMap } from "lodash";
+
+export type RuneStatMod = {
+  id: number;
+  name: string;
+  icon: string;
+};
+
+export const runesStatMods: RuneStatMod[][] = [
   [
     {
       id: 5008,
@@ -51,3 +59,11 @@ export const runesStatMods = [
     },
   ],
 ];
+
+export const runesStatModMap = flatMap(runesStatMods).reduce(
+  (map: Map<number, RuneStatMod>, obj: RuneStatMod) => {
+    map.set(obj.id, obj);
+    return map;
+  },
+  new Map<number, RuneStatMod>(),
+);

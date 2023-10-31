@@ -28,6 +28,8 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
     textColorPressedPrimary: "#fff",
     textColorFocusPrimary: "#fff",
     textColorDisabledPrimary: "#fff",
+    textColorTextError: "#fff",
+    textColorError: "#fff",
   },
   Message: {
     colorInfo: "rgba(18, 18, 18,  0.75)",

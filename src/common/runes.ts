@@ -31,12 +31,7 @@ export type RuneData = {
 };
 
 export const runesFlatMap = flatMap(runesConfig, (value, key, collection) => {
-  return (value?.slots[0]["runes"] || {
-    id: value.id,
-    key: value.key,
-    icon: value.icon,
-    name: value.name,
-  }) as unknown as RuneData;
+  return flatMap(value.slots, (item) => item.runes);
 }).reduce((map: Map<number, RuneData>, obj: RuneData) => {
   map.set(obj.id, obj);
   return map;

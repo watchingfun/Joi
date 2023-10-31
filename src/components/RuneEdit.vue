@@ -8,6 +8,7 @@ import PositionSelect from "@/components/PositionSelect.vue";
 import GameModeSelect from "@/components/GameModeSelect.vue";
 import { ReactiveVariable } from "vue/macros";
 import { TransitionSlide } from "@morev/vue-transitions";
+import { InputInst } from "naive-ui";
 
 type editType = "add" | "edit";
 
@@ -31,7 +32,7 @@ const close = () => {
 
 const runeConfig = reactive({
   id: 0,
-  name: '',
+  name: "",
   primary_page_id: 8100,
   primary_rune_ids: [0, 0, 0, 0],
   secondary_page_id: 0,
@@ -74,13 +75,13 @@ const selectPage = (id: number, mainPage: boolean) => {
     }
     if (runeConfig.secondary_page_id === id) {
       runeConfig.secondary_page_id = 0;
-      runeConfig.secondary_rune_ids = [0, 0];
+      runeConfig.secondary_rune_ids = [];
       queue = [];
     }
     runeConfig.primary_page_id = id;
   } else {
     if (runeConfig.secondary_page_id !== id) {
-      runeConfig.secondary_rune_ids = [0, 0];
+      runeConfig.secondary_rune_ids = [];
       queue = [];
     }
     runeConfig.secondary_page_id = id;
@@ -117,29 +118,25 @@ const selectStatMod = (id: number, index: number) => {
   runeConfig.stat_mod_ids = runeConfig.stat_mod_ids.toSpliced(index, 1, id);
 };
 
-const check = () => {
-  return !(
-    runeConfig.primary_rune_ids.indexOf(0) < 0 ||
-    runeConfig.stat_mod_ids.indexOf(0) < 0 ||
+const checkIncomplete = () => {
+  return (
+    runeConfig.primary_rune_ids.indexOf(0) != -1 ||
+    runeConfig.stat_mod_ids.indexOf(0) != -1 ||
     runeConfig.secondary_rune_ids.length !== 2
   );
 };
 
 const message = useMessage();
 
-const rule = {
-  trigger: ["input", "blur"],
-  validator() {
-    if (runeConfig.name) {
-      return new Error("符文名字不能为空");
-    }
-  },
-};
+const runeNameInput = ref<InputInst | null>(null);
+
 const save = () => {
   if (!runeConfig.name) {
+    runeNameInput.value?.focus();
+    message.error("符文名不能为空！");
     return;
   }
-  if (check()) {
+  if (checkIncomplete()) {
     message.error("符文未配置完整");
     return;
   } else {
@@ -149,12 +146,14 @@ const save = () => {
 </script>
 
 <template>
-  <n-modal v-model:show="showModel">
+  <n-modal v-model:show="showModel" :auto-focus="false">
     <div
       style="width: 100%; margin: unset; align-self: stretch"
       class="flex flex-col model"
     >
-      <div class="flex flex-row flex-nowrap mr-5 ml-5 mt-5 gap-[10px]">
+      <div
+        class="flex flex-row flex-nowrap mr-5 ml-5 mt-5 gap-[10px] items-center"
+      >
         <n-grid :x-gap="12" :y-gap="8" :cols="2">
           <n-gi span="2">
             <role-select
@@ -181,9 +180,11 @@ const save = () => {
             ></game-mode-select>
           </n-gi>
           <n-gi>
-            <n-form-item :rule="rule">
-              <n-input placeholder="符文名称"></n-input>
-            </n-form-item>
+            <n-input
+              placeholder="符文名称"
+              v-model:value="runeConfig.name"
+              ref="runeNameInput"
+            ></n-input>
           </n-gi>
         </n-grid>
         <n-space>
@@ -198,6 +199,7 @@ const save = () => {
         <div class="flex flex-col primary_type_page">
           <div class="flex flex-row primary_type_row w-full">
             <n-image
+              lazy
               preview-disabled
               v-for="mainRune of runesConfigJson"
               :key="mainRune.key"
@@ -225,6 +227,7 @@ const save = () => {
                 :class="i === 0 ? 'base-rune' : ''"
               >
                 <n-image
+                  lazy
                   preview-disabled
                   v-for="rune of runes"
                   :key="rune.key"
@@ -244,6 +247,7 @@ const save = () => {
         <div class="flex flex-col second_type_page">
           <div class="flex flex-row second_type_row">
             <n-image
+              lazy
               preview-disabled
               v-for="secondaryRune of secondaryRunePageConfig"
               :key="secondaryRune.key"
@@ -273,6 +277,7 @@ const save = () => {
                   :key="i + runeConfig.secondary_page_id"
                 >
                   <n-image
+                    lazy
                     preview-disabled
                     v-for="rune of runes"
                     :key="rune.key"
@@ -299,6 +304,7 @@ const save = () => {
               :key="i"
             >
               <n-image
+                lazy
                 preview-disabled
                 v-for="statMod of statMods"
                 :key="statMod.id"
