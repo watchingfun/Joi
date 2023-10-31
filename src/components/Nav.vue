@@ -12,7 +12,7 @@
         v-for="menu in navStore.navMenus"
         :key="menu.key"
         :name="menu.key"
-        @click="() => handleSelect(menu.key)"
+        @click="() => handleSelect(<string>menu.key)"
       >
         {{ menu.name }}
       </n-tab>
@@ -61,9 +61,6 @@ const navStore = useNavStore();
 const handleSelect = (key: string) => {
   router.push({ name: key });
 };
-
-const extractor: UseMouseEventExtractor = (event) =>
-  event instanceof Touch ? null : [event.offsetX, event.offsetY];
 
 const { x, y } = useMouse({ target: parentEl, type: "page" });
 

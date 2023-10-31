@@ -2,7 +2,7 @@
     <img
         :width="props.width" :height="props.width"
         :src="`./img/position/icon-position-${props.position}.svg`"
-    />
+     alt="positionImage"/>
 </template>
 <script setup lang="ts">
 // props

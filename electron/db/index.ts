@@ -10,16 +10,6 @@ export interface DBConfig {
   initData?: () => void;
 }
 
-export interface PageObj<T> {
-  total: number;
-  data: T[];
-}
-
-export interface PageQuery {
-  start: number;
-  size: number;
-}
-
 export const initDb = () => {
   //tableVersion表的本身的版本：数据库表发生变动了就+1，其他表的版本：当前表变动后版本+1
   if (tableVersionDB.tableExist(tableVersionDB.tableName)) {

@@ -20,6 +20,7 @@ export const settingModelDefault: SettingModel = {
 
 export interface CustomRune {
   id: number; //基石
+  name: string;
   primary_page_id: number; //主系类别id
   primary_rune_ids: number[];
   secondary_page_id: number; //副系类别id
@@ -38,4 +39,26 @@ export interface RuneConfig {
   subStyleId: number;
   selectedPerkIds: number[]; //长度为9的数组 依次为4个主系，副系2个 属性3个
   current: boolean;
+}
+
+export interface PageObj<T> {
+  total: number;
+  data: T[];
+}
+
+export interface PageQuery {
+  start: number;
+  size: number;
+}
+export interface RunesPageQuery extends PageQuery {
+  primaryPageId?: number;
+  position?: string[];
+  mode?: string[];
+  role?: string[];
+  name?: string;
+}
+
+export interface RunesDBObj {
+  id: number;
+  value: CustomRune;
 }

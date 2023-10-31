@@ -84,7 +84,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
         </div>
         <div class="item-group">
           <template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">
-            <itemImg
+            <item-img
               class="item ml-1"
               :width="20"
               :style="{

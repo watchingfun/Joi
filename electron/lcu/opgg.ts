@@ -49,7 +49,7 @@ export async function getNoneRankRune(championId: number, mode: GameMode) {
 
 export function convertOPGGRuneFormat(rune: Rune | CustomRune): RuneConfig {
   return {
-    name: "OP.GG " + champDict[rune.id + ""]?.label,
+    name: rune?.name || "OP.GG " + champDict[rune.id + ""]?.label,
     order: rune["id"],
     primaryStyleId: rune["primary_page_id"],
     subStyleId: rune["secondary_page_id"],
@@ -65,10 +65,10 @@ export function convertOPGGRuneFormat(rune: Rune | CustomRune): RuneConfig {
 //获取游戏模式
 export function getGameModeByQueue(queue: number): GameMode {
   if ([420, 430, 440].includes(queue)) {
-    return "rank";
+    return "RANK";
   } else if (queue === 450) {
-    return "aram";
+    return "ARAM";
   } else if ([900, 1010, 1900].includes(queue)) {
-    return "urf";
+    return "URF";
   }
 }

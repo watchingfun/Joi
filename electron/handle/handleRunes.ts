@@ -6,7 +6,7 @@ import { convertOPGGRuneFormat } from "../lcu/opgg";
 export function setupRunesListener() {
   ipcMain.handle("queryCustomRunes", (event, query) => {
     console.log("queryCustomRunes", query);
-    return runesDB.queryPageRunes();
+    return runesDB.queryPageRunes(query);
   });
 
   ipcMain.handle("addCustomRune", (event, value) => {

@@ -1,9 +1,9 @@
 // custom.d.ts
 
-import {ipcRenderer} from "electron";
+import { IpcRenderer } from "electron";
 
 declare global {
-    interface Window {
-        ipcRenderer: ipcRenderer;
-    }
+  interface Window {
+    ipcRenderer: IpcRenderer;
+  }
 }

@@ -10,7 +10,7 @@ const props = defineProps({
   multiple: { type: Boolean, default: false },
 });
 const options = Object.keys(positionMap).map((key) => ({
-  label: positionMap[key],
+  label: positionMap[key as keyof typeof positionMap],
   value: key,
 }));
 

@@ -1,9 +1,10 @@
 <template>
   <img
-    :width="props.width" :height="props.width"
+    :width="props.width"
+    :height="props.width"
     :src="url"
     :class="[props.itemId === 0 ? 'none' : '']"
-  />
+   alt="itemImage"/>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";

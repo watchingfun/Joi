@@ -1,4 +1,9 @@
-import { CustomRune } from "@@/config/type";
+import {
+  CustomRune,
+  PageObj,
+  RunesDBObj,
+  RunesPageQuery,
+} from "@@/config/type";
 
 export default {
   addCustomRunes(runes: CustomRune) {
@@ -7,8 +12,11 @@ export default {
   updateCustomRunes(id: number, runes: CustomRune) {
     return window.ipcRenderer.invoke("updateCustomRune", id, runes);
   },
-  queryPageRunes() {
-    return window.ipcRenderer.invoke("queryCustomRunes");
+  queryPageRunes(query: RunesPageQuery = { start: 0, size: 50 }) {
+    return window.ipcRenderer.invoke(
+      "queryCustomRunes",
+      query,
+    ) as Promise<PageObj<RunesDBObj>>;
   },
   deletePageRunes(id: number) {
     return window.ipcRenderer.invoke("deleteCustomRune", id);

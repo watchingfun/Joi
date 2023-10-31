@@ -10,7 +10,7 @@ const props = defineProps({
   multiple: { type: Boolean, default: false },
 });
 const options = Object.keys(roleMap).map((key) => ({
-  label: roleMap[key],
+  label: roleMap[key as keyof typeof roleMap],
   value: key,
 }));
 

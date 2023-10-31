@@ -3,7 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "noImplicitThis": true,
     "strict": true,
     "jsx": "preserve",
@@ -30,7 +30,8 @@
   },
   "include": [
     "src",
-    "auto-imports.d.ts"
+    "auto-imports.d.ts",
+    "custom.d.ts"
   ],
   "references": [
     {

@@ -31,6 +31,7 @@ const close = () => {
 
 const runeConfig = reactive({
   id: 0,
+  name: '',
   primary_page_id: 8100,
   primary_rune_ids: [0, 0, 0, 0],
   secondary_page_id: 0,
@@ -125,7 +126,19 @@ const check = () => {
 };
 
 const message = useMessage();
+
+const rule = {
+  trigger: ["input", "blur"],
+  validator() {
+    if (runeConfig.name) {
+      return new Error("符文名字不能为空");
+    }
+  },
+};
 const save = () => {
+  if (!runeConfig.name) {
+    return;
+  }
   if (check()) {
     message.error("符文未配置完整");
     return;
@@ -168,7 +181,9 @@ const save = () => {
             ></game-mode-select>
           </n-gi>
           <n-gi>
-            <n-input placeholder="符文名称"></n-input>
+            <n-form-item :rule="rule">
+              <n-input placeholder="符文名称"></n-input>
+            </n-form-item>
           </n-gi>
         </n-grid>
         <n-space>

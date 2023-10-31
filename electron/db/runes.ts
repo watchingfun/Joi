@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
-import { DBConfig, PageObj, PageQuery } from "./index";
-import { CustomRune } from "../config/type";
+import { DBConfig, PageQuery } from "./index";
+import {CustomRune, PageObj, RunesDBObj, RunesPageQuery} from "../config/type";
 import { getDB } from "./better-sqlite3";
 
 const defaultPageQuery = {
@@ -8,10 +8,6 @@ const defaultPageQuery = {
   size: 50,
 };
 
-export interface RunesDBObj {
-  id: number;
-  value: CustomRune;
-}
 
 const emptyPageObj: PageObj<RunesDBObj> = {
   total: 0,
@@ -43,18 +39,47 @@ const useDB = (db: Database.Database): RunesDB => ({
 
   initData() {},
 
-  queryPageRunes(pageQuery: PageQuery = defaultPageQuery) {
-    const count_stmt = db.prepare("SELECT count(*) FROM runes");
-    const count = count_stmt.get();
-    if (count === 0) {
+  queryPageRunes(pageQuery: RunesPageQuery = defaultPageQuery) {
+    let baseSql = " FROM runes";
+    let conditions: string[] = [];
+    if (pageQuery.primaryPageId) {
+      conditions.push("runes.value ->> 'primary_page_id' = :primaryPageId");
+    }
+    if (pageQuery.name) {
+      conditions.push("runes.value ->> 'name' like ('%' || :name || '%')");
+    }
+    if (pageQuery.position && pageQuery.position.length > 0) {
+      conditions.push(
+        "exists(select * from json_each(runes.value->>'position') where json_each.value in(:position))",
+      );
+    }
+    if (pageQuery.mode && pageQuery.mode.length > 0) {
+      conditions.push(
+        "exists(select * from json_each(runes.value->>'mode') where json_each.value in(:mode))",
+      );
+    }
+    if (pageQuery.role && pageQuery.role.length > 0) {
+      conditions.push(
+        "exists(select * from json_each(runes.value->>'role') where json_each.value in(:role))",
+      );
+    }
+    if (conditions.length > 0) {
+      baseSql = baseSql + " where " + conditions.join(" and ");
+    }
+
+    const count_stmt = db.prepare("SELECT count(*) as count " + baseSql);
+    const countResult = (count_stmt.get(pageQuery) as any).count;
+    if (countResult === 0) {
       return emptyPageObj;
     }
-    const stmt = db.prepare("SELECT id, value FROM runes limit :start,:size");
+    const stmt = db.prepare(
+      "SELECT id, value " + baseSql + " limit :start,:size",
+    );
     const list = stmt
       .all(pageQuery)
       .map((i: any) => ({ id: i.id, value: JSON.parse(i.value) }));
 
-    return { total: count, data: list } as PageObj<RunesDBObj>;
+    return { total: countResult, data: list } as PageObj<RunesDBObj>;
   },
 
   updateRune(id: number, val: CustomRune) {

@@ -21,13 +21,13 @@ export function setupListener() {
     lcuConst.connected,
     (event: IpcRendererEvent, ...args: any[]) => {
       lcuStore.connectStatus = ConnectStatusEnum.connected;
-      lcuStore.getCurrentSummoner();
+      void lcuStore.getCurrentSummoner();
     },
   );
   window.ipcRenderer.on(
     "jumpRoute",
     (event: IpcRendererEvent, ...args: any[]) => {
-      router.push(args[0] as string | { name: string });
+      void router.push(args[0] as string | { name: string });
     },
   );
 }

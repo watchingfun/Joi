@@ -1,4 +1,4 @@
-import { champDict } from "@@/const/lolDataConfig";
+import {champDict} from "@@/const/lolDataConfig";
 
 //英雄id转图片url
 export function champImg(champId: number) {

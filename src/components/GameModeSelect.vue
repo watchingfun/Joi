@@ -10,7 +10,7 @@ const props = defineProps({
   multiple: { type: Boolean, default: false },
 });
 const options = Object.keys(gameModeMap).map((key) => ({
-  label: gameModeMap[key],
+  label: gameModeMap[key as keyof typeof gameModeMap],
   value: key,
 }));
 

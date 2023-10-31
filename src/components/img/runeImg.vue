@@ -1,5 +1,5 @@
 <template>
-  <img :width="props.width" :height="props.width" :src="url" />
+  <img :width="props.width" :height="props.width" :src="url"  alt="runeImage"/>
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
@@ -10,7 +10,7 @@ const props = defineProps({
   runeId: { type: Number, required: true },
 });
 const url = computed(() => {
-  if (runes[props.runeId] === undefined) {
+  if (!runes[props.runeId]) {
     return "./img/blank.png";
   } else
     return (
