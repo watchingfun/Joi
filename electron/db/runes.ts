@@ -78,7 +78,7 @@ const useDB = (db: Database.Database): RunesDB => ({
       return emptyPageObj;
     }
     const stmt = db.prepare(
-      "SELECT id, value " + baseSql + " limit :start,:size",
+      "SELECT id, value " + baseSql + " order by id desc limit :start,:size",
     );
     pageQuery.start = pageQuery.start * pageQuery.size;
     const list = stmt

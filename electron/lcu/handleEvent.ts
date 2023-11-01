@@ -1,8 +1,10 @@
 import {createHttp1Request} from "../lib/league-connect";
 import {getCredentials} from "./handleLCU";
-import {getCurrentSummoner, listenChampSelect, queryMatchHistory,} from "./lcuRequest";
+import {getCurrentSummoner, getGameInfo, listenChampSelect, queryMatchHistory,} from "./lcuRequest";
 import logger from "../lib/logger";
 import {setting} from "../config/";
+import {sendToWebContent} from "../util/util";
+import {lcuConst} from "../const/const";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -36,7 +38,11 @@ export function handelChampSelect(eventKey: string) {
   if (eventKey !== "ChampSelect") {
     return;
   }
-  unListenChampSelect = listenChampSelect();
+  unListenChampSelect = listenChampSelect((currentChampId: number) => {
+    if (currentChampId) {
+      sendToWebContent(lcuConst.champSelect, currentChampId);
+    }
+  });
 }
 
 //选择英雄结束，游戏准备开始
@@ -44,7 +50,7 @@ export function handelGameStart(eventKey: string) {
   if (eventKey !== "GameStart") {
     return;
   }
-  //getGameInfo();
+  void getGameInfo();
   if (unListenChampSelect) {
     unListenChampSelect();
   }

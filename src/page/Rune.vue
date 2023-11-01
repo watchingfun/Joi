@@ -108,9 +108,10 @@ function fetchData() {
     });
 }
 
-function tabChange() {
-  nextTick(fetchData);
-}
+watch(activeKey, () => {
+  page.value = 1;
+  fetchData();
+});
 
 const editRuneObj = ref<RunesDBObj>();
 
@@ -124,7 +125,7 @@ const showEditHandler = (rune: RunesDBObj) => {
 };
 const dialog = useDialog();
 const deleteRuneHandler = (id: number) => {
-  return runesApi.deleteCustomRune(id).then(() => {
+  runesApi.deleteCustomRune(id).then(() => {
     message.success("删除成功");
     fetchData();
   });
@@ -142,7 +143,6 @@ onMounted(() => {
       style="width: 100%; border-bottom: 1px rgba(128, 128, 128, 0.52) solid"
     >
       <n-tabs
-        @update-value="tabChange"
         style="width: 500px; padding: 10px 0 0 0"
         v-model:value="activeKey"
         justify-content="space-around"

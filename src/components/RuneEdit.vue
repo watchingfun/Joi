@@ -1,16 +1,25 @@
 <script setup lang="ts">
-import { computed, PropType, reactive, Ref } from "vue";
-import runesConfigJson from "@/assets/runesReforged.json";
+import { computed, PropType, Ref } from "vue";
+import runesReforged from "@/assets/runesReforged.json";
 import { CustomRune, RunesDBObj } from "@@/config/type";
 import { runesStatMods } from "@/assets/runesStatMods";
 import RoleSelect from "@/components/RoleSelect.vue";
 import PositionSelect from "@/components/PositionSelect.vue";
 import GameModeSelect from "@/components/GameModeSelect.vue";
-import { ReactiveVariable } from "vue/macros";
 import { TransitionSlide } from "@morev/vue-transitions";
 import { InputInst } from "naive-ui";
 
 type editType = "add" | "edit";
+
+//按客户端的顺序排序
+const runesSort = [8000, 8100, 8200, 8400, 8300];
+
+const runesConfigJson = runesReforged.toSorted((a, b) => {
+  return (
+    runesSort.findIndex((id) => id === a.id) -
+    runesSort.findIndex((id) => id === b.id)
+  );
+});
 
 const props = defineProps({
   show: { default: false },
@@ -34,7 +43,7 @@ const close = () => {
 const defaultRuneConfig = {
   id: 0,
   name: "",
-  primary_page_id: 8100,
+  primary_page_id: 8200,
   primary_rune_ids: [0, 0, 0, 0],
   secondary_page_id: 0,
   secondary_rune_ids: [],
@@ -211,17 +220,24 @@ const save = () => {
       <div class="content flex flex-row">
         <div class="flex flex-col primary_type_page">
           <div class="flex flex-row primary_type_row w-full">
-            <n-image
-              lazy
-              preview-disabled
+            <n-tooltip
+              trigger="hover"
               v-for="mainRune of runesConfigJson"
               :key="mainRune.key"
-              :src="mainRune.icon.toLowerCase()"
-              :class="[
-                runeConfig.primary_page_id === mainRune.id ? 'active' : '',
-              ]"
-              @click="() => selectPage(mainRune.id, true)"
-            ></n-image>
+            >
+              <template #trigger>
+                <n-image
+                  lazy
+                  preview-disabled
+                  :src="mainRune.icon.toLowerCase()"
+                  :class="[
+                    runeConfig.primary_page_id === mainRune.id ? 'active' : '',
+                  ]"
+                  @click="() => selectPage(mainRune.id, true)"
+                ></n-image>
+              </template>
+              {{ mainRune.name }}
+            </n-tooltip>
           </div>
 
           <transition-slide
@@ -239,19 +255,32 @@ const save = () => {
                 :key="i + runeConfig.primary_page_id"
                 :class="i === 0 ? 'base-rune' : ''"
               >
-                <n-image
-                  lazy
-                  preview-disabled
+                <n-tooltip
+                  :style="{ maxWidth: '400px' }"
+                  trigger="hover"
+                  :keep-alive-on-hover="false"
                   v-for="rune of runes"
                   :key="rune.key"
-                  :src="rune.icon.toLowerCase()"
-                  :class="[
-                    runeConfig.primary_rune_ids.includes(rune.id)
-                      ? 'active'
-                      : '',
-                  ]"
-                  @click="() => selectMainRune(rune.id, i)"
-                ></n-image>
+                >
+                  <template #trigger>
+                    <n-image
+                      lazy
+                      preview-disabled
+                      :src="rune.icon.toLowerCase()"
+                      :class="[
+                        runeConfig.primary_rune_ids.includes(rune.id)
+                          ? 'active'
+                          : '',
+                      ]"
+                      @click="() => selectMainRune(rune.id, i)"
+                    ></n-image>
+                  </template>
+                  <div>
+                    <b>{{ rune.name }}</b>
+                    <br />
+                    <div v-html="rune.longDesc"></div>
+                  </div>
+                </n-tooltip>
               </div>
             </div>
           </transition-slide>
@@ -259,19 +288,27 @@ const save = () => {
 
         <div class="flex flex-col second_type_page">
           <div class="flex flex-row second_type_row">
-            <n-image
-              lazy
-              preview-disabled
+            <n-tooltip
+              placement="bottom"
+              trigger="hover"
               v-for="secondaryRune of secondaryRunePageConfig"
               :key="secondaryRune.key"
-              :src="secondaryRune.icon.toLowerCase()"
-              :class="[
-                runeConfig.secondary_page_id === secondaryRune.id
-                  ? 'active'
-                  : '',
-              ]"
-              @click="() => selectPage(secondaryRune.id, false)"
-            ></n-image>
+            >
+              <template #trigger>
+                <n-image
+                  lazy
+                  preview-disabled
+                  :src="secondaryRune.icon.toLowerCase()"
+                  :class="[
+                    runeConfig.secondary_page_id === secondaryRune.id
+                      ? 'active'
+                      : '',
+                  ]"
+                  @click="() => selectPage(secondaryRune.id, false)"
+                ></n-image>
+              </template>
+              {{ secondaryRune.name }}
+            </n-tooltip>
           </div>
 
           <transition-slide
@@ -289,19 +326,33 @@ const save = () => {
                   v-for="({ runes }, i) of secondaryRuneConfig"
                   :key="i + runeConfig.secondary_page_id"
                 >
-                  <n-image
-                    lazy
-                    preview-disabled
+                  <n-tooltip
+                    :keep-alive-on-hover="false"
+                    :style="{ maxWidth: '400px' }"
+                    placement="bottom"
+                    trigger="hover"
                     v-for="rune of runes"
                     :key="rune.key"
-                    :src="rune.icon.toLowerCase()"
-                    :class="[
-                      runeConfig.secondary_rune_ids.includes(rune.id)
-                        ? 'active'
-                        : '',
-                    ]"
-                    @click="() => selectSecondaryRune(rune.id, i)"
-                  ></n-image>
+                  >
+                    <template #trigger>
+                      <n-image
+                        lazy
+                        preview-disabled
+                        :src="rune.icon.toLowerCase()"
+                        :class="[
+                          runeConfig.secondary_rune_ids.includes(rune.id)
+                            ? 'active'
+                            : '',
+                        ]"
+                        @click="() => selectSecondaryRune(rune.id, i)"
+                      ></n-image>
+                    </template>
+                    <div>
+                      <b>{{ rune.name }}</b>
+                      <br />
+                      <div v-html="rune.longDesc"></div>
+                    </div>
+                  </n-tooltip>
                 </div>
               </div>
             </template>
@@ -316,17 +367,31 @@ const save = () => {
               v-for="(statMods, i) of runesStatMods"
               :key="i"
             >
-              <n-image
-                lazy
-                preview-disabled
+              <n-tooltip
+                :keep-alive-on-hover="false"
+                :style="{ maxWidth: '400px' }"
+                placement="bottom"
+                trigger="hover"
                 v-for="statMod of statMods"
                 :key="statMod.id"
-                :src="statMod.icon.toLowerCase()"
-                :class="[
-                  runeConfig.stat_mod_ids[i] === statMod.id ? 'active' : '',
-                ]"
-                @click="() => selectStatMod(statMod.id, i)"
-              ></n-image>
+              >
+                <template #trigger>
+                  <n-image
+                    lazy
+                    preview-disabled
+                    :src="statMod.icon.toLowerCase()"
+                    :class="[
+                      runeConfig.stat_mod_ids[i] === statMod.id ? 'active' : '',
+                    ]"
+                    @click="() => selectStatMod(statMod.id, i)"
+                  ></n-image>
+                </template>
+                <div>
+                  <b>{{ statMod.name }}</b>
+                  <br />
+                  {{ statMod.desc }}
+                </div>
+              </n-tooltip>
             </div>
           </div>
         </div>

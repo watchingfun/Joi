@@ -2,6 +2,8 @@ export const lcuConst = {
   connected: "lcu:connected",
   connecting: "lcu:connecting",
   disconnect: "lcu:disconnect",
+  gameFlowPhase: "lcu:gameFlowPhase",
+  champSelect: "lcu:champSelect",
   getCurrentSummoner: "lcu:getCurrentSummoner",
   queryGameDetails: "lcu:queryGameDetails",
   queryMatchHistory: "lcu:queryMatchHistory",

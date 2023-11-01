@@ -1,8 +1,8 @@
-import { createApp } from "vue";
+import {createApp} from "vue";
 import "./style.css";
 import App from "./App.vue";
-import { createPinia } from "pinia";
-import { setupListener } from "@/listener/backgroundListener";
+import {createPinia} from "pinia";
+import {setupListener} from "@/listener/backgroundListener";
 import router from "@/router/index";
 import useLCUStore from "@/store/lcu";
 import "@morev/vue-transitions/styles";
@@ -10,6 +10,11 @@ import LazyComponent from "lazy-load-vue3/src/LazyComponent";
 import useAppStore from "@/store/app";
 import "./common/configDayjs";
 import useSettingStore from "@/store/setting";
+
+//确保naive ui样式不被tailwind preflight 覆盖
+const meta = document.createElement("meta");
+meta.name = "naive-ui-style";
+document.head.appendChild(meta);
 
 const app = createApp(App);
 const pinia = createPinia();

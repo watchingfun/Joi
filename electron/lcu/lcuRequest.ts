@@ -2,7 +2,15 @@ import {createHttp1Request, createHttp2Request, createHttpSession, EventResponse
 import {getCredentials, getLeagueWebSocket} from "./handleLCU";
 import {ClientHttp2Session} from "http2";
 import {champDict} from "../const/lolDataConfig";
-import {GameDetail, GameSessionData, MatchHistoryQueryResult, PageRange, SummonerInfo, TeamMember,} from "./interface";
+import {
+  ChampSelectPhaseSession,
+  GameDetail,
+  GameSessionData,
+  MatchHistoryQueryResult,
+  PageRange,
+  SummonerInfo,
+  TeamMember,
+} from "./interface";
 import logger from "../lib/logger";
 import {RuneConfig} from "../config/type";
 
@@ -35,26 +43,27 @@ export async function getSummonerByName(nickname: string) {
 //通过puuid查询召唤师信息
 export async function getSummonerByPuuid(puuid: string) {
   return (
-      await createHttp1Request(
-          {
-            method: "GET",
-            url: `/lol-summoner/v2/summoners/puuid/${puuid}`,
-          },
-          getCredentials(),
-      )
+    await createHttp1Request(
+      {
+        method: "GET",
+        url: `/lol-summoner/v2/summoners/puuid/${puuid}`,
+      },
+      getCredentials(),
+    )
   ).json() as SummonerInfo;
 }
 
 //监听选择的英雄
-export function listenChampSelect(): Function {
+export function listenChampSelect(callback?: Function): Function {
   const ws = getLeagueWebSocket();
   ws.subscribe(
     "/lol-champ-select/v1/session",
-    async <ChampSelectPhaseSession>(
+    async (
       data: ChampSelectPhaseSession,
       event: EventResponse<ChampSelectPhaseSession>,
     ) => {
       const currentChampId = await getCurrentChampId();
+      callback && callback(currentChampId);
       logger.debug("currentChampId", currentChampId);
       logger.debug("champ-select-session", JSON.stringify(data));
     },
@@ -190,13 +199,13 @@ export async function applyRune(data: RuneConfig) {
   let credentials = getCredentials();
   // 获取符文页信息
   const currentRuneList = (
-      await createHttp1Request(
-          {
-            method: "GET",
-            url: "lol-perks/v1/pages",
-          },
-          credentials,
-      )
+    await createHttp1Request(
+      {
+        method: "GET",
+        url: "lol-perks/v1/pages",
+      },
+      credentials,
+    )
   ).json();
   logger.info("currentRuneList", currentRuneList);
   //@ts-ignore
@@ -204,21 +213,21 @@ export async function applyRune(data: RuneConfig) {
   if (current != undefined) {
     // 删除当前符文页
     await createHttp1Request(
-        {
-          method: "DELETE",
-          url: `lol-perks/v1/pages/${current.id}`,
-        },
-        credentials,
+      {
+        method: "DELETE",
+        url: `lol-perks/v1/pages/${current.id}`,
+      },
+      credentials,
     );
   }
   // 写入新的符文页
   await createHttp1Request(
-      {
-        method: "POST",
-        url: "lol-perks/v1/pages",
-        body: data,
-      },
-      credentials,
+    {
+      method: "POST",
+      url: "lol-perks/v1/pages",
+      body: data,
+    },
+    credentials,
   );
   return true;
 }

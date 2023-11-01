@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RunesDBObj } from "@@/config/type";
-import { runesFlatMap } from "@/common/runes";
-import { runesStatModMap } from "@/assets/runesStatMods";
+import { RuneData, runesFlatMap } from "@/common/runes";
+import { runesStatModMap, RuneStatMod } from "@/assets/runesStatMods";
 import { toRefs } from "vue";
 import { TransitionFade } from "@morev/vue-transitions";
 
@@ -19,6 +19,20 @@ const runeBgImgStyle = computed(() => {
 });
 const showOperation = ref(false);
 const emit = defineEmits(["edit", "delete"]);
+const runeConfig = computed(() => {
+  let runeValue = rune.value.value;
+  return {
+    primary1: runesFlatMap.get(runeValue.primary_rune_ids[0]) as RuneData,
+    primary2: runesFlatMap.get(runeValue.primary_rune_ids[1]) as RuneData,
+    primary3: runesFlatMap.get(runeValue.primary_rune_ids[2]) as RuneData,
+    primary4: runesFlatMap.get(runeValue.primary_rune_ids[3]) as RuneData,
+    secondary1: runesFlatMap.get(runeValue.secondary_rune_ids[0]) as RuneData,
+    secondary2: runesFlatMap.get(runeValue.secondary_rune_ids[1]) as RuneData,
+    stat1: runesStatModMap.get(runeValue.stat_mod_ids[0]) as RuneStatMod,
+    stat2: runesStatModMap.get(runeValue.stat_mod_ids[1]) as RuneStatMod,
+    stat3: runesStatModMap.get(runeValue.stat_mod_ids[2]) as RuneStatMod,
+  };
+});
 </script>
 
 <template>
@@ -35,99 +49,189 @@ const emit = defineEmits(["edit", "delete"]);
         <div
           class="flex-col flex items-center justify-between gap-[8px] primary-runes"
         >
-          <n-image
-            lazy
-            width="50"
-            preview-disabled
-            :src="
-              runesFlatMap
-                .get(rune.value.primary_rune_ids[0])
-                ?.icon.toLowerCase()
-            "
-          />
-          <n-image
-            lazy
-            width="30"
-            preview-disabled
-            :src="
-              runesFlatMap
-                .get(rune.value.primary_rune_ids[1])
-                ?.icon.toLowerCase()
-            "
-          />
-          <n-image
-            lazy
-            width="30"
-            preview-disabled
-            :src="
-              runesFlatMap
-                .get(rune.value.primary_rune_ids[2])
-                ?.icon.toLowerCase()
-            "
-          />
-          <n-image
-            lazy
-            width="30"
-            preview-disabled
-            :src="
-              runesFlatMap
-                .get(rune.value.primary_rune_ids[3])
-                ?.icon.toLowerCase()
-            "
-          />
+          <n-tooltip
+            :keep-alive-on-hover="false"
+            :style="{ maxWidth: '400px' }"
+            placement="bottom"
+            trigger="hover"
+          >
+            <template #trigger>
+              <n-image
+                lazy
+                width="50"
+                preview-disabled
+                :src="runeConfig.primary1?.icon.toLowerCase()"
+              />
+            </template>
+            <div>
+              <b>{{ runeConfig.primary1.name }}</b>
+              <br />
+              <div v-html="runeConfig.primary1.shortDesc"></div>
+            </div>
+          </n-tooltip>
+          <n-tooltip
+            :keep-alive-on-hover="false"
+            :style="{ maxWidth: '400px' }"
+            placement="bottom"
+            trigger="hover"
+          >
+            <template #trigger>
+              <n-image
+                lazy
+                width="30"
+                preview-disabled
+                :src="runeConfig.primary2?.icon.toLowerCase()"
+              />
+            </template>
+            <div>
+              <b>{{ runeConfig.primary2.name }}</b>
+              <br />
+              <div v-html="runeConfig.primary2.shortDesc"></div>
+            </div>
+          </n-tooltip>
+          <n-tooltip
+            :keep-alive-on-hover="false"
+            :style="{ maxWidth: '400px' }"
+            placement="bottom"
+            trigger="hover"
+          >
+            <template #trigger>
+              <n-image
+                lazy
+                width="30"
+                preview-disabled
+                :src="runeConfig.primary3?.icon.toLowerCase()"
+              />
+            </template>
+            <div>
+              <b>{{ runeConfig.primary3.name }}</b>
+              <br />
+              <div v-html="runeConfig.primary3.shortDesc"></div>
+            </div>
+          </n-tooltip>
+          <n-tooltip
+            :keep-alive-on-hover="false"
+            :style="{ maxWidth: '400px' }"
+            placement="bottom"
+            trigger="hover"
+          >
+            <template #trigger>
+              <n-image
+                lazy
+                width="30"
+                preview-disabled
+                :src="runeConfig.primary4?.icon.toLowerCase()"
+              />
+            </template>
+            <div>
+              <b>{{ runeConfig.primary4.name }}</b>
+              <br />
+              <div v-html="runeConfig.primary4.shortDesc"></div>
+            </div>
+          </n-tooltip>
         </div>
         <div class="flex-col flex items-center justify-center gap-[5px]">
-          <n-image
-            lazy
-            width="30"
-            preview-disabled
-            :src="
-              runesFlatMap
-                .get(rune.value.secondary_rune_ids[0])
-                ?.icon.toLowerCase()
-            "
-          />
-          <n-image
-            lazy
-            width="30"
-            preview-disabled
-            :src="
-              runesFlatMap
-                .get(rune.value.secondary_rune_ids[1])
-                ?.icon.toLowerCase()
-            "
-          />
+          <n-tooltip
+            :keep-alive-on-hover="false"
+            :style="{ maxWidth: '400px' }"
+            placement="bottom"
+            trigger="hover"
+          >
+            <template #trigger>
+              <n-image
+                lazy
+                width="30"
+                preview-disabled
+                :src="runeConfig.secondary1?.icon.toLowerCase()"
+              />
+            </template>
+            <div>
+              <b>{{ runeConfig.secondary1.name }}</b>
+              <br />
+              <div v-html="runeConfig.secondary1.shortDesc"></div>
+            </div>
+          </n-tooltip>
+          <n-tooltip
+            :keep-alive-on-hover="false"
+            :style="{ maxWidth: '400px' }"
+            placement="bottom"
+            trigger="hover"
+          >
+            <template #trigger>
+              <n-image
+                lazy
+                width="30"
+                preview-disabled
+                :src="runeConfig.secondary2?.icon.toLowerCase()"
+              />
+            </template>
+            <div>
+              <b>{{ runeConfig.secondary2.name }}</b>
+              <br />
+              <div v-html="runeConfig.secondary2.shortDesc"></div>
+            </div>
+          </n-tooltip>
           <div class="flex-col flex items-center gap-[2px]">
-            <n-image
-              lazy
-              width="25"
-              preview-disabled
-              :src="
-                runesStatModMap
-                  .get(rune.value.stat_mod_ids[0])
-                  ?.icon.toLowerCase()
-              "
-            />
-            <n-image
-              lazy
-              width="25"
-              preview-disabled
-              :src="
-                runesStatModMap
-                  .get(rune.value.stat_mod_ids[1])
-                  ?.icon.toLowerCase()
-              "
-            />
-            <n-image
-              lazy
-              width="25"
-              preview-disabled
-              :src="
-                runesStatModMap
-                  .get(rune.value.stat_mod_ids[2])
-                  ?.icon.toLowerCase()
-              "
-            />
+            <n-tooltip
+              :keep-alive-on-hover="false"
+              :style="{ maxWidth: '400px' }"
+              placement="bottom"
+              trigger="hover"
+            >
+              <template #trigger>
+                <n-image
+                  lazy
+                  width="25"
+                  preview-disabled
+                  :src="runeConfig.stat1?.icon.toLowerCase()"
+                />
+              </template>
+              <div>
+                <b>{{ runeConfig.stat1.name }}</b>
+                <br />
+                {{ runeConfig.stat1.desc }}
+              </div>
+            </n-tooltip>
+            <n-tooltip
+              :keep-alive-on-hover="false"
+              :style="{ maxWidth: '400px' }"
+              placement="bottom"
+              trigger="hover"
+            >
+              <template #trigger>
+                <n-image
+                  lazy
+                  width="25"
+                  preview-disabled
+                  :src="runeConfig.stat2?.icon.toLowerCase()"
+                />
+              </template>
+              <div>
+                <b>{{ runeConfig.stat2.name }}</b>
+                <br />
+                {{ runeConfig.stat2.desc }}
+              </div>
+            </n-tooltip>
+            <n-tooltip
+              :keep-alive-on-hover="false"
+              :style="{ maxWidth: '400px' }"
+              placement="bottom"
+              trigger="hover"
+            >
+              <template #trigger>
+                <n-image
+                  lazy
+                  width="25"
+                  preview-disabled
+                  :src="runeConfig.stat3?.icon.toLowerCase()"
+                />
+              </template>
+              <div>
+                <b>{{ runeConfig.stat3.name }}</b>
+                <br />
+                {{ runeConfig.stat3.desc }}
+              </div>
+            </n-tooltip>
           </div>
         </div>
       </div>
@@ -135,6 +239,7 @@ const emit = defineEmits(["edit", "delete"]);
         <div class="absolute w-full operation" v-if="showOperation">
           <div class="flex flex-row gap-[5px] justify-center">
             <n-button
+              secondary
               type="primary"
               size="small"
               @click="() => emit('edit', rune)"
@@ -151,9 +256,9 @@ const emit = defineEmits(["edit", "delete"]);
               @negative-click="() => {}"
             >
               <template #trigger>
-                <n-button type="error" size="small" @click.stop=""
-                  >删除</n-button
-                >
+                <n-button secondary type="error" size="small" @click.stop=""
+                  >删除
+                </n-button>
               </template>
               确认删除？
             </n-popconfirm>
@@ -197,7 +302,7 @@ const emit = defineEmits(["edit", "delete"]);
 }
 
 .card .bg-img {
-  filter: blur(15px) brightness(1.2);
+  filter: blur(15px) brightness(1.1);
   transition: filter 0.3s ease-in-out;
 }
 
@@ -220,5 +325,6 @@ const emit = defineEmits(["edit", "delete"]);
   display: flex;
   flex-flow: column;
   justify-content: center;
+  background-color: rgba(0, 0, 0, 0.38);
 }
 </style>

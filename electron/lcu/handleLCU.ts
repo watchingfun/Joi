@@ -118,6 +118,7 @@ ipcMain.handle(lcuConst.killRender, (event, args) => {
 function wsSubscribe(ws: LeagueWebSocket) {
   ws.subscribe("/lol-gameflow/v1/gameflow-phase", async (data) => {
     logger.info("gameflow-phase", data);
+    sendToWebContent(lcuConst.gameFlowPhase, data);
     Object.values(LCUEventHandlers).forEach((handler) => handler(data));
   });
 }

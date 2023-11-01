@@ -30,6 +30,6 @@ defineOptions({
 
 <style scoped>
 :deep(.n-divider) {
-  margin: 8px;
+  margin: 8px !important;
 }
 </style>

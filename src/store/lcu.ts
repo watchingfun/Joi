@@ -15,6 +15,31 @@ export enum ConnectStatusEnum {
   disconnect,
 }
 
+export type GameFlowPhase =
+  | "Lobby"
+  | "Matchmaking"
+  | "ReadyCheck"
+  | "ChampSelect"
+  | "GameStart"
+  | "InProgress"
+  | "WaitingForStats"
+  | "PreEndOfGame"
+  | "EndOfGame"
+  | "None";
+
+export const gameFlowPhaseMap: Record<GameFlowPhase, string> = {
+  Lobby: "大厅",
+  Matchmaking: "匹配中",
+  ReadyCheck: "确认匹配",
+  ChampSelect: "英雄选择",
+  GameStart: "游戏开始",
+  InProgress: "对局载入",
+  WaitingForStats: "等待统计",
+  PreEndOfGame: "游戏结束前",
+  EndOfGame: "游戏结束",
+  None: "None",
+};
+
 const useLCUStore = defineStore("lcu", () => {
   const connectStatus = ref(
     ConnectStatusEnum.disconnect,
@@ -25,6 +50,12 @@ const useLCUStore = defineStore("lcu", () => {
   const querySummonerInfo = ref<SummonerInfo>();
   const search = ref("");
   const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
+  const gameFlowPhase = ref<GameFlowPhase>("None");
+  const champId = ref(0);
+
+  function updateChampId(id: number) {
+    champId.value = id;
+  }
 
   async function getCurrentSummoner() {
     summonerInfo.value = await lcuApi.getCurrentSummoner();
@@ -81,6 +112,9 @@ const useLCUStore = defineStore("lcu", () => {
   }
 
   return {
+    champId,
+    updateChampId,
+    gameFlowPhase,
     connectStatus,
     getCurrentSummoner,
     getMatchHistoryQueryResult,
