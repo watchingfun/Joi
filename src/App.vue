@@ -12,13 +12,15 @@ import { darkTheme, zhCN } from "naive-ui";
     :theme-overrides="darkThemeOverrides"
   >
     <n-global-style />
-    <n-message-provider>
-      <router-view v-slot="{ Component }">
-        <keep-alive>
-          <component :is="Component" />
-        </keep-alive>
-      </router-view>
-    </n-message-provider>
+    <n-dialog-provider>
+      <n-message-provider>
+        <router-view v-slot="{ Component }">
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 

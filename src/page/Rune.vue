@@ -19,7 +19,7 @@ const tabs = [
   {
     name: "全部",
     id: 0,
-    config: { key: "all" },
+    config: { key: "all", icon: null },
   },
   {
     name: "精密",
@@ -48,16 +48,25 @@ const tabs = [
   },
 ];
 const activeKey = ref(0);
-const showAddRune = ref(false);
+const showEditRune = ref(false);
 
 const message = useMessage();
 const loading = ref(false);
 
-function addRune(runeConfig: CustomRune) {
-  runesApi.addCustomRunes(runeConfig).then(() => {
-    message.success("保存成功");
-    showAddRune.value = false;
-  });
+function addRune(runeConfig: CustomRune, id: number) {
+  if (id) {
+    runesApi.updateCustomRune(id, runeConfig).then(() => {
+      message.success("更新成功");
+      showEditRune.value = false;
+      fetchData();
+    });
+  } else {
+    runesApi.addCustomRune(runeConfig).then(() => {
+      message.success("保存成功");
+      showEditRune.value = false;
+      fetchData();
+    });
+  }
 }
 
 const page = ref(1);
@@ -103,6 +112,24 @@ function tabChange() {
   nextTick(fetchData);
 }
 
+const editRuneObj = ref<RunesDBObj>();
+
+const showAddHandler = () => {
+  editRuneObj.value = undefined;
+  showEditRune.value = true;
+};
+const showEditHandler = (rune: RunesDBObj) => {
+  editRuneObj.value = rune;
+  showEditRune.value = true;
+};
+const dialog = useDialog();
+const deleteRuneHandler = (id: number) => {
+  return runesApi.deleteCustomRune(id).then(() => {
+    message.success("删除成功");
+    fetchData();
+  });
+};
+
 onMounted(() => {
   fetchData();
 });
@@ -116,7 +143,7 @@ onMounted(() => {
     >
       <n-tabs
         @update-value="tabChange"
-        style="width: 400px; padding: 20px 0"
+        style="width: 500px; padding: 10px 0 0 0"
         v-model:value="activeKey"
         justify-content="space-around"
         animated
@@ -129,7 +156,18 @@ onMounted(() => {
           :tab="tab.name"
           :key="tab.name"
         >
-          <span :class="tab.config?.key">{{ tab.name }}</span>
+          <span
+            :class="tab.config?.key"
+            class="flex flex-row justify-center gap-1 pb-[5px]"
+          >
+            <n-image
+              width="20"
+              preview-disabled
+              :src="(tab.config?.icon as string).toLowerCase()"
+              v-if="tab.config?.icon"
+            ></n-image>
+            <span> {{ tab.name }}</span>
+          </span>
         </n-tab>
       </n-tabs>
       <n-input
@@ -138,7 +176,7 @@ onMounted(() => {
         v-model:value="searchVal"
         clearable
       ></n-input>
-      <n-button @click="() => (showAddRune = true)">新增</n-button>
+      <n-button @click="showAddHandler">新增</n-button>
     </div>
     <div class="content relative flex flex-1 flex-col min-h-0 w-full">
       <overlay-scrollbars-component
@@ -158,9 +196,11 @@ onMounted(() => {
             :key="activeKey"
           >
             <div
-              class="flex flex-row justify-start gap-[30px] mx-5 flex-wrap py-5"
+              class="flex flex-row justify-start gap-[30px] mx-5 flex-wrap pt-5 pb-[50px]"
             >
               <rune-card
+                @edit="showEditHandler"
+                @delete="deleteRuneHandler"
                 v-for="rune in pageResult.data"
                 :rune="rune"
               ></rune-card>
@@ -168,24 +208,27 @@ onMounted(() => {
           </epic-loading>
         </transition-slide>
       </overlay-scrollbars-component>
-      <div style="height: 50px" class="shrink-0"></div>
       <div
-        class="absolute bottom-0 p-[10px] right-0 w-full flex flex-row justify-center"
-        style="background: #1c1c1cb8; backdrop-filter: blur(5px)"
+        class="absolute bottom-0 p-[10px] right-0 w-full flex flex-row justify-center pagination"
       >
         <n-pagination
           v-model:page="page"
           v-model:page-size="pageSize"
-          @change="fetchData"
+          @update-page="fetchData"
           :page-count="pageCount"
           :page-sizes="[10, 20, 30, 50]"
           :page-slot="8"
+          size="small"
         >
           <template #suffix> 总计数量 {{ pageResult.total }}</template>
         </n-pagination>
       </div>
     </div>
-    <RuneEdit v-model:show="showAddRune" @save="addRune"></RuneEdit>
+    <RuneEdit
+      v-model:show="showEditRune"
+      @save="addRune"
+      :rune="editRuneObj"
+    ></RuneEdit>
   </div>
 </template>
 
@@ -200,5 +243,10 @@ onMounted(() => {
 
 :deep(.n-tabs-tab--active):has(.c_8100) {
   text-shadow: 0 0 9px #ffca68;
+}
+
+.pagination {
+  background: rgba(28, 28, 28, 0.6);
+  backdrop-filter: saturate(50%) blur(4px);
 }
 </style>

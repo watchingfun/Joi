@@ -30,9 +30,17 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
     textColorDisabledPrimary: "#fff",
     textColorTextError: "#fff",
     textColorError: "#fff",
+    textColorHoverError: "#fff",
+    textColorPressedError: "#fff",
+    textColorFocusError: "#fff",
+    textColorWarning: "#fff",
+    textColorHoverWarning: "#fff"
   },
   Message: {
     colorInfo: "rgba(18, 18, 18,  0.75)",
+  },
+  Dialog: {
+    color: "rgba(52,52,52,0.75)",
   },
   // ...
 };

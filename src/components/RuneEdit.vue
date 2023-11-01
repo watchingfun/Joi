@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, PropType, reactive } from "vue";
+import { computed, PropType, reactive, Ref } from "vue";
 import runesConfigJson from "@/assets/runesReforged.json";
-import { CustomRune } from "@@/config/type";
+import { CustomRune, RunesDBObj } from "@@/config/type";
 import { runesStatMods } from "@/assets/runesStatMods";
 import RoleSelect from "@/components/RoleSelect.vue";
 import PositionSelect from "@/components/PositionSelect.vue";
@@ -15,6 +15,7 @@ type editType = "add" | "edit";
 const props = defineProps({
   show: { default: false },
   editMode: { type: String as PropType<editType>, default: "add" },
+  rune: { type: Object as PropType<RunesDBObj>, required: false },
 });
 const emit = defineEmits(["update:show", "save"]);
 
@@ -30,7 +31,7 @@ const close = () => {
   emit("update:show", false);
 };
 
-const runeConfig = reactive({
+const defaultRuneConfig = {
   id: 0,
   name: "",
   primary_page_id: 8100,
@@ -42,10 +43,21 @@ const runeConfig = reactive({
   position: [],
   mode: [],
   role: [],
-}) as ReactiveVariable<CustomRune>;
+};
+
+const runeConfig = ref(
+  props.rune?.value || defaultRuneConfig,
+) as Ref<CustomRune>;
+
+watch(
+  () => props.rune,
+  () => {
+    runeConfig.value = props.rune?.value || defaultRuneConfig;
+  },
+);
 
 const mainRuneConfig = computed(() => {
-  let id = runeConfig.primary_page_id;
+  let id = runeConfig.value.primary_page_id;
   if (id) {
     return runesConfigJson.find((rune) => rune.id === id)?.slots;
   }
@@ -53,7 +65,7 @@ const mainRuneConfig = computed(() => {
 });
 
 const secondaryRunePageConfig = computed(() => {
-  let id = runeConfig.primary_page_id;
+  let id = runeConfig.value.primary_page_id;
   if (id) {
     return runesConfigJson.filter((rune) => rune.id !== id) || [];
   }
@@ -61,7 +73,7 @@ const secondaryRunePageConfig = computed(() => {
 });
 
 const secondaryRuneConfig = computed(() => {
-  let id = runeConfig.secondary_page_id;
+  let id = runeConfig.value.secondary_page_id;
   if (id) {
     return runesConfigJson.find((rune) => rune.id === id)?.slots.slice(1) || [];
   }
@@ -70,32 +82,29 @@ const secondaryRuneConfig = computed(() => {
 
 const selectPage = (id: number, mainPage: boolean) => {
   if (mainPage) {
-    if (runeConfig.primary_page_id !== id) {
-      runeConfig.primary_rune_ids = [0, 0, 0, 0];
+    if (runeConfig.value.primary_page_id !== id) {
+      runeConfig.value.primary_rune_ids = [0, 0, 0, 0];
     }
-    if (runeConfig.secondary_page_id === id) {
-      runeConfig.secondary_page_id = 0;
-      runeConfig.secondary_rune_ids = [];
+    if (runeConfig.value.secondary_page_id === id) {
+      runeConfig.value.secondary_page_id = 0;
+      runeConfig.value.secondary_rune_ids = [];
       queue = [];
     }
-    runeConfig.primary_page_id = id;
+    runeConfig.value.primary_page_id = id;
   } else {
-    if (runeConfig.secondary_page_id !== id) {
-      runeConfig.secondary_rune_ids = [];
+    if (runeConfig.value.secondary_page_id !== id) {
+      runeConfig.value.secondary_rune_ids = [];
       queue = [];
     }
-    runeConfig.secondary_page_id = id;
+    runeConfig.value.secondary_page_id = id;
   }
 };
 
 const selectMainRune = (id: number, index: number) => {
-  runeConfig.primary_rune_ids = runeConfig.primary_rune_ids.toSpliced(
-    index,
-    1,
-    id,
-  );
+  runeConfig.value.primary_rune_ids =
+    runeConfig.value.primary_rune_ids.toSpliced(index, 1, id);
   if (index === 0) {
-    runeConfig.id = id;
+    runeConfig.value.id = id;
   }
 };
 
@@ -111,18 +120,22 @@ const selectSecondaryRune = (id: number, index: number) => {
     queue.shift();
   }
   queue.push({ [index]: id });
-  runeConfig.secondary_rune_ids = queue.flatMap((i) => Object.values(i));
+  runeConfig.value.secondary_rune_ids = queue.flatMap((i) => Object.values(i));
 };
 
 const selectStatMod = (id: number, index: number) => {
-  runeConfig.stat_mod_ids = runeConfig.stat_mod_ids.toSpliced(index, 1, id);
+  runeConfig.value.stat_mod_ids = runeConfig.value.stat_mod_ids.toSpliced(
+    index,
+    1,
+    id,
+  );
 };
 
 const checkIncomplete = () => {
   return (
-    runeConfig.primary_rune_ids.indexOf(0) != -1 ||
-    runeConfig.stat_mod_ids.indexOf(0) != -1 ||
-    runeConfig.secondary_rune_ids.length !== 2
+    runeConfig.value.primary_rune_ids.indexOf(0) != -1 ||
+    runeConfig.value.stat_mod_ids.indexOf(0) != -1 ||
+    runeConfig.value.secondary_rune_ids.length !== 2
   );
 };
 
@@ -131,7 +144,7 @@ const message = useMessage();
 const runeNameInput = ref<InputInst | null>(null);
 
 const save = () => {
-  if (!runeConfig.name) {
+  if (!runeConfig.value.name) {
     runeNameInput.value?.focus();
     message.error("符文名不能为空！");
     return;
@@ -140,7 +153,7 @@ const save = () => {
     message.error("符文未配置完整");
     return;
   } else {
-    emit("save", toRaw(runeConfig));
+    emit("save", toRaw(unref(runeConfig.value)), props.rune?.id);
   }
 };
 </script>

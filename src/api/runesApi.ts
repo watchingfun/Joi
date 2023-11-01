@@ -6,10 +6,10 @@ import {
 } from "@@/config/type";
 
 export default {
-  addCustomRunes(runes: CustomRune) {
+  addCustomRune(runes: CustomRune) {
     return window.ipcRenderer.invoke("addCustomRune", runes);
   },
-  updateCustomRunes(id: number, runes: CustomRune) {
+  updateCustomRune(id: number, runes: CustomRune) {
     return window.ipcRenderer.invoke("updateCustomRune", id, runes);
   },
   queryPageRunes(query: RunesPageQuery = { start: 0, size: 50 }) {
@@ -18,10 +18,10 @@ export default {
       query,
     ) as Promise<PageObj<RunesDBObj>>;
   },
-  deletePageRunes(id: number) {
+  deleteCustomRune(id: number) {
     return window.ipcRenderer.invoke("deleteCustomRune", id);
   },
-  applyCustomRunes(id: number) {
+  applyCustomRune(id: number) {
     return window.ipcRenderer.invoke("applyCustomRune", id);
   },
 };
