@@ -50,11 +50,12 @@ export interface PageQuery {
   start: number;
   size: number;
 }
+
 export interface RunesPageQuery extends PageQuery {
   primaryPageId?: number;
-  position?: string[];
-  mode?: string[];
-  role?: string[];
+  position?: string[] | string;
+  mode?: string[] | string;
+  role?: string[] | string;
   name?: string;
 }
 

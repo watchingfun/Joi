@@ -1,4 +1,5 @@
 //https://ddragon.leagueoflegends.com/cdn/13.21.1/data/zh_CN/item.json
+//https://ddragon.leagueoflegends.com/api/versions.json
 import itemJson from "@/assets/item.json";
 
 export interface ItemData {

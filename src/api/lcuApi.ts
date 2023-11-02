@@ -7,6 +7,8 @@ import {
 } from "@@/lcu/interface";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import useAppStore from "@/store/app";
+import { Rune } from "@@/lcu/opgg_rank_type";
+import { RuneConfig, RunesDBObj } from "@@/config/type";
 
 async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
   const { message } = useAppStore();
@@ -53,4 +55,14 @@ export default {
     captureError<SummonerInfo>(
       window.ipcRenderer.invoke(lcuConst.getSummonerByPuuid, puuid),
     ),
+  getCustomRunes: (champId: number) =>
+    captureError<RunesDBObj[]>(
+      window.ipcRenderer.invoke(lcuConst.getCustomRunes, champId),
+    ),
+  getOPGGRunes: (champId: number) =>
+    captureError<Rune[]>(
+      window.ipcRenderer.invoke(lcuConst.getOPGGRunes, champId),
+    ),
+  applyRune: (data: RuneConfig) =>
+    captureError<void>(window.ipcRenderer.invoke(lcuConst.applyRune, data)),
 };

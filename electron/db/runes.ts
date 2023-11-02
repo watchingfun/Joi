@@ -3,7 +3,6 @@ import { DBConfig } from "./index";
 import {
   CustomRune,
   PageObj,
-  PageQuery,
   RunesDBObj,
   RunesPageQuery,
 } from "../config/type";
@@ -20,7 +19,7 @@ const emptyPageObj: PageObj<RunesDBObj> = {
 };
 
 export interface RunesDB extends DBConfig {
-  queryPageRunes: (pageQuery?: PageQuery) => PageObj<RunesDBObj>;
+  queryPageRunes: (pageQuery?: RunesPageQuery) => PageObj<RunesDBObj>;
   updateRune: (id: number, val: CustomRune) => void;
   addRune: (value: CustomRune) => void;
   deleteRune: (id: number) => void;
@@ -53,23 +52,26 @@ const useDB = (db: Database.Database): RunesDB => ({
     if (pageQuery.name) {
       conditions.push("runes.value ->> 'name' like ('%' || :name || '%')");
     }
-    if (pageQuery.position && pageQuery.position.length > 0) {
+    if (pageQuery.position instanceof Array && pageQuery.position.length > 0) {
+      pageQuery.position = JSON.stringify(pageQuery.position);
       conditions.push(
-        "exists(select * from json_each(runes.value->>'position') where json_each.value in(:position))",
+        "exists(select * from json_each(runes.value->>'position') where json_each.value in (SELECT value FROM json_each(:position)))",
       );
     }
-    if (pageQuery.mode && pageQuery.mode.length > 0) {
+    if (pageQuery.mode instanceof Array && pageQuery.mode.length > 0) {
+      pageQuery.mode = JSON.stringify(pageQuery.mode);
       conditions.push(
-        "exists(select * from json_each(runes.value->>'mode') where json_each.value in(:mode))",
+        "exists(select * from json_each(runes.value->>'mode') where json_each.value in (SELECT value FROM json_each(:mode)))",
       );
     }
-    if (pageQuery.role && pageQuery.role.length > 0) {
+    if (pageQuery.role instanceof Array && pageQuery.role.length > 0) {
+      pageQuery.role = JSON.stringify(pageQuery.role);
       conditions.push(
-        "exists(select * from json_each(runes.value->>'role') where json_each.value in(:role))",
+        "exists(select * from json_each(runes.value->>'role') where json_each.value in (SELECT value FROM json_each(:role)))",
       );
     }
     if (conditions.length > 0) {
-      baseSql = baseSql + " where " + conditions.join(" and ");
+      baseSql = baseSql + " where " + conditions.join(" or ");
     }
 
     const count_stmt = db.prepare("SELECT count(*) as count " + baseSql);

@@ -1,12 +1,7 @@
-import {
-  createHttp1Request,
-  createHttp2Request,
-  createHttpSession,
-  EventResponse,
-} from "../lib/league-connect";
-import { getCredentials, getLeagueWebSocket } from "./handleLCU";
-import { ClientHttp2Session } from "http2";
-import { champDict } from "../const/lolDataConfig";
+import {createHttp1Request, createHttp2Request, createHttpSession, EventResponse,} from "../lib/league-connect";
+import {getCredentials, getLeagueWebSocket} from "./handleLCU";
+import {ClientHttp2Session} from "http2";
+import {champDict} from "../const/lolDataConfig";
 import {
   ChampSelectPhaseSession,
   GameDetail,
@@ -17,7 +12,10 @@ import {
   TeamMember,
 } from "./interface";
 import logger from "../lib/logger";
-import { RuneConfig } from "../config/type";
+import {RuneConfig} from "../config/type";
+import {getChampData, getNoneRankRunes, getRankRunes} from "./opgg";
+import runesDB from "../db/runes";
+import {GameMode} from "./opgg_rank_type";
 
 //获取当前召唤师信息
 export async function getCurrentSummoner() {
@@ -286,4 +284,62 @@ export const queryGameDetails = async (gameId: number) => {
   ).json() as GameDetail;
   //logger.debug("queryGameDetails gameId:", gameId);
   return res;
+};
+
+// async def get_current_queue(self):
+// """
+// 获取当前游戏模式
+// """
+// res = await (await self._wllp.request("GET", '/lol-gameflow/v1/session')).json()
+// return 430 if res['gameData']['queue']['id'] < 0 else res['gameData']['queue']['id']
+
+//获取游戏模式
+function getGameModeByQueue(queue: number): GameMode {
+  if ([420, 430, 440].includes(queue)) {
+    return "RANK";
+  } else if (queue === 450) {
+    return "ARAM";
+  } else if ([900, 1010, 1900].includes(queue)) {
+    return "URF";
+  }
+}
+
+export const getCurrentQueue = async () => {
+  let res = (
+    await createHttp1Request(
+      {
+        method: "GET",
+        url: `/lol-gameflow/v1/session`,
+      },
+      getCredentials(),
+    )
+  ).json() as GameSessionData;
+  return res?.gameData?.queue?.id || 430;
+};
+
+//获取本地符文库getGameModeByQueue
+export const getCustomRunes = async (champId: number) => {
+  //todo 后面改成缓存
+  const championData = await getChampData(champId);
+  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "RANK";
+  const roles = championData?.roles.flatMap((r) => r.name.split("|")) || [];
+  const position = championData?.positions.map((p) => p.name) || [];
+  return runesDB.queryPageRunes({
+    start: 0,
+    size: 10,
+    mode: [gameMode],
+    role: roles,
+    position: position,
+  }).data;
+};
+
+export const getOPGGRunes = async (champId: number) => {
+  const championData = await getChampData(champId);
+  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "RANK";
+  const position = championData?.positions.map((p) => p.name)[0] || "MID";
+  if (gameMode === "RANK") {
+    return await getRankRunes(champId, position);
+  } else {
+    return await getNoneRankRunes(champId, gameMode);
+  }
 };

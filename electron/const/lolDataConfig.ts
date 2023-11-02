@@ -1540,14 +1540,6 @@ export const queue: { [key: string]: string } = {
   2020: "Tutorial 3",
 };
 
-export const runes: { [key: number]: string } = {
-  8000: "jm",
-  8100: "zz",
-  8200: "ws",
-  8300: "qd",
-  8400: "jj",
-};
-
 export const spells: { [key: number]: string } = {
   1: "SummonerBoost",
   3: "SummonerExhaust",

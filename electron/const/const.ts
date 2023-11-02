@@ -11,4 +11,7 @@ export const lcuConst = {
   queryConnectStatus: "lcu:queryConnectStatus",
   getSummonerByName: "lcu:getSummonerByName",
   getSummonerByPuuid: "lcu:getSummonerByPuuid",
+  getCustomRunes: "lcu:getCustomRunes",
+  getOPGGRunes: "lcu:getOPGGRunes",
+  applyRune: "lcu:applyRune",
 };

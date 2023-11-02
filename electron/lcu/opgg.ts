@@ -4,6 +4,7 @@ import {
   GameMode,
   PositionName,
   Rune,
+  RunePage,
 } from "./opgg_rank_type";
 import { CustomRune, RuneConfig } from "../config/type";
 import { champDict } from "../const/lolDataConfig";
@@ -31,20 +32,36 @@ export async function getChampPosition(championId: number) {
   }
 }
 
+export async function getChampData(championId: number) {
+  let response = await fetch(OPGG_DATA_URL);
+  if (!response.ok) {
+    throw new Error(response.statusText + " " + (await response.text()));
+  }
+  const data = (await response.json()) as ChampionsPopularData;
+  return data.data.filter((champion) => champion.id === championId)?.[0];
+}
+
 // 获取排位模式英雄符文
-export async function getRankRune(championId: number, position: PositionName) {
+export async function getRankRunes(championId: number, position: PositionName) {
   const data: ChampionPopularData = await fetch(
     OPGG_RANK_RUNE_URL(championId, position),
   ).then((res) => res.json());
-  return data.data.rune_pages[0].builds[0];
+  return extractPreRune(data.data?.rune_pages);
 }
 
 // 获取普通模式英雄符文
-export async function getNoneRankRune(championId: number, mode: GameMode) {
+export async function getNoneRankRunes(championId: number, mode: GameMode) {
   const data: ChampionPopularData = await fetch(
     OPGG_NOR_RUNE_URL(championId, mode),
   ).then((res) => res.json());
-  return data.data.rune_pages[0].builds[0];
+  return extractPreRune(data.data?.rune_pages);
+}
+
+function extractPreRune(runePages: RunePage[]) {
+  if (!runePages) {
+    return [];
+  }
+  return runePages.flatMap((page) => page.builds[0]);
 }
 
 export function convertOPGGRuneFormat(rune: Rune | CustomRune): RuneConfig {
@@ -61,15 +78,4 @@ export function convertOPGGRuneFormat(rune: Rune | CustomRune): RuneConfig {
     ],
     current: true,
   };
-}
-
-//获取游戏模式
-export function getGameModeByQueue(queue: number): GameMode {
-  if ([420, 430, 440].includes(queue)) {
-    return "RANK";
-  } else if (queue === 450) {
-    return "ARAM";
-  } else if ([900, 1010, 1900].includes(queue)) {
-    return "URF";
-  }
 }

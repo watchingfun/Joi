@@ -8,6 +8,7 @@ import {
   SummonerInfo,
 } from "@@/lcu/interface";
 import useAppStore from "@/store/app";
+import router from "@/router";
 
 export enum ConnectStatusEnum {
   connecting,
@@ -33,7 +34,7 @@ export const gameFlowPhaseMap: Record<GameFlowPhase, string> = {
   ReadyCheck: "确认匹配",
   ChampSelect: "英雄选择",
   GameStart: "游戏开始",
-  InProgress: "对局载入",
+  InProgress: "对局中",
   WaitingForStats: "等待统计",
   PreEndOfGame: "游戏结束前",
   EndOfGame: "游戏结束",
@@ -50,8 +51,14 @@ const useLCUStore = defineStore("lcu", () => {
   const querySummonerInfo = ref<SummonerInfo>();
   const search = ref("");
   const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
-  const gameFlowPhase = ref<GameFlowPhase>("None");
+  const gameFlowPhase = ref<GameFlowPhase>("ChampSelect");
   const champId = ref(0);
+
+  watch(gameFlowPhase, (n, o) => {
+    if (n === "ChampSelect") {
+      void router.push({ name: "inGame" });
+    }
+  });
 
   function updateChampId(id: number) {
     champId.value = id;
