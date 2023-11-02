@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import SpellImg from "@/components/img/spellImg.vue";
 import RuneImg from "@/components/img/runeImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
+import Perks from "@/components/img/Perks.vue";
 
 const props = defineProps<{ record: GameDetail }>();
 const { record } = toRefs(props);
@@ -100,13 +101,8 @@ const gameModeBackground = (str: string) => {
           <spell-img :spell-id="record.participants[0].spell1Id"></spell-img>
           <spell-img :spell-id="record.participants[0].spell2Id"></spell-img>
         </div>
-        <div class="rune">
-          <rune-img
-            :rune-id="record.participants[0].stats.perkPrimaryStyle"
-          ></rune-img>
-          <rune-img
-            :rune-id="record.participants[0].stats.perkSubStyle"
-          ></rune-img>
+        <div class="rune pl-[2px]">
+          <perks :stats="record.participants[0].stats"/>
         </div>
         <div class="item-group">
           <template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">

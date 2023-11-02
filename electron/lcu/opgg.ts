@@ -49,7 +49,8 @@ export async function getNoneRankRune(championId: number, mode: GameMode) {
 
 export function convertOPGGRuneFormat(rune: Rune | CustomRune): RuneConfig {
   return {
-    name: rune?.name || "OP.GG " + champDict[rune.id + ""]?.label,
+    name:
+      "name" in rune ? rune?.name : "OP.GG " + champDict[rune.id + ""]?.label,
     order: rune["id"],
     primaryStyleId: rune["primary_page_id"],
     subStyleId: rune["secondary_page_id"],

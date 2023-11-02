@@ -7,6 +7,7 @@ import RuneImg from "@/components/img/runeImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
 import { DocumentCopy16Regular } from "@vicons/fluent";
 import useLCUStore from "@/store/lcu";
+import Perks from "@/components/img/Perks.vue";
 
 const props = defineProps<{
   info: Participant;
@@ -76,11 +77,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
           <spell-img :width="10" :spell-id="info?.spell2Id"></spell-img>
         </div>
         <div class="rune">
-          <rune-img
-            :width="10"
-            :rune-id="info?.stats.perkPrimaryStyle"
-          ></rune-img>
-          <rune-img :width="10" :rune-id="info?.stats.perkSubStyle"></rune-img>
+          <perks :stats="info?.stats"></perks>
         </div>
         <div class="item-group">
           <template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">

@@ -1,7 +1,12 @@
-import {createHttp1Request, createHttp2Request, createHttpSession, EventResponse,} from "../lib/league-connect";
-import {getCredentials, getLeagueWebSocket} from "./handleLCU";
-import {ClientHttp2Session} from "http2";
-import {champDict} from "../const/lolDataConfig";
+import {
+  createHttp1Request,
+  createHttp2Request,
+  createHttpSession,
+  EventResponse,
+} from "../lib/league-connect";
+import { getCredentials, getLeagueWebSocket } from "./handleLCU";
+import { ClientHttp2Session } from "http2";
+import { champDict } from "../const/lolDataConfig";
 import {
   ChampSelectPhaseSession,
   GameDetail,
@@ -12,7 +17,7 @@ import {
   TeamMember,
 } from "./interface";
 import logger from "../lib/logger";
-import {RuneConfig} from "../config/type";
+import { RuneConfig } from "../config/type";
 
 //获取当前召唤师信息
 export async function getCurrentSummoner() {
@@ -279,6 +284,6 @@ export const queryGameDetails = async (gameId: number) => {
       getCredentials(),
     )
   ).json() as GameDetail;
-  logger.debug("queryGameDetails invoke");
+  //logger.debug("queryGameDetails gameId:", gameId);
   return res;
 };

@@ -185,10 +185,11 @@ const drawerShow = ref(false);
           @jumpDetail="jumpDetail"
         ></GameInfoList>
         <div
-          class="flex-1 flex flex-col items-center justify-center h-full"
+          class="flex-1 flex flex-col items-center justify-start h-full pt-[60px]"
           v-if="!matchHistoryList.length"
         >
-          <div>暂无结果</div>
+          <p style="font-size: 100px">😅</p>
+          <div style="font-size: 40px">暂无结果</div>
         </div>
       </overlay-scrollbars-component>
     </epic-loading>

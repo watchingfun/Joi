@@ -22,6 +22,7 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
     primaryColorSuppl: "rgb(239,143,95)",
   },
   Button: {
+    colorPrimary:"rgba(246,125,65,0.76)",
     textColorPrimary: "#fff",
     textColorHoverPrimary: "rgba(255,255,255,0.75)",
     textColorPressedPrimary: "#fff",

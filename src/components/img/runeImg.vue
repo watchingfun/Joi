@@ -1,22 +1,18 @@
 <template>
-  <img :width="props.width" :height="props.width" :src="url"  alt="runeImage"/>
+  <img :width="props.width" :height="props.width" :src="url" alt="runeImage" />
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
-import { runes } from "@@/const/lolDataConfig";
+import { runesFlatMap } from "@/common/runes";
 // props
 const props = defineProps({
   width: { type: Number, required: false },
   runeId: { type: Number, required: true },
 });
 const url = computed(() => {
-  if (!runes[props.runeId]) {
+  let rune = runesFlatMap.get(props.runeId);
+  if (!rune) {
     return "./img/blank.png";
-  } else
-    return (
-      "https://game.gtimg.cn/images/lol/act/img/rune/" +
-      runes[props.runeId] +
-      ".png"
-    );
+  } else return rune.icon.toLowerCase();
 });
 </script>
