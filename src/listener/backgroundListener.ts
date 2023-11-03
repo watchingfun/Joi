@@ -42,7 +42,7 @@ export function setupListener() {
   );
   window.ipcRenderer.on(
     lcuConst.champSelect,
-    (event: IpcRendererEvent, champId: number) => {
+    async (event: IpcRendererEvent, champId: number) => {
       console.log("champSelect", champId);
       lcuStore.updateChampId(champId);
     },

@@ -1,18 +1,6 @@
-import { app, BrowserWindow, Menu, Tray } from "electron";
+import { app, Menu, Tray } from "electron";
 import path from "node:path";
-
-function showMainWindow(route?: string | { name: string }) {
-  // 获取当前的窗口  目前程序只做一个窗口
-  const windows = BrowserWindow.getAllWindows();
-  if (windows.length) {
-    const win = windows.at(0);
-    if (route) {
-      win.webContents.send("jumpRoute", route);
-    }
-    //win.restore();
-    win.show();
-  }
-}
+import { showMainWindow } from "../util/util";
 
 export function setupTray() {
   // 创建托盘图标

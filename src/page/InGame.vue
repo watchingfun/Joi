@@ -55,11 +55,15 @@ const fetchRune = async (champId: number) => {
   }
 };
 
-watch(champId, (n, o) => {
-  if (n) {
-    fetchRune(n);
-  }
-});
+watch(
+  champId,
+  (n, o) => {
+    if (n) {
+      fetchRune(n);
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <template>

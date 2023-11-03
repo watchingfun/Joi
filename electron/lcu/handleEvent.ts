@@ -3,7 +3,7 @@ import {getCredentials} from "./handleLCU";
 import {getCurrentSummoner, getGameInfo, listenChampSelect, queryMatchHistory,} from "./lcuRequest";
 import logger from "../lib/logger";
 import {setting} from "../config/";
-import {sendToWebContent} from "../util/util";
+import {sendToWebContent, showMainWindow} from "../util/util";
 import {lcuConst} from "../const/const";
 
 // 自动接受对局
@@ -40,7 +40,9 @@ export function handelChampSelect(eventKey: string) {
   }
   unListenChampSelect = listenChampSelect((currentChampId: number) => {
     if (currentChampId) {
+      showMainWindow({ name: "inGame" });
       sendToWebContent(lcuConst.champSelect, currentChampId);
+      unListenChampSelect();
     }
   });
 }
