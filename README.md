@@ -6,15 +6,18 @@
 - [x] 自动接受对局
 - [x] 重启客户端界面进程功能
 - [x] 个人战绩查询
-- [ ] sqlite3存储配置项
+- [x] sqlite3存储配置项
 - [x] 战绩详情查询
 - [x] 他人战绩查询
 - [x] 设置项配置功能
+- [x] 符文系统
 - [ ] 发送聊天
 - [ ] 小黑屋功能
 - [ ] 对局分析
+- [ ] 应用检查更新功能
 
 ## 截图
-![Image](./screenshot/1697890042876.png)
-![Image](./screenshot/1697890056461.png)
-![Image](./screenshot/1697890067570.png)
+
+![Image](./screenshot/1699032210821.png)
+![Image](./screenshot/1699032237668.png)
+![Image](./screenshot/1699032266914.png)
