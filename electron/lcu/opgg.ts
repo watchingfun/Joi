@@ -7,7 +7,6 @@ import {
   RunePage,
 } from "./opgg_rank_type";
 import { CustomRune, RuneConfig } from "../config/type";
-import { champDict } from "../const/lolDataConfig";
 
 const OPGG_RANK_RUNE_URL = (championId: number, position: PositionName) =>
   `https://lol-api-champion.op.gg/api/KR/champions/ranked/${championId}/${position}`;
@@ -64,10 +63,12 @@ function extractPreRune(runePages: RunePage[]) {
   return runePages.flatMap((page) => page.builds[0]);
 }
 
-export function convertOPGGRuneFormat(rune: Rune | CustomRune): RuneConfig {
+export function convertOPGGRuneFormat(
+  rune: Rune | CustomRune,
+  name: string,
+): RuneConfig {
   return {
-    name:
-      "name" in rune ? rune?.name : "OP.GG " + champDict[rune.id + ""]?.label,
+    name: name,
     order: rune["id"],
     primaryStyleId: rune["primary_page_id"],
     subStyleId: rune["secondary_page_id"],

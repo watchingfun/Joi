@@ -210,7 +210,7 @@ export async function applyRune(data: RuneConfig) {
       credentials,
     )
   ).json();
-  logger.info("currentRuneList", currentRuneList);
+  logger.debug("currentRuneList", currentRuneList);
   //@ts-ignore
   const current = currentRuneList.find((i) => i.current && i.isDeletable);
   if (current != undefined) {

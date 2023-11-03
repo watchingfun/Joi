@@ -14,6 +14,8 @@ import { ComputedRef } from "vue";
 import RuneCard from "@/components/DBRuneCard.vue";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import { TransitionSlide } from "@morev/vue-transitions";
+import lcuApi from "@/api/lcuApi";
+import { convertOPGGRuneFormat } from "@@/lcu/opgg";
 
 const tabs = [
   {
@@ -131,6 +133,12 @@ const deleteRuneHandler = (id: number) => {
   });
 };
 
+const applyRune = (rune: RunesDBObj) => {
+  lcuApi
+    .applyRune(convertOPGGRuneFormat(rune.value, rune.value.name))
+    .then(() => message.success("应用成功"));
+};
+
 onMounted(() => {
   fetchData();
 });
@@ -199,6 +207,7 @@ onMounted(() => {
               class="flex flex-row justify-start gap-[30px] mx-5 flex-wrap pt-5 pb-[50px]"
             >
               <rune-card
+                @apply="applyRune"
                 @edit="showEditHandler"
                 @delete="deleteRuneHandler"
                 v-for="rune in pageResult.data"

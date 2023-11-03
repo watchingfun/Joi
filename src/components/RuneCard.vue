@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { RunesDBObj } from "@@/config/type";
+import { CustomRune } from "@@/config/type";
 import { RuneData, runesFlatMap } from "@/common/runes";
 import { runesStatModMap, RuneStatMod } from "@/assets/runesStatMods";
 import { toRefs } from "vue";
-import { TransitionFade } from "@morev/vue-transitions";
+import { Rune } from "@@/lcu/opgg_rank_type";
 
-const props = defineProps<{ rune: RunesDBObj }>();
+const props = defineProps<{ rune: Rune | CustomRune }>();
 
 const { rune } = toRefs(props);
 const runeBgImgStyle = computed(() => {
   return {
     backgroundImage: `url(${runesFlatMap
-      .get(rune.value.value.primary_rune_ids[0])
+      .get(rune.value.primary_rune_ids[0])
       ?.icon.toLowerCase()})`,
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
   };
 });
 const showOperation = ref(false);
-const emit = defineEmits(["edit", "delete", "apply"]);
+const emit = defineEmits(["apply"]);
 const runeConfig = computed(() => {
-  let runeValue = rune.value.value;
+  let runeValue = rune.value;
   return {
     primary1: runesFlatMap.get(runeValue.primary_rune_ids[0]) as RuneData,
     primary2: runesFlatMap.get(runeValue.primary_rune_ids[1]) as RuneData,
@@ -36,7 +36,7 @@ const runeConfig = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <div
       class="relative overflow-hidden card"
       @click="() => (showOperation = !showOperation)"
@@ -235,49 +235,15 @@ const runeConfig = computed(() => {
           </div>
         </div>
       </div>
-      <transition-fade mode="out-in">
-        <div class="absolute w-full operation" v-if="showOperation">
-          <div class="flex flex-row gap-[5px] justify-center">
-            <n-button
-              secondary
-              type="primary"
-              size="small"
-              @click="() => emit('edit', rune)"
-              >修改
-            </n-button>
-            <n-popconfirm
-              :show-icon="false"
-              @positive-click="
-                () => {
-                  emit('delete', rune.id);
-                  showOperation = false;
-                }
-              "
-              @negative-click="() => {}"
-            >
-              <template #trigger>
-                <n-button secondary type="error" size="small" @click.stop=""
-                  >删除
-                </n-button>
-              </template>
-              确认删除？
-            </n-popconfirm>
-          </div>
-          <div class="mt-[5px]">
-            <n-button
-              style="width: 100%"
-              secondary
-              type="primary"
-              size="small"
-              @click="() => emit('apply', rune)"
-              >应用
-            </n-button>
-          </div>
-        </div>
-      </transition-fade>
     </div>
-    <div class="rune-name truncate" :title="rune.value.name">
-      {{ rune.value.name }}
+    <div class="flex flex-col apply">
+      <n-button
+        secondary
+        type="primary"
+        size="small"
+        @click="() => emit('apply', rune)"
+        >应用
+      </n-button>
     </div>
   </div>
 </template>
@@ -293,22 +259,15 @@ const runeConfig = computed(() => {
   box-shadow:
     rgba(0, 0, 0, 0.16) 0 10px 36px 0,
     rgba(0, 0, 0, 0.06) 0 0 0 1px;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 
 .card:hover {
   box-shadow:
     rgba(50, 50, 93, 0.25) 0 13px 27px -5px,
     rgba(0, 0, 0, 0.3) 0 8px 16px -8px;
-  transform: translateY(-5px);
   background-color: rgba(128, 128, 128, 0.5);
-}
-
-.rune-name {
-  text-align: center;
-  font-size: 1rem;
-  padding: 5px;
-  width: 120px;
-  text-shadow: 2px 2px 7px rgb(239 143 95 / 41%);
 }
 
 .card .bg-img {
@@ -324,17 +283,9 @@ const runeConfig = computed(() => {
   border-right: 1px rgba(255, 255, 255, 0.3) solid;
 }
 
-.operation {
-  transition: all 0.4s ease-in-out;
-  backdrop-filter: blur(4px);
-  padding: 10px;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  background-color: rgb(30 32 48 / 80%);
+.apply :deep(button) {
+  border-top-left-radius: unset !important;
+  border-top-right-radius: unset !important;
+  border-radius: 6px;
 }
 </style>

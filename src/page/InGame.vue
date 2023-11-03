@@ -7,22 +7,51 @@ import ChampionImg from "@/components/img/championImg.vue";
 import lcuApi from "@/api/lcuApi";
 import { storeToRefs } from "pinia";
 import { convertOPGGRuneFormat } from "@@/lcu/opgg";
+import RuneCard from "@/components/RuneCard.vue";
+import { Rune } from "@@/lcu/opgg_rank_type";
+import { Ref } from "vue";
+import { CustomRune } from "@@/config/type";
 
 const lcuStore = useLCUStore();
-//todo 当游戏阶段为ChampSelect 并且选择了英雄时，准备获取查询获取符文（列出本地符文 和 open.gg的），然后调用api设置符文（根据设置本地符文 或 open.gg）；
+//todo根据设置项来决定是否自动应用 open.gg符文；
 const gameFlowPhaseName = computed(() => {
   return gameFlowPhaseMap[lcuStore.gameFlowPhase];
 });
 const { champId } = storeToRefs(lcuStore);
 
+const opggRunes = ref([]) as Ref<Rune[]>;
+const customRunes = ref([]) as Ref<CustomRune[]>;
+
+const message = useMessage();
+
+const loadingRune = ref(false);
+
+const applyRune = (rune: Rune | CustomRune) => {
+  let name: string;
+  if ("name" in rune) {
+    name = rune?.name;
+  } else {
+    name = "OP.GG " + champDict[champId.value + ""]?.label;
+  }
+  lcuApi.applyRune(convertOPGGRuneFormat(rune, name)).then(() => {
+    message.success("符文已应用");
+  });
+};
+
 const fetchRune = async (champId: number) => {
-  lcuApi
-    .getCustomRunes(champId)
-    .then((res) => console.log("getCustomRunes", res));
-  const opggRunes = await lcuApi.getOPGGRunes(champId);
-  if (opggRunes?.length) {
-    //todo 有点问题，待优化
-    await lcuApi.applyRune(convertOPGGRuneFormat(opggRunes[0]));
+  loadingRune.value = true;
+  try {
+    customRunes.value = await lcuApi
+      .getCustomRunes(champId)
+      .then((res) => res?.map((i) => i.value) || []);
+    opggRunes.value = (await lcuApi.getOPGGRunes(champId)) || [];
+    if (opggRunes.value.length) {
+      applyRune(opggRunes.value[0]);
+    }
+  } catch (e) {
+    if (e instanceof Error) message.error(e.message);
+  } finally {
+    loadingRune.value = false;
   }
 };
 
@@ -34,8 +63,8 @@ watch(champId, (n, o) => {
 </script>
 
 <template>
-  <div class="flex-1">
-    <div class="flex flex-row justify-center items-center h-full">
+  <div class="flex-1 flex flex-col justify-start">
+    <div class="flex flex-col justify-center items-center flex-1">
       <div
         style="font-size: 30px"
         v-show="['None'].includes(lcuStore.gameFlowPhase)"
@@ -66,8 +95,11 @@ watch(champId, (n, o) => {
           <div style="font-size: 40px">正在寻找对局</div>
         </template>
       </epic-loading>
-      <div v-show="lcuStore.gameFlowPhase === 'ChampSelect'">
-        <div class="flex flex-col justify-around transition-all">
+      <div
+        v-show="lcuStore.gameFlowPhase === 'ChampSelect'"
+        class="flex h-full w-[95%]"
+      >
+        <div class="flex flex-col transition-all flex-1">
           <div class="flex flex-row items-center gap-5">
             当前选择英雄：
             <champion-img style="width: 50px" :champion-id="champId" />
@@ -77,8 +109,57 @@ watch(champId, (n, o) => {
                 : "未选择"
             }}
           </div>
-          <div></div>
-          <div></div>
+          <n-spin :show="loadingRune" class="flex">
+            <n-card style="margin-bottom: 16px; width: 0" class="flex-1">
+              <n-tabs
+                animated
+                default-value="opgg"
+                justify-content="space-evenly"
+                type="line"
+              >
+                <n-tab-pane name="opgg" tab="OPGG">
+                  <n-carousel
+                    draggable
+                    :slides-per-view="3"
+                    :loop="false"
+                    :dot-type="'line'"
+                  >
+                    <n-carousel-item
+                      style="width: 33%; height: 280px"
+                      v-for="(rune, i) in opggRunes"
+                      :key="i"
+                    >
+                      <RuneCard
+                        class="rune-card"
+                        :rune="rune"
+                        @apply="applyRune"
+                      ></RuneCard>
+                    </n-carousel-item>
+                  </n-carousel>
+                </n-tab-pane>
+                <n-tab-pane name="custom" tab="自定义">
+                  <n-carousel
+                    draggable
+                    :slides-per-view="3"
+                    :loop="false"
+                    :dot-type="'line'"
+                  >
+                    <n-carousel-item
+                      style="width: 33%; height: 280px"
+                      v-for="(rune, i) in customRunes"
+                      :key="i"
+                    >
+                      <RuneCard
+                        class="rune-card"
+                        :rune="rune"
+                        @apply="applyRune"
+                      ></RuneCard>
+                    </n-carousel-item>
+                  </n-carousel>
+                </n-tab-pane>
+              </n-tabs>
+            </n-card>
+          </n-spin>
         </div>
       </div>
     </div>
@@ -94,5 +175,9 @@ watch(champId, (n, o) => {
 :deep(.rhombus) {
   background-color: rgb(146 204 255) !important;
   box-shadow: rgb(41 85 255 / 88%) 0px 0px 55px 0px;
+}
+
+.rune-card {
+  width: 130px;
 }
 </style>

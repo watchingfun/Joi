@@ -51,7 +51,7 @@ const useLCUStore = defineStore("lcu", () => {
   const querySummonerInfo = ref<SummonerInfo>();
   const search = ref("");
   const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
-  const gameFlowPhase = ref<GameFlowPhase>("ChampSelect");
+  const gameFlowPhase = ref<GameFlowPhase>("None");
   const champId = ref(0);
 
   watch(gameFlowPhase, (n, o) => {

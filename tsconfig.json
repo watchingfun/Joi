@@ -35,7 +35,7 @@
   ],
   "references": [
     {
-      "path": "./electron/"
+      "path": "./electron/tsconfig.json"
     },
     {
       "path": "./tsconfig.node.json"
