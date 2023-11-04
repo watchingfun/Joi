@@ -70,10 +70,11 @@ watch(
   <div class="flex-1 flex flex-col justify-start">
     <div class="flex flex-col justify-center items-center flex-1">
       <div
-        style="font-size: 30px"
+        class="flex flex-col items-center"
         v-show="['None'].includes(lcuStore.gameFlowPhase)"
       >
-        🍽️等你开把游戏
+        <div style="font-size: 100px">🍽️</div>
+        <div style="font-size: 40px">等你开把游戏</div>
       </div>
       <div
         style="font-size: 30px"

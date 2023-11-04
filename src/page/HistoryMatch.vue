@@ -188,7 +188,7 @@ const drawerShow = ref(false);
           class="flex-1 flex flex-col items-center justify-start h-full pt-[60px]"
           v-if="!matchHistoryList.length"
         >
-          <p style="font-size: 100px">😅</p>
+          <p style="font-size: 100px">😴</p>
           <div style="font-size: 40px">暂无结果</div>
         </div>
       </overlay-scrollbars-component>
