@@ -65,7 +65,10 @@ const useLCUStore = defineStore("lcu", () => {
   }
 
   async function getCurrentSummoner() {
-    summonerInfo.value = await lcuApi.getCurrentSummoner();
+    const res = (await lcuApi.getCurrentSummoner()) as SummonerInfo;
+    if (res && !res?.errorCode) {
+      summonerInfo.value = res;
+    }
     return summonerInfo.value;
   }
 
@@ -101,8 +104,9 @@ const useLCUStore = defineStore("lcu", () => {
       }
     } else {
       //如果名字和puuid都没传，那就是查询自己
-      querySummonerInfo.value =
-        summonerInfo.value || (await getCurrentSummoner());
+      querySummonerInfo.value = summonerInfo.value?.puuid
+        ? summonerInfo.value
+        : await getCurrentSummoner();
       puuid = querySummonerInfo.value?.puuid;
     }
 
