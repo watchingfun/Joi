@@ -105,7 +105,7 @@ watch(
         class="flex h-full w-[95%]"
       >
         <div class="flex flex-col transition-all flex-1">
-          <div class="flex flex-row items-center gap-5">
+          <div class="flex flex-row items-center gap-5 py-[15px]">
             当前选择英雄：
             <champion-img style="width: 50px" :champion-id="champId" />
             {{
@@ -117,6 +117,7 @@ watch(
           <n-spin :show="loadingRune" class="flex">
             <n-card style="margin-bottom: 16px; width: 0" class="flex-1">
               <n-tabs
+                style="height: 100%"
                 animated
                 default-value="opgg"
                 justify-content="space-evenly"
@@ -125,12 +126,12 @@ watch(
                 <n-tab-pane name="opgg" tab="OPGG">
                   <n-carousel
                     draggable
-                    :slides-per-view="3"
+                    :slides-per-view="4"
                     :loop="false"
                     :dot-type="'line'"
                   >
                     <n-carousel-item
-                      style="width: 33%; height: 280px"
+                      style="width: 25%; height: 280px; padding-top: 25px"
                       v-for="(rune, i) in opggRunes"
                       :key="i"
                     >
@@ -150,7 +151,7 @@ watch(
                     :dot-type="'line'"
                   >
                     <n-carousel-item
-                      style="width: 33%; height: 280px"
+                      style="width: 25%; height: 280px; padding-top: 25px"
                       v-for="(rune, i) in customRunes"
                       :key="i"
                     >
@@ -184,5 +185,27 @@ watch(
 
 .rune-card {
   width: 130px;
+}
+
+:deep(.n-card__content) {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+}
+
+:deep(.n-card--bordered) {
+  background: transparent;
+}
+
+:deep(.n-tabs-pane-wrapper) {
+  height: 100% !important;
+}
+
+:deep(.n-tab-pane) {
+  height: 100% !important;
+}
+
+:deep(.n-carousel.n-carousel--bottom .n-carousel__dots) {
+  bottom: 0px !important;
 }
 </style>
