@@ -9,17 +9,30 @@ import logger from "./lib/logger";
 import { getPath } from "./util/util";
 import { initDb } from "./db";
 import { setupRunesListener } from "./handle/handleRunes";
+import child_process from "child_process";
 import Input = Electron.Input;
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
 
+export const isWin11 = child_process
+  .execSync("wmic os get Caption /value")
+  .toString()
+  .trim()
+  .includes("Microsoft Windows 11");
+
+ipcMain.on("checkIsWin11", (event, args) => {
+  event.returnValue = isWin11;
+});
+
 process.on("uncaughtException", (err) => {
   logger.error(err);
   throw err;
 });
-const BrowserWindow = require("electron-acrylic-window").BrowserWindow;
+const BrowserWindow = isWin11
+  ? require("electron-acrylic-window").BrowserWindow
+  : require("electron").BrowserWindow;
 // The built directory structure
 //
 // ├─┬ dist
@@ -64,8 +77,8 @@ export function createWindow() {
     vibrancy: {
       theme: "dark",
       effect: "acrylic",
-      useCustomWindowRefreshMethod: false,
-      disableOnBlur: false,
+      useCustomWindowRefreshMethod: true,
+      disableOnBlur: true,
     },
     show: false,
   });

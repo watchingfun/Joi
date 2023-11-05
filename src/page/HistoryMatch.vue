@@ -246,27 +246,7 @@ const drawerShow = ref(false);
 }
 
 .detail-drawer {
-  background-color: #ffffff52 !important;
+  background-color: #181818e6 !important;
   backdrop-filter: blur(10px);
-}
-
-.detail-drawer.win {
-  background-image: linear-gradient(
-    43deg,
-    #02424d 0%,
-    #006b52a6 46%,
-    #ffffff00 100%
-  );
-  box-shadow: rgb(0 163 134 / 20%) -20px 0px 20px;
-}
-
-.detail-drawer.fail {
-  background-image: linear-gradient(
-    43deg,
-    #952b21 0%,
-    #dd2e2ea6 46%,
-    #ffffff00 100%
-  );
-  box-shadow: #b5373787 -20px 0px 20px;
 }
 </style>

@@ -1,5 +1,5 @@
 export type PositionName = "ADC" | "JUNGLE" | "MID" | "SUPPORT" | "TOP";
-export type GameMode = "RANK" | "ARAM" | "URF";
+export type GameMode = "rank" | "aram" | "urf";
 export type RoleType = keyof typeof roleMap;
 export const roleMap = {
   CONTROLLER: "控制",

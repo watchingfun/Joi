@@ -38,11 +38,12 @@ export function handelChampSelect(eventKey: string) {
   if (eventKey !== "ChampSelect") {
     return;
   }
+  let champId = 0;
   unListenChampSelect = listenChampSelect((currentChampId: number) => {
-    if (currentChampId) {
+    if (currentChampId && currentChampId !== champId) {
+      champId = currentChampId;
       showMainWindow({ name: "inGame" });
       sendToWebContent(lcuConst.champSelect, currentChampId);
-      unListenChampSelect();
     }
   });
 }

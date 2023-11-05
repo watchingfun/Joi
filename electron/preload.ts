@@ -77,11 +77,11 @@ function useLoading() {
     },
     async removeLoading() {
       safeDOM.append(document.head, oStyle2);
-      setTimeout(()=>{
+      setTimeout(() => {
         safeDOM.remove(document.head, oStyle);
         safeDOM.remove(document.head, oStyle2);
         safeDOM.remove(document.body, oDiv);
-      }, 1200)
+      }, 1200);
     },
   };
 }
@@ -89,7 +89,15 @@ function useLoading() {
 // ----------------------------------------------------------------------
 
 const { appendLoading, removeLoading } = useLoading();
-domReady().then(appendLoading);
+domReady().then(() => {
+  appendLoading();
+  const isWin11 = ipcRenderer.sendSync("checkIsWin11");
+  if (isWin11) {
+    const win11Style = document.createElement("style");
+    win11Style.innerHTML = "body{background-color: transparent !important;}";
+    safeDOM.append(document.head, win11Style);
+  }
+});
 
 window.onmessage = (ev: MessageEvent) => {
   ev.data.payload === "removeLoading" && removeLoading();

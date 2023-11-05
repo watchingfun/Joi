@@ -296,11 +296,11 @@ export const queryGameDetails = async (gameId: number) => {
 //获取游戏模式
 function getGameModeByQueue(queue: number): GameMode {
   if ([420, 430, 440].includes(queue)) {
-    return "RANK";
+    return "rank";
   } else if (queue === 450) {
-    return "ARAM";
+    return "aram";
   } else if ([900, 1010, 1900].includes(queue)) {
-    return "URF";
+    return "urf";
   }
 }
 

@@ -115,7 +115,11 @@ watch(
             }}
           </div>
           <n-spin :show="loadingRune" class="flex">
-            <n-card style="margin-bottom: 16px; width: 0" class="flex-1">
+            <n-card
+              style="margin-bottom: 16px; width: 0"
+              class="flex-1"
+              v-show="champId"
+            >
               <n-tabs
                 style="height: 100%"
                 animated

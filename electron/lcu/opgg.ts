@@ -53,6 +53,13 @@ export async function getNoneRankRunes(championId: number, mode: GameMode) {
   const data: ChampionPopularData = await fetch(
     OPGG_NOR_RUNE_URL(championId, mode),
   ).then((res) => res.json());
+  // if ("message" in data) {
+  //   console.log(
+  //     "getNoneRankRunes",
+  //     OPGG_NOR_RUNE_URL(championId, mode),
+  //     data["message"],
+  //   );
+  // }
   return extractPreRune(data.data?.rune_pages);
 }
 

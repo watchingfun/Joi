@@ -37,5 +37,5 @@ html, body {
 body {
   background-image: linear-gradient(130deg, #575cad7a 0%, #ffffff00 100%);
   user-select: none;
-  background-color: transparent !important;
+  overflow: hidden;
 }
