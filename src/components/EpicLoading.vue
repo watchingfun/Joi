@@ -20,7 +20,7 @@ const props = defineProps<{ loading: boolean }>();
           align-items: center;
           justify-content: center;
           backdrop-filter: blur(4px);
-          z-index: 99999;
+          z-index: 100;
         "
       >
         <slot name="loading">

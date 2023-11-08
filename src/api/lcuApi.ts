@@ -16,17 +16,18 @@ async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
     message.error("客户端未连接，LCU api不可用！");
     return;
   }
-  if (func instanceof Promise) {
-    try {
+  try {
+    if (func instanceof Promise) {
       return await func;
-    } catch (err) {
-      if (err instanceof Error) {
-        message.error(err.message);
-      }
-      throw err;
+    } else {
+      return func(...args) as T;
     }
-  } else {
-    return func(...args) as T;
+  } catch (err) {
+    if (err instanceof Error) {
+      message.error(err.message);
+    }
+    console.log("an error occurred: ", err);
+    throw err;
   }
 }
 

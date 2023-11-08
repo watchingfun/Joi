@@ -1,4 +1,4 @@
-export type PositionName = "ADC" | "JUNGLE" | "MID" | "SUPPORT" | "TOP";
+export type PositionName = "adc" | "jungle" | "mid" | "support" | "top";
 export type GameMode = "rank" | "aram" | "urf";
 export type RoleType = keyof typeof roleMap;
 export const roleMap = {

@@ -335,9 +335,9 @@ export const getCustomRunes = async (champId: number) => {
 
 export const getOPGGRunes = async (champId: number) => {
   const championData = await getChampData(champId);
-  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "RANK";
-  const position = championData?.positions.map((p) => p.name)[0] || "MID";
-  if (gameMode === "RANK") {
+  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "rank";
+  const position = championData?.positions.map((p) => p.name)[0] || "mid";
+  if (gameMode === "rank") {
     return await getRankRunes(champId, position);
   } else {
     return await getNoneRankRunes(champId, gameMode);
