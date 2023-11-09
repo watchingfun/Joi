@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { positionMap } from "@@/lcu/opgg_rank_type";
+import { positionMap } from "@@/types/opgg_rank_type";
 import { computed, PropType } from "vue";
 
 const props = defineProps({

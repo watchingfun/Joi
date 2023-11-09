@@ -1,11 +1,6 @@
 import Database from "better-sqlite3";
 import { DBConfig } from "./index";
-import {
-  CustomRune,
-  PageObj,
-  RunesDBObj,
-  RunesPageQuery,
-} from "../config/type";
+import { CustomRune, PageObj, RunesDBObj, RunesPageQuery } from "../types/type";
 import { getDB } from "./better-sqlite3";
 
 const defaultPageQuery = {

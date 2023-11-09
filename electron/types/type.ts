@@ -1,11 +1,12 @@
-import { GameMode, PositionName, RoleType } from "../lcu/opgg_rank_type";
+import { GameMode, PositionName, RoleType } from "./opgg_rank_type";
 
 export interface SettingModel {
   exitAsk: boolean;
   exitDirectly: boolean;
   autoAccept: boolean;
   autoAcceptDelay: number;
-
+  autoConfigRune: boolean;
+  autoConfigRuneOPGGPriority: boolean;
   [prop: string]: any;
 }
 

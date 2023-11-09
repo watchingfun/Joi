@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import { DBConfig } from "./index";
-import { SettingModel, settingModelDefault } from "../config/type";
+import { SettingModel, settingModelDefault } from "../types/type";
 import { cloneDeep } from "lodash";
 import { getDB } from "./better-sqlite3";
 

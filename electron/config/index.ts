@@ -1,5 +1,5 @@
 import { ipcMain } from "electron";
-import { SettingModel, settingModelDefault } from "./type";
+import { SettingModel, settingModelDefault } from "../types/type";
 import settingDB from "../db/setting";
 
 class Setting {

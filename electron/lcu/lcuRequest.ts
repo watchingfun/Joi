@@ -12,10 +12,11 @@ import {
   TeamMember,
 } from "./interface";
 import logger from "../lib/logger";
-import {RuneConfig} from "../config/type";
+import {RuneConfig} from "../types/type";
 import {getChampData, getNoneRankRunes, getRankRunes} from "./opgg";
 import runesDB from "../db/runes";
-import {GameMode} from "./opgg_rank_type";
+import {GameMode} from "../types/opgg_rank_type";
+import {PerkRune} from "../types/rune";
 
 //获取当前召唤师信息
 export async function getCurrentSummoner() {
@@ -201,7 +202,7 @@ const getPosition = (selectedPosition) => {
 export async function applyRune(data: RuneConfig) {
   let credentials = getCredentials();
   // 获取符文页信息
-  const currentRuneList = (
+  const currentRuneList: PerkRune[] = (
     await createHttp1Request(
       {
         method: "GET",
@@ -210,8 +211,6 @@ export async function applyRune(data: RuneConfig) {
       credentials,
     )
   ).json();
-  logger.debug("currentRuneList", currentRuneList);
-  //@ts-ignore
   const current = currentRuneList.find((i) => i.current && i.isDeletable);
   if (current != undefined) {
     // 删除当前符文页
@@ -317,11 +316,11 @@ export const getCurrentQueue = async () => {
   return res?.gameData?.queue?.id || 430;
 };
 
-//获取本地符文库getGameModeByQueue
+//获取本地符文库
 export const getCustomRunes = async (champId: number) => {
   //todo 后面改成缓存
   const championData = await getChampData(champId);
-  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "RANK";
+  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "rank";
   const roles = championData?.roles.flatMap((r) => r.name.split("|")) || [];
   const position = championData?.positions.map((p) => p.name) || [];
   return runesDB.queryPageRunes({
@@ -333,6 +332,7 @@ export const getCustomRunes = async (champId: number) => {
   }).data;
 };
 
+//获取opgg符文
 export const getOPGGRunes = async (champId: number) => {
   const championData = await getChampData(champId);
   const gameMode = getGameModeByQueue(await getCurrentQueue()) || "rank";

@@ -7,8 +7,8 @@ import {
 } from "@@/lcu/interface";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import useAppStore from "@/store/app";
-import { Rune } from "@@/lcu/opgg_rank_type";
-import { RuneConfig, RunesDBObj } from "@@/config/type";
+import { Rune } from "@@/types/opgg_rank_type";
+import { RuneConfig, RunesDBObj } from "@@/types/type";
 
 async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
   const { message } = useAppStore();

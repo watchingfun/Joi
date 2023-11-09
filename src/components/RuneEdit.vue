@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, PropType, Ref } from "vue";
 import runesReforged from "@/assets/runesReforged.json";
-import { CustomRune, RunesDBObj } from "@@/config/type";
+import { CustomRune, RunesDBObj } from "@@/types/type";
 import { runesStatMods } from "@/assets/runesStatMods";
 import RoleSelect from "@/components/RoleSelect.vue";
 import PositionSelect from "@/components/PositionSelect.vue";

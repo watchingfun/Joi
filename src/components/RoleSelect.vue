@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { roleMap } from "@@/lcu/opgg_rank_type";
+import { roleMap } from "@@/types/opgg_rank_type";
 import { computed, PropType } from "vue";
 
 const props = defineProps({

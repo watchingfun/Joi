@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { Ref, ref, WatchStopHandle } from "vue";
 import { watchDebounced } from "@vueuse/core";
-import { SettingModel, settingModelDefault } from "@@/config/type";
+import { SettingModel, settingModelDefault } from "@@/types/type";
 
 async function getSettingFromDB() {
   let res = (await window.ipcRenderer.invoke("getSetting")) as SettingModel;

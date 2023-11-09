@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { CustomRune } from "@@/config/type";
+import { CustomRune } from "@@/types/type";
 import { RuneData, runesFlatMap } from "@/common/runes";
 import { runesStatModMap, RuneStatMod } from "@/assets/runesStatMods";
 import { toRefs } from "vue";
-import { Rune } from "@@/lcu/opgg_rank_type";
+import { Rune } from "@@/types/opgg_rank_type";
 
 const props = defineProps<{ rune: Rune | CustomRune }>();
 

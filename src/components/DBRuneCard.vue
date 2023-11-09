@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RunesDBObj } from "@@/config/type";
+import { RunesDBObj } from "@@/types/type";
 import { RuneData, runesFlatMap } from "@/common/runes";
 import { runesStatModMap, RuneStatMod } from "@/assets/runesStatMods";
 import { toRefs } from "vue";

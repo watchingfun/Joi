@@ -8,11 +8,13 @@ import lcuApi from "@/api/lcuApi";
 import { storeToRefs } from "pinia";
 import { convertOPGGRuneFormat } from "@@/lcu/opgg";
 import RuneCard from "@/components/RuneCard.vue";
-import { Rune } from "@@/lcu/opgg_rank_type";
+import { Rune } from "@@/types/opgg_rank_type";
 import { Ref } from "vue";
-import { CustomRune } from "@@/config/type";
+import { CustomRune } from "@@/types/type";
+import useSettingStore from "@/store/setting";
 
 const lcuStore = useLCUStore();
+const settingStore = useSettingStore();
 //todo根据设置项来决定是否自动应用 open.gg符文；
 const gameFlowPhaseName = computed(() => {
   return gameFlowPhaseMap[lcuStore.gameFlowPhase];
@@ -45,8 +47,15 @@ const fetchRune = async (champId: number) => {
       .getCustomRunes(champId)
       .then((res) => res?.map((i) => i.value) || []);
     opggRunes.value = (await lcuApi.getOPGGRunes(champId)) || [];
-    if (opggRunes.value.length) {
-      applyRune(opggRunes.value[0]);
+    if (settingStore.settingModel.autoConfigRune) {
+      if (
+        settingStore.settingModel.autoConfigRuneOPGGPriority &&
+        opggRunes.value.length
+      ) {
+        applyRune(opggRunes.value[0]);
+      } else if (customRunes.value.length) {
+        applyRune(customRunes.value[0]);
+      }
     }
   } catch (e) {
     if (e instanceof Error) message.error(e.message);

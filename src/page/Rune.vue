@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import { runesMap } from "@/common/runes";
 import RuneEdit from "@/components/RuneEdit.vue";
-import {
-  CustomRune,
-  PageObj,
-  RunesDBObj,
-  RunesPageQuery,
-} from "@@/config/type";
+import { CustomRune, PageObj, RunesDBObj, RunesPageQuery } from "@@/types/type";
 import runesApi from "@/api/runesApi";
 import EpicLoading from "@/components/EpicLoading.vue";
 import { watchDebounced } from "@vueuse/core";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { gameModeMap } from "@@/lcu/opgg_rank_type";
+import { gameModeMap } from "@@/types/opgg_rank_type";
 import { computed, PropType } from "vue";
 
 const props = defineProps({
