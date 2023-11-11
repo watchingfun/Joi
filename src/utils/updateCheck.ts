@@ -3,7 +3,7 @@ import useAppStore from "@/store/app";
 
 export const fetchLatestReleases = async () => {
   const response = await fetch(
-    "https://api.github.com/repos/watchingfun/Joi/releases/latest",
+    `https://api.github.com/repos/watchingfun/Joi/releases/latest?time=${new Date().getTime()}`,
   );
   if (response.ok) {
     return (await response.json()) as LatestReleases;
