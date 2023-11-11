@@ -5,8 +5,7 @@ import vue from "@vitejs/plugin-vue";
 import vueJsx from "@vitejs/plugin-vue-jsx";
 import renderer from "vite-plugin-electron-renderer";
 import electron from "vite-plugin-electron/simple";
-import pkg from "./package.json";
-import { notBundle } from 'vite-plugin-electron/plugin'
+import { notBundle } from "vite-plugin-electron/plugin";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
@@ -71,6 +70,9 @@ export default defineConfig(({ command }) => {
       renderer(),
       bindingSqlite3(),
     ],
+    define: {
+      __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
+    },
     clearScreen: false,
   };
 });

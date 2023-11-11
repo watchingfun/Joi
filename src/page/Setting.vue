@@ -2,13 +2,22 @@
 import { useRouter } from "vue-router";
 import useSettingStore from "@/store/setting";
 import { storeToRefs } from "pinia";
+import { checkUpdate } from "@/utils/updateCheck";
 
 const router = useRouter();
 
 const { settingModel } = storeToRefs(useSettingStore());
 
+const appVersion = __APP_VERSION__;
+const fetching = ref(false);
+
 function goBack() {
   router.go(-1);
+}
+
+function handleCheckUpdate() {
+  fetching.value = true;
+  checkUpdate().finally(() => (fetching.value = false));
 }
 </script>
 
@@ -77,6 +86,15 @@ function goBack() {
                 >每次询问
               </n-checkbox>
             </div>
+          </div>
+        </div>
+
+        <div class="setting-group mt-4">
+          <div class="flex flex-row gap-5 items-center">
+            <div><b>当前版本：</b>{{ appVersion }}</div>
+            <n-button @click="handleCheckUpdate" :loading="fetching">
+              检查更新
+            </n-button>
           </div>
         </div>
       </div>
