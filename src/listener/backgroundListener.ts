@@ -1,6 +1,7 @@
 import useLCUStore, { ConnectStatusEnum, GameFlowPhase } from "@/store/lcu";
 import { lcuConst } from "@@/const/const";
 import router from "@/router";
+import { SimpleChampSelectPhaseSessionData } from "@@/types/lcuType";
 import IpcRendererEvent = Electron.IpcRendererEvent;
 
 export function setupListener() {
@@ -38,6 +39,17 @@ export function setupListener() {
         lcuStore.updateChampId(0);
       }
       lcuStore.gameFlowPhase = phase;
+    },
+  );
+  window.ipcRenderer.on(
+    lcuConst.gameSessionData,
+    async (
+      event: IpcRendererEvent,
+      gameSessionData: SimpleChampSelectPhaseSessionData,
+    ) => {
+      console.log("gameSessionData", gameSessionData);
+      lcuStore.currentPosition = gameSessionData.selectedResult.position;
+      lcuStore.currentGameMode = gameSessionData.gameMode;
     },
   );
   window.ipcRenderer.on(

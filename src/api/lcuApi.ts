@@ -4,10 +4,10 @@ import {
   MatchHistoryQueryResult,
   PageRange,
   SummonerInfo,
-} from "@@/lcu/interface";
+} from "@@/types/lcuType";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import useAppStore from "@/store/app";
-import { Rune } from "@@/types/opgg_rank_type";
+import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
 import { RuneConfig, RunesDBObj } from "@@/types/type";
 
 async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
@@ -56,13 +56,31 @@ export default {
     captureError<SummonerInfo>(
       window.ipcRenderer.invoke(lcuConst.getSummonerByPuuid, puuid),
     ),
-  getCustomRunes: (champId: number) =>
+  getCustomRunes: (
+    champId: number,
+    gameMode?: GameMode,
+    position?: PositionName,
+  ) =>
     captureError<RunesDBObj[]>(
-      window.ipcRenderer.invoke(lcuConst.getCustomRunes, champId),
+      window.ipcRenderer.invoke(
+        lcuConst.getCustomRunes,
+        champId,
+        gameMode,
+        position,
+      ),
     ),
-  getOPGGRunes: (champId: number) =>
+  getOPGGRunes: (
+    champId: number,
+    gameMode?: GameMode,
+    position?: PositionName,
+  ) =>
     captureError<Rune[]>(
-      window.ipcRenderer.invoke(lcuConst.getOPGGRunes, champId),
+      window.ipcRenderer.invoke(
+        lcuConst.getOPGGRunes,
+        champId,
+        gameMode,
+        position,
+      ),
     ),
   applyRune: (data: RuneConfig) =>
     captureError<void>(window.ipcRenderer.invoke(lcuConst.applyRune, data)),

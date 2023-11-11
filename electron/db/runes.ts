@@ -59,12 +59,6 @@ const useDB = (db: Database.Database): RunesDB => ({
         "exists(select * from json_each(runes.value->>'mode') where json_each.value in (SELECT value FROM json_each(:mode)))",
       );
     }
-    if (pageQuery.role instanceof Array && pageQuery.role.length > 0) {
-      pageQuery.role = JSON.stringify(pageQuery.role);
-      conditions.push(
-        "exists(select * from json_each(runes.value->>'role') where json_each.value in (SELECT value FROM json_each(:role)))",
-      );
-    }
     if (conditions.length > 0) {
       baseSql = baseSql + " where " + conditions.join(" or ");
     }

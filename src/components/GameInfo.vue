@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { queue } from "@@/const/lolDataConfig";
-import { GameDetail } from "@@/lcu/interface";
+import { GameDetail } from "@@/types/lcuType";
 import { toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import dayjs from "dayjs";
 import SpellImg from "@/components/img/spellImg.vue";
-import RuneImg from "@/components/img/runeImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
 import Perks from "@/components/img/Perks.vue";
 
@@ -102,7 +101,7 @@ const gameModeBackground = (str: string) => {
           <spell-img :spell-id="record.participants[0].spell2Id"></spell-img>
         </div>
         <div class="rune pl-[2px]">
-          <perks :stats="record.participants[0].stats"/>
+          <perks :stats="record.participants[0].stats" />
         </div>
         <div class="item-group">
           <template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">

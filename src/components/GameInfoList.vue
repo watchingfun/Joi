@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GameDetail } from "@@/lcu/interface";
+import { GameDetail } from "@@/types/lcuType";
 import { toRefs } from "vue";
 import GameInfo from "@/components/GameInfo.vue";
 

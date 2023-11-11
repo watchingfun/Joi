@@ -4,6 +4,7 @@ export const lcuConst = {
   disconnect: "lcu:disconnect",
   gameFlowPhase: "lcu:gameFlowPhase",
   champSelect: "lcu:champSelect",
+  gameSessionData: "lcu:gameSessionData",
   getCurrentSummoner: "lcu:getCurrentSummoner",
   queryGameDetails: "lcu:queryGameDetails",
   queryMatchHistory: "lcu:queryMatchHistory",

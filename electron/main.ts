@@ -26,10 +26,14 @@ ipcMain.on("checkIsWin11", (event, args) => {
   event.returnValue = isWin11;
 });
 
-process.on("uncaughtException", (err) => {
-  logger.error(err);
-  throw err;
-});
+process
+  .on("unhandledRejection", (reason, p) => {
+    logger.error("Unhandled Rejection at Promise", reason, p);
+  })
+  .on("uncaughtException", (err) => {
+    logger.error(err);
+    throw err;
+  });
 const BrowserWindow = isWin11
   ? require("electron-acrylic-window").BrowserWindow
   : require("electron").BrowserWindow;

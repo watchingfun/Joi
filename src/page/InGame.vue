@@ -42,11 +42,14 @@ const applyRune = (rune: Rune | CustomRune) => {
 
 const fetchRune = async (champId: number) => {
   loadingRune.value = true;
+  let gameMode = unref(lcuStore.currentGameMode);
+  let position = unref(lcuStore.currentPosition);
   try {
     customRunes.value = await lcuApi
-      .getCustomRunes(champId)
+      .getCustomRunes(champId, gameMode, position)
       .then((res) => res?.map((i) => i.value) || []);
-    opggRunes.value = (await lcuApi.getOPGGRunes(champId)) || [];
+    opggRunes.value =
+      (await lcuApi.getOPGGRunes(champId, gameMode, position)) || [];
     if (settingStore.settingModel.autoConfigRune) {
       if (
         settingStore.settingModel.autoConfigRuneOPGGPriority &&

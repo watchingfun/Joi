@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RuneData, runesFlatMap } from "@/common/runes";
-import { toRefs, computed } from "vue";
-import { Stats } from "@@/lcu/interface";
+import { computed, toRefs } from "vue";
+import { Stats } from "@@/types/lcuType";
 
 const props = defineProps<{ stats: Stats }>();
 
@@ -25,38 +25,38 @@ const runeConfig = computed(() => {
     <div class="relative overflow-hidden card">
       <div class="grid grid-rows-2 h-[140px] inner">
         <div
-          class="grid grid-cols-4  grid-rows-[2fr,1fr] grid-flow-col gap-x-[10px] justify-items-center items-center primary-runes"
+          class="grid grid-cols-4 grid-rows-[2fr,1fr] grid-flow-col gap-x-[10px] justify-items-center items-center primary-runes"
         >
           <n-image
-              lazy
-              width="50"
-              preview-disabled
-              :src="runeConfig.primary1?.icon.toLowerCase()"
+            lazy
+            width="50"
+            preview-disabled
+            :src="runeConfig.primary1?.icon.toLowerCase()"
           />
           <div>
             {{ runeConfig.primary1.name }}
           </div>
           <n-image
-              lazy
-              width="30"
-              preview-disabled
-              :src="runeConfig.primary2?.icon.toLowerCase()"
+            lazy
+            width="30"
+            preview-disabled
+            :src="runeConfig.primary2?.icon.toLowerCase()"
           />
           <div>
             {{ runeConfig.primary2.name }}
           </div>
           <n-image
-              lazy
-              width="30"
-              preview-disabled
-              :src="runeConfig.primary3?.icon.toLowerCase()"
+            lazy
+            width="30"
+            preview-disabled
+            :src="runeConfig.primary3?.icon.toLowerCase()"
           />
           <div>{{ runeConfig.primary3.name }}</div>
           <n-image
-              lazy
-              width="30"
-              preview-disabled
-              :src="runeConfig.primary4?.icon.toLowerCase()"
+            lazy
+            width="30"
+            preview-disabled
+            :src="runeConfig.primary4?.icon.toLowerCase()"
           />
           <div>
             {{ runeConfig.primary4.name }}

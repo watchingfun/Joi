@@ -6,9 +6,10 @@ import {
   PageRange,
   PageRanges,
   SummonerInfo,
-} from "@@/lcu/interface";
+} from "@@/types/lcuType";
 import useAppStore from "@/store/app";
 import router from "@/router";
+import { GameMode, PositionName } from "@@/types/opgg_rank_type";
 
 export enum ConnectStatusEnum {
   connecting,
@@ -53,6 +54,8 @@ const useLCUStore = defineStore("lcu", () => {
   const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
   const gameFlowPhase = ref<GameFlowPhase>("None");
   const champId = ref(0);
+  const currentGameMode = ref<GameMode>();
+  const currentPosition = ref<PositionName>();
 
   watch(gameFlowPhase, (n, o) => {
     if (n === "ChampSelect") {
@@ -125,6 +128,8 @@ const useLCUStore = defineStore("lcu", () => {
   return {
     champId,
     updateChampId,
+    currentGameMode,
+    currentPosition,
     gameFlowPhase,
     connectStatus,
     getCurrentSummoner,

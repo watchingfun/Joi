@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PlayerGameInfo from "@/components/PlayerGameInfo.vue";
 import { toRefs } from "vue";
-import { GameDetail } from "@@/lcu/interface";
+import { GameDetail } from "@@/types/lcuType";
 
 const props = defineProps<{ detail: GameDetail }>();
 const { detail } = toRefs(props);

@@ -4,7 +4,7 @@ import GameInfoList from "@/components/GameInfoList.vue";
 import GameDetailInfo from "@/components/GameDetailInfo.vue";
 import lcuApi from "@/api/lcuApi";
 import { computed, onMounted, ref, watch } from "vue";
-import { GameDetail, PageRanges, Player } from "@@/lcu/interface";
+import { GameDetail, PageRanges, Player } from "@@/types/lcuType";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";

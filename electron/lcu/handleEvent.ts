@@ -1,10 +1,17 @@
 import {createHttp1Request} from "../lib/league-connect";
 import {getCredentials} from "./handleLCU";
-import {getCurrentSummoner, getGameInfo, listenChampSelect, queryMatchHistory,} from "./lcuRequest";
+import {
+  getCurrentQueue,
+  getCurrentSummoner,
+  getGameInfo,
+  getGameModeByQueue,
+  listenChampSelect,
+  queryMatchHistory,
+} from "./lcuRequest";
 import logger from "../lib/logger";
 import {setting} from "../config/";
-import {sendToWebContent, showMainWindow} from "../util/util";
-import {lcuConst} from "../const/const";
+import {ChampSelectPhaseSession} from "../types/lcuType";
+import {handleGameSessionData} from "./handleGameSessionData";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -34,18 +41,17 @@ export function handelAutoAcceptGame(eventKey: string) {
 let unListenChampSelect: Function | null;
 
 //选择英雄
-export function handelChampSelect(eventKey: string) {
+export async function handelChampSelect(eventKey: string) {
   if (eventKey !== "ChampSelect") {
     return;
   }
   let champId = 0;
-  unListenChampSelect = listenChampSelect((currentChampId: number) => {
-    if (currentChampId && currentChampId !== champId) {
-      champId = currentChampId;
-      showMainWindow({ name: "inGame" });
-      sendToWebContent(lcuConst.champSelect, currentChampId);
-    }
-  });
+  const gameMode = getGameModeByQueue(await getCurrentQueue());
+  unListenChampSelect = listenChampSelect(
+    (phaseSession: ChampSelectPhaseSession) => {
+      handleGameSessionData(phaseSession, gameMode);
+    },
+  );
 }
 
 //选择英雄结束，游戏准备开始

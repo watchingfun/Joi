@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Participant, ParticipantIdentity, Player } from "@@/lcu/interface";
+import { Participant, ParticipantIdentity, Player } from "@@/types/lcuType";
 import { computed, toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import SpellImg from "@/components/img/spellImg.vue";
-import RuneImg from "@/components/img/runeImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
 import { DocumentCopy16Regular } from "@vicons/fluent";
 import useLCUStore from "@/store/lcu";

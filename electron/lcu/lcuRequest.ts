@@ -10,12 +10,12 @@ import {
   PageRange,
   SummonerInfo,
   TeamMember,
-} from "./interface";
+} from "../types/lcuType";
 import logger from "../lib/logger";
 import {RuneConfig} from "../types/type";
-import {getChampData, getNoneRankRunes, getRankRunes} from "./opgg";
+import {getNoneRankRunes, getRankRunes} from "./opgg";
 import runesDB from "../db/runes";
-import {GameMode} from "../types/opgg_rank_type";
+import {GameMode, PositionName} from "../types/opgg_rank_type";
 import {PerkRune} from "../types/rune";
 
 //获取当前召唤师信息
@@ -67,8 +67,9 @@ export function listenChampSelect(callback?: Function): Function {
       event: EventResponse<ChampSelectPhaseSession>,
     ) => {
       const currentChampId = await getCurrentChampId();
-      callback && callback(currentChampId);
-      logger.debug("currentChampId", currentChampId);
+      if (typeof currentChampId === "number") {
+        callback && callback(data);
+      }
       logger.debug("champ-select-session", JSON.stringify(data));
     },
   );
@@ -293,7 +294,7 @@ export const queryGameDetails = async (gameId: number) => {
 // return 430 if res['gameData']['queue']['id'] < 0 else res['gameData']['queue']['id']
 
 //获取游戏模式
-function getGameModeByQueue(queue: number): GameMode {
+export function getGameModeByQueue(queue: number): GameMode {
   if ([420, 430, 440].includes(queue)) {
     return "rank";
   } else if (queue === 450) {
@@ -317,26 +318,31 @@ export const getCurrentQueue = async () => {
 };
 
 //获取本地符文库
-export const getCustomRunes = async (champId: number) => {
-  //todo 后面改成缓存
-  const championData = await getChampData(champId);
-  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "rank";
-  const roles = championData?.roles.flatMap((r) => r.name.split("|")) || [];
-  const position = championData?.positions.map((p) => p.name) || [];
+export const getCustomRunes = async (
+  champId: number,
+  gameMode: GameMode,
+  position: PositionName,
+) => {
+  gameMode = gameMode || "rank";
+  position = position || "mid";
+  logger.debug("getCustomRunes", champId, gameMode, position);
   return runesDB.queryPageRunes({
     start: 0,
     size: 10,
     mode: [gameMode],
-    role: roles,
-    position: position,
+    position: [position],
   }).data;
 };
 
 //获取opgg符文
-export const getOPGGRunes = async (champId: number) => {
-  const championData = await getChampData(champId);
-  const gameMode = getGameModeByQueue(await getCurrentQueue()) || "rank";
-  const position = championData?.positions.map((p) => p.name)[0] || "mid";
+export const getOPGGRunes = async (
+    champId: number,
+    gameMode: GameMode,
+    position: PositionName,
+) => {
+  gameMode = gameMode || "rank";
+  position = position || "mid";
+  logger.debug("getOPGGRunes", champId, gameMode, position);
   if (gameMode === "rank") {
     return await getRankRunes(champId, position);
   } else {

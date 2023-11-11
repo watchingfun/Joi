@@ -1,3 +1,5 @@
+import { GameMode, PositionName } from "@@/types/opgg_rank_type";
+
 interface RPC {
   errorCode?: string;
   message?: string;
@@ -267,7 +269,7 @@ export interface ChampSelectPhaseSession {
   allowRerolling: boolean;
   allowSkinSelection: boolean;
   bans: Bans;
-  benchChampions: any[];
+  benchChampions: BenchChampion[];
   benchEnabled: boolean;
   boostableSkinCount: number;
   chatDetails: ChatDetails;
@@ -319,7 +321,7 @@ export interface MucJwtDto {
 }
 
 export interface MyTeam {
-  assignedPosition: string;
+  assignedPosition: AssignedPosition;
   cellId: number;
   championId: number;
   championPickIntent: number;
@@ -336,7 +338,7 @@ export interface MyTeam {
 }
 
 export interface TheirTeam {
-  assignedPosition: string;
+  assignedPosition: AssignedPosition;
   cellId: number;
   championId: number;
   championPickIntent: number;
@@ -599,4 +601,52 @@ export interface Team {
 export interface Ban {
   championId: number;
   pickTurn: number;
+}
+
+export type AssignedPosition =
+  | "bottom"
+  | "jungle"
+  | "middle"
+  | "utility"
+  | "top"
+  | string;
+
+export interface SelectedResult {
+  championId: number;
+  position: PositionName;
+}
+
+export interface BanAction {
+  actorCellId: number;
+  championId: number;
+  completed: boolean;
+  isAllyAction: boolean;
+}
+
+export type PickAction = BanAction;
+
+export interface BanPickResult {
+  ban: BanAction[];
+  pick: PickAction[];
+}
+
+export interface BenchChampion {
+  championId: number;
+  isPriority: boolean;
+}
+
+export interface AllyTrade {
+  id: number;
+  cellId: number;
+  championId: number;
+  state: "INVALID" | "AVAILABLE";
+}
+
+export interface SimpleChampSelectPhaseSessionData {
+  banPick: BanPickResult;
+  selectedResult: SelectedResult;
+  gameMode: GameMode;
+  benchChampions: BenchChampion[]; //大乱斗上方交换池
+  benchEnabled: boolean;
+  allyTrades: AllyTrade[];
 }
