@@ -1,19 +1,34 @@
 import { ChampSelectPhaseSession } from "../types/lcuType";
-import { parseGameSessionData } from "./utils";
+import { getCurrentAction, parseGameSessionData } from "./utils";
 import { GameMode } from "../types/opgg_rank_type";
 import { sendToWebContent, showMainWindow } from "../util/util";
 import { lcuConst } from "../const/const";
+import logger from "../lib/logger";
+import { getCurrentChampId } from "./lcuRequest";
 
 let champId = 0;
+let actionId: number;
 
-export function handleGameSessionData(
+export async function handleGameSessionData(
   data: ChampSelectPhaseSession,
   gameMode: GameMode,
 ) {
+  //进行简单解析
   const sessionData = parseGameSessionData(data, gameMode);
-  const currentChampId = sessionData.selectedResult.championId;
-  sendToWebContent(lcuConst.gameSessionData, sessionData);
-  //todo 根据会话数据 自动锁定英雄 自动发起交换 自动ban英雄
+
+  //sendToWebContent(lcuConst.gameSessionData, sessionData);
+  //获取当前活动
+  const action = getCurrentAction(data);
+  if (action && actionId !== action.id) {
+    actionId = action.id; // 防止重复接收活动事件
+    logger.info("currentAction", JSON.stringify(action));
+    //todo 自动选择英雄 自动ban英雄
+  }
+
+  //获取当前锁定的英雄
+  const currentChampId = await getCurrentChampId().catch(() => {
+    return 0;
+  });
   //发送给前台自动设置符文
   if (currentChampId && currentChampId !== champId) {
     champId = currentChampId;

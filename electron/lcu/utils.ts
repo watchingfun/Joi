@@ -8,13 +8,17 @@ import {
 } from "../types/lcuType";
 import { GameMode, PositionName } from "../types/opgg_rank_type";
 
-export function getSelectChampIdAndPosition(data: ChampSelectPhaseSession) {
+export function getSelectChampIdAndPosition(
+  data: ChampSelectPhaseSession,
+): SelectedResult | undefined {
   const result = data.myTeam.find((t) => t.cellId === data.localPlayerCellId);
   if (result?.championId) {
     return {
       championId: result.championId,
       position: convertPositionToOpggPosition(result.assignedPosition),
     } as SelectedResult;
+  } else {
+    return undefined;
   }
 }
 
@@ -53,6 +57,12 @@ export function convertPositionToOpggPosition(position: AssignedPosition) {
     utility: "support",
     top: "top",
   }[position] || "mid") as PositionName;
+}
+
+export function getCurrentAction(data: ChampSelectPhaseSession) {
+  return data.actions
+    .flatMap((actions) => actions)
+    .find((a) => a.actorCellId === data.localPlayerCellId && a.isInProgress);
 }
 
 export function parseGameSessionData(

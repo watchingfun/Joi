@@ -1,6 +1,6 @@
 import { GameMode, PositionName } from "@@/types/opgg_rank_type";
 
-interface RPC {
+export interface RPC {
   errorCode?: string;
   message?: string;
 }
@@ -644,9 +644,25 @@ export interface AllyTrade {
 
 export interface SimpleChampSelectPhaseSessionData {
   banPick: BanPickResult;
-  selectedResult: SelectedResult;
+  selectedResult?: SelectedResult;
   gameMode: GameMode;
   benchChampions: BenchChampion[]; //大乱斗上方交换池
   benchEnabled: boolean;
   allyTrades: AllyTrade[];
+}
+
+export interface BanPickRequest {
+  actorCellId: number;
+  championId: number;
+  completed: boolean;
+  id: number;
+  isAllyAction: boolean;
+  type: "ban" | "pick";
+}
+
+export interface Conversation {
+  id: number;
+  type: string;
+
+  [key: string]: any;
 }

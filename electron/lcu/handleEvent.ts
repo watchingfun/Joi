@@ -45,8 +45,8 @@ export async function handelChampSelect(eventKey: string) {
   if (eventKey !== "ChampSelect") {
     return;
   }
-  let champId = 0;
   const gameMode = getGameModeByQueue(await getCurrentQueue());
+  unListenChampSelect && unListenChampSelect();
   unListenChampSelect = listenChampSelect(
     (phaseSession: ChampSelectPhaseSession) => {
       handleGameSessionData(phaseSession, gameMode);
