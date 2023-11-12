@@ -3,6 +3,7 @@ import { computed, PropType, Ref } from "vue";
 import runesReforged from "@/assets/runesReforged.json";
 import { CustomRune, RunesDBObj } from "@@/types/type";
 import { runesStatMods } from "@/assets/runesStatMods";
+import RoleSelect from "@/components/RoleSelect.vue";
 import PositionSelect from "@/components/PositionSelect.vue";
 import GameModeSelect from "@/components/GameModeSelect.vue";
 import { TransitionSlide } from "@morev/vue-transitions";
@@ -50,6 +51,7 @@ const defaultRuneConfig = {
   enabled: true,
   position: [],
   mode: [],
+  role: [],
 };
 
 const runeConfig = ref(
@@ -175,6 +177,14 @@ const save = () => {
         class="flex flex-row flex-nowrap mr-5 ml-5 mt-5 gap-[10px] items-center"
       >
         <n-grid :x-gap="12" :y-gap="8" :cols="2">
+          <n-gi span="2">
+            <role-select
+              multiple
+              clearable
+              v-model="runeConfig.role"
+              placeholder="适用角色"
+            ></role-select>
+          </n-gi>
           <n-gi>
             <position-select
               multiple

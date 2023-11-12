@@ -1,4 +1,4 @@
-import { GameMode, PositionName } from "./opgg_rank_type";
+import { GameMode, PositionName, RoleType } from "./opgg_rank_type";
 
 export interface SettingModel {
   exitAsk: boolean;
@@ -30,6 +30,7 @@ export interface CustomRune {
   enabled: boolean;
   position: PositionName[];
   mode: GameMode[];
+  role: RoleType[];
 }
 
 export interface RuneConfig {
@@ -55,6 +56,7 @@ export interface RunesPageQuery extends PageQuery {
   primaryPageId?: number;
   position?: string[] | string;
   mode?: string[] | string;
+  role?: string[] | string;
   name?: string;
 }
 

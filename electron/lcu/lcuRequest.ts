@@ -23,7 +23,7 @@ import {
 } from "../types/lcuType";
 import logger from "../lib/logger";
 import { RuneConfig } from "../types/type";
-import { getNoneRankRunes, getRankRunes } from "./opgg";
+import { getChampData, getNoneRankRunes, getRankRunes } from "./opgg";
 import runesDB from "../db/runes";
 import { GameMode, PositionName } from "../types/opgg_rank_type";
 import { PerkRune } from "../types/rune";
@@ -343,11 +343,14 @@ export const getCustomRunes = async (
   gameMode = gameMode || "rank";
   position = position || "mid";
   logger.debug("getCustomRunes", champId, gameMode, position);
+  const championData = await getChampData(champId);
+  const roles = championData?.roles.flatMap((r) => r.name.split("|")) || [];
   return runesDB.queryPageRunes({
     start: 0,
     size: 10,
     mode: [gameMode],
-    position: [position],
+    position: gameMode === "rank" ? [position] : [],
+    role: roles,
   }).data;
 };
 

@@ -6,6 +6,7 @@ import {
   Rune,
   RunePage,
 } from "../types/opgg_rank_type";
+import opggRankDataJson from "./opggRankData.json";
 import { CustomRune, RuneConfig } from "../types/type";
 import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";
@@ -23,15 +24,16 @@ async function checkResponse(response: Response) {
   }
 }
 
-let opggRankData: ChampionsPopularData | null;
+//let opggRankData: ChampionsPopularData | null;
 
 async function getOpggRankData() {
-  if (!opggRankData) {
-    let response = await fetch(OPGG_DATA_URL);
-    await checkResponse(response);
-    opggRankData = (await response.json()) as ChampionsPopularData;
-  }
-  return opggRankData;
+  // if (!opggRankData) {
+  //   let response = await fetch(OPGG_DATA_URL);
+  //   await checkResponse(response);
+  //   opggRankData = (await response.json()) as ChampionsPopularData;
+  // }
+  // return opggRankData;
+  return opggRankDataJson as ChampionsPopularData;
 }
 
 //查询opgg排位的符文数据

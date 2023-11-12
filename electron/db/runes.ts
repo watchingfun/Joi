@@ -48,19 +48,25 @@ const useDB = (db: Database.Database): RunesDB => ({
       conditions.push("runes.value ->> 'name' like ('%' || :name || '%')");
     }
     if (pageQuery.position instanceof Array && pageQuery.position.length > 0) {
-      pageQuery.position = JSON.stringify(pageQuery.position);
+      pageQuery.position = JSON.stringify(pageQuery.position).toUpperCase();
       conditions.push(
         "exists(select * from json_each(runes.value->>'position') where json_each.value in (SELECT value FROM json_each(:position)))",
       );
     }
     if (pageQuery.mode instanceof Array && pageQuery.mode.length > 0) {
-      pageQuery.mode = JSON.stringify(pageQuery.mode);
+      pageQuery.mode = JSON.stringify(pageQuery.mode).toUpperCase();
       conditions.push(
         "exists(select * from json_each(runes.value->>'mode') where json_each.value in (SELECT value FROM json_each(:mode)))",
       );
     }
+    if (pageQuery.role instanceof Array && pageQuery.role.length > 0) {
+      pageQuery.role = JSON.stringify(pageQuery.role).toUpperCase();
+      conditions.push(
+        "exists(select * from json_each(runes.value->>'role') where json_each.value in (SELECT value FROM json_each(:role)))",
+      );
+    }
     if (conditions.length > 0) {
-      baseSql = baseSql + " where " + conditions.join(" or ");
+      baseSql = baseSql + " where " + conditions.join(" and ");
     }
 
     const count_stmt = db.prepare("SELECT count(*) as count " + baseSql);
