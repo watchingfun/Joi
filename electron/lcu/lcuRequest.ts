@@ -7,7 +7,6 @@ import {
 } from "../lib/league-connect";
 import { getCredentials, getLeagueWebSocket } from "./handleLCU";
 import { ClientHttp2Session } from "http2";
-import { champDict } from "../const/lolDataConfig";
 import {
   Action,
   ChampSelectPhaseSession,
@@ -19,7 +18,6 @@ import {
   PlayerChampionSelection,
   RPC,
   SummonerInfo,
-  TeamMember,
 } from "../types/lcuType";
 import logger from "../lib/logger";
 import { RuneConfig } from "../types/type";
@@ -103,97 +101,13 @@ const getSummonerSelectChampMap = (
 
 // 查询对局游戏信息(召唤师ID,昵称,英雄)
 export async function getGameInfo() {
-  const summoner = await getCurrentSummoner();
   const matchSession = await httpRequest<GameSessionData>({
     method: "GET",
     url: `/lol-gameflow/v1/session`,
   });
-
-  //logger.debug("matchSession", JSON.stringify(matchSession));
-
-  let friendInfoList = [];
-  let enemyInfoList = [];
-  const playerChampionSelections = getSummonerSelectChampMap(
-    matchSession?.gameData?.playerChampionSelections,
-  );
-
-  let enemyInfo: TeamMember[];
-  let friendInfo: TeamMember[];
-  if (
-    matchSession?.gameData.teamOne.find(
-      (i) => i.summonerId === summoner.summonerId,
-    )
-  ) {
-    enemyInfo = matchSession.gameData.teamTwo;
-    friendInfo = matchSession.gameData.teamOne;
-  } else {
-    enemyInfo = matchSession.gameData.teamOne;
-    friendInfo = matchSession.gameData.teamTwo;
-  }
-
-  for (let i = 0; i < friendInfo.length; i++) {
-    try {
-      friendInfoList.push({
-        name: friendInfo[i].summonerName,
-        summonerId: friendInfo[i].summonerId,
-        selectChamp:
-          "https://game.gtimg.cn/images/lol/act/img/champion/" +
-          champDict[
-            `${playerChampionSelections[friendInfo[i].summonerInternalName]}`
-          ].alias +
-          ".png",
-        index: getPosition(friendInfo[i].selectedPosition),
-      });
-    } catch (e) {
-      break;
-    }
-  }
-  for (let i = 0; i < enemyInfo.length; i++) {
-    try {
-      enemyInfoList.push({
-        name: enemyInfo[i].summonerName,
-        summonerId: enemyInfo[i].summonerId,
-        selectChamp:
-          "https://game.gtimg.cn/images/lol/act/img/champion/" +
-          champDict[
-            `${playerChampionSelections[enemyInfo[i].summonerInternalName]}`
-          ].alias +
-          ".png",
-        index: getPosition(enemyInfo[i].selectedPosition),
-      });
-    } catch (e) {
-      break;
-    }
-  }
-
-  friendInfoList.sort((x, y) => {
-    return x.index - y.index;
-  });
-  enemyInfoList.sort((x, y) => {
-    return x.index - y.index;
-  });
-
-  return [friendInfoList, enemyInfoList];
+  logger.debug("matchSession", JSON.stringify(matchSession));
+  return matchSession;
 }
-
-const getPosition = (selectedPosition: string) => {
-  switch (selectedPosition) {
-    case "BOTTOM":
-      return 4;
-    case "JUNGLE":
-      return 2;
-    case "TOP":
-      return 1;
-    case "MIDDLE":
-      return 3;
-    case "UTILITY":
-      return 5;
-    case "NONE":
-      return 0;
-    default:
-      return 0;
-  }
-};
 
 //应用符文
 export async function applyRune(data: RuneConfig) {
@@ -331,6 +245,7 @@ export const getCurrentQueue = async () => {
     method: "GET",
     url: `/lol-gameflow/v1/session`,
   });
+  logger.debug("getCurrentQueue", res);
   return res?.gameData?.queue?.id || 430;
 };
 
@@ -368,4 +283,20 @@ export const getOPGGRunes = async (
   } else {
     return await getNoneRankRunes(champId, gameMode);
   }
+};
+
+//查询玩家最近20场游戏对局详情
+export const queryTeamMemberGameDetail = async (puuid: string) => {
+  const gameHistory = (await queryMatchHistory(puuid)).flatMap(
+      (m) => m.games.games,
+  );
+  const result = await Promise.allSettled(
+      gameHistory.map(async (game) => {
+        return await queryGameDetails(game.gameId);
+      }),
+  );
+  const isFulfilled = <T>(
+      p: PromiseSettledResult<T>,
+  ): p is PromiseFulfilledResult<T> => p.status === "fulfilled";
+  return result.filter(isFulfilled<GameDetail>).map((p) => p.value);
 };

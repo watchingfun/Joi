@@ -12,6 +12,8 @@ import logger from "../lib/logger";
 import {setting} from "../config/";
 import {ChampSelectPhaseSession} from "../types/lcuType";
 import {handleGameSessionData} from "./handleGameSessionData";
+import {sendToWebContent} from "../util/util";
+import {lcuConst} from "../const/const";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -55,13 +57,18 @@ export async function handelChampSelect(eventKey: string) {
 }
 
 //选择英雄结束，游戏准备开始
-export function handelGameStart(eventKey: string) {
+export async function handelGameStart(eventKey: string) {
   if (eventKey !== "GameStart") {
     return;
   }
-  void getGameInfo();
-  if (unListenChampSelect) {
-    unListenChampSelect();
+  try {
+    const gameSessionData = await getGameInfo();
+    const { teamOne, teamTwo } = gameSessionData.gameData;
+    sendToWebContent(lcuConst.gameTeams, [teamOne, teamTwo]);
+  } finally {
+    if (unListenChampSelect) {
+      unListenChampSelect();
+    }
   }
 }
 

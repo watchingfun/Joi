@@ -666,3 +666,12 @@ export interface Conversation {
 
   [key: string]: any;
 }
+
+export interface TeamMemberInfo {
+  assignedPosition?: AssignedPosition;
+  championId?: number;
+  puuid: string;
+  summonerName: string;
+  gameDetail?: GameDetail[];
+  score?: number;
+}

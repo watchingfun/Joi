@@ -6,6 +6,8 @@ import {
   PageRange,
   PageRanges,
   SummonerInfo,
+  TeamMember,
+  TeamMemberInfo,
 } from "@@/types/lcuType";
 import useAppStore from "@/store/app";
 import router from "@/router";
@@ -56,6 +58,8 @@ const useLCUStore = defineStore("lcu", () => {
   const champId = ref(0);
   const currentGameMode = ref<GameMode>();
   const currentPosition = ref<PositionName>();
+  const myTeam = ref<TeamMemberInfo[]>([]);
+  const theirTeam = ref<TeamMemberInfo[]>([]);
 
   watch(gameFlowPhase, (n, o) => {
     if (n === "ChampSelect") {
@@ -125,11 +129,60 @@ const useLCUStore = defineStore("lcu", () => {
     });
   }
 
+  //更新队伍信息
+  function updateTeamsInfo(teams: TeamMember[][]) {
+    const myTeamMemberIndex = teams.findIndex((teams) =>
+      teams.find((t) => t.puuid === summonerInfo.value?.puuid),
+    );
+    updateMyTeamInfo(teams[myTeamMemberIndex]);
+    updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
+  }
+
+  async function fetchTeamMembersGameDetail(teams: TeamMemberInfo[]) {
+    return await Promise.all(
+      teams.map(
+        async (team) =>
+          ({
+            ...team,
+            gameDetail: await lcuApi.queryTeamMemberGameDetail(team.puuid),
+          }) as TeamMemberInfo,
+      ),
+    );
+  }
+
+  //刚进入房间时就只能得到召唤师信息，进入游戏前得到位置英雄等信息然后更新下
+  function updateMyTeamInfo(teamMembers: TeamMember[]) {
+    myTeam.value = teamMembers.map((t) => {
+      return {
+        assignedPosition: t.selectedPosition?.toLowerCase(),
+        championId: t.championId,
+        puuid: t.puuid,
+        summonerName: t.summonerName,
+        gameDetail: myTeam.value.find((i) => i.puuid === t.puuid)?.gameDetail,
+      } as TeamMemberInfo;
+    });
+  }
+
+  function updateTheirTeamInfo(teamMembers: TeamMember[]) {
+    theirTeam.value = teamMembers.map((t) => {
+      return {
+        assignedPosition: t.selectedPosition?.toLowerCase(),
+        championId: t.championId,
+        puuid: t.puuid,
+        summonerName: t.summonerName,
+        gameDetail: [],
+      } as TeamMemberInfo;
+    });
+  }
+
   return {
     champId,
     updateChampId,
+    updateTeamsInfo,
     currentGameMode,
     currentPosition,
+    myTeam,
+    theirTeam,
     gameFlowPhase,
     connectStatus,
     getCurrentSummoner,

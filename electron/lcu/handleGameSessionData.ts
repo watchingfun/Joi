@@ -1,13 +1,14 @@
-import { ChampSelectPhaseSession } from "../types/lcuType";
+import { ChampSelectPhaseSession, TeamMemberInfo } from "../types/lcuType";
 import { getCurrentAction, parseGameSessionData } from "./utils";
 import { GameMode } from "../types/opgg_rank_type";
 import { sendToWebContent, showMainWindow } from "../util/util";
 import { lcuConst } from "../const/const";
 import logger from "../lib/logger";
-import { getCurrentChampId } from "./lcuRequest";
+import { getCurrentChampId, getSummonerByPuuid } from "./lcuRequest";
 
 let champId = 0;
-let actionId: number;
+let actionId: number | null;
+let myTeam: TeamMemberInfo[] | null;
 
 export async function handleGameSessionData(
   data: ChampSelectPhaseSession,
@@ -15,8 +16,23 @@ export async function handleGameSessionData(
 ) {
   //进行简单解析
   const sessionData = parseGameSessionData(data, gameMode);
+  logger.debug("ChampSelectPhaseSession", data);
+  sendToWebContent(lcuConst.gameSessionData, sessionData);
 
-  //sendToWebContent(lcuConst.gameSessionData, sessionData);
+  //发送当前对局我方成员
+  if (!myTeam) {
+    myTeam = await Promise.all(
+      data.myTeam.map(async (t) => ({
+        puuid: t.puuid,
+        summonerName: (await getSummonerByPuuid(t.puuid)).displayName,
+      })),
+    ).catch((e) => {
+      logger.error("查询成员信息失败：", (e as Error)?.message);
+      return [];
+    });
+    sendToWebContent(lcuConst.gameSessionMyTeam, myTeam);
+  }
+
   //获取当前活动
   const action = getCurrentAction(data);
   if (action && actionId !== action.id) {
@@ -34,5 +50,12 @@ export async function handleGameSessionData(
     champId = currentChampId;
     showMainWindow({ name: "inGame" });
     sendToWebContent(lcuConst.champSelect, currentChampId);
+  }
+
+  //游戏开始了，清空变量值
+  if (data.timer.phase === "GAME_STARTING") {
+    myTeam = null;
+    champId = 0;
+    actionId = null;
   }
 }

@@ -16,13 +16,13 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
     textColor2: "rgba(255, 255, 255, 0.82)",
     textColor3: "rgba(255, 255, 255, 0.52)",
     textColorDisabled: "rgba(255, 255, 255, 0.38)",
-    primaryColor: "rgb(239,143,95)",
+    primaryColor: "rgba(239,143,95,0.81)",
     primaryColorHover: "rgba(255,121,53,0.76)",
     primaryColorPressed: "rgb(239,143,95)",
     primaryColorSuppl: "rgb(239,143,95)",
   },
   Button: {
-    colorPrimary:"rgba(246,125,65,0.76)",
+    colorPrimary: "rgba(246,125,65,0.76)",
     textColorPrimary: "#fff",
     textColorHoverPrimary: "rgba(255,255,255,0.75)",
     textColorPressedPrimary: "#fff",
@@ -34,7 +34,7 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
     textColorPressedError: "#fff",
     textColorFocusError: "#fff",
     textColorWarning: "#fff",
-    textColorHoverWarning: "#fff"
+    textColorHoverWarning: "#fff",
   },
   Message: {
     colorInfo: "rgba(18, 18, 18,  0.75)",
