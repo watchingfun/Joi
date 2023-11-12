@@ -11,7 +11,7 @@ import {
 import logger from "../lib/logger";
 import {setting} from "../config/";
 import {ChampSelectPhaseSession} from "../types/lcuType";
-import {handleGameSessionData} from "./handleGameSessionData";
+import {clearFlag, handleGameSessionData} from "./handleGameSessionData";
 import {sendToWebContent} from "../util/util";
 import {lcuConst} from "../const/const";
 
@@ -47,6 +47,7 @@ export async function handelChampSelect(eventKey: string) {
   if (eventKey !== "ChampSelect") {
     return;
   }
+  clearFlag();
   const gameMode = getGameModeByQueue(await getCurrentQueue());
   unListenChampSelect && unListenChampSelect();
   unListenChampSelect = listenChampSelect(

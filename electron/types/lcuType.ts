@@ -661,7 +661,7 @@ export interface BanPickRequest {
 }
 
 export interface Conversation {
-  id: number;
+  id: string;
   type: string;
 
   [key: string]: any;

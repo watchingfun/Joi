@@ -70,6 +70,14 @@ export function setupListener() {
       lcuStore.theirTeam = [];
     },
   );
+
+  window.ipcRenderer.on(
+    lcuConst.gameSessionRoomId,
+    async (event: IpcRendererEvent, chatRoomId: string) => {
+      lcuStore.currentChatRoomId = chatRoomId;
+    },
+  );
+
   window.ipcRenderer.on(
     lcuConst.champSelect,
     async (event: IpcRendererEvent, champId: number) => {

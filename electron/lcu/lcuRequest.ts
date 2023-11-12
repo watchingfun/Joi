@@ -162,11 +162,10 @@ export const getConversations = async () => {
   });
 };
 
-const dividerLine =
-  "----------------------------------------------------------------------------------";
-//发送聊天
-export const sendChatMsg = async (
-  conversationId: number,
+
+//发送聊天到房间
+export const sendChatMsgToRoom = async (
+    conversationId: string,
   msg: string,
   type: string = "chat",
 ) => {
@@ -245,7 +244,7 @@ export const getCurrentQueue = async () => {
     method: "GET",
     url: `/lol-gameflow/v1/session`,
   });
-  logger.debug("getCurrentQueue", res);
+  logger.debug("getCurrentQueue", JSON.stringify(res));
   return res?.gameData?.queue?.id || 430;
 };
 

@@ -9,6 +9,7 @@ import { getCurrentChampId, getSummonerByPuuid } from "./lcuRequest";
 let champId = 0;
 let actionId: number | null;
 let myTeam: TeamMemberInfo[] | null;
+let roomId: string | null;
 
 export async function handleGameSessionData(
   data: ChampSelectPhaseSession,
@@ -16,7 +17,7 @@ export async function handleGameSessionData(
 ) {
   //进行简单解析
   const sessionData = parseGameSessionData(data, gameMode);
-  logger.debug("ChampSelectPhaseSession", data);
+  logger.debug("ChampSelectPhaseSession", JSON.stringify(data));
   sendToWebContent(lcuConst.gameSessionData, sessionData);
 
   //发送当前对局我方成员
@@ -31,6 +32,8 @@ export async function handleGameSessionData(
       return [];
     });
     sendToWebContent(lcuConst.gameSessionMyTeam, myTeam);
+    roomId = data.chatDetails.multiUserChatId;
+    sendToWebContent(lcuConst.gameSessionRoomId, roomId);
   }
 
   //获取当前活动
@@ -51,11 +54,12 @@ export async function handleGameSessionData(
     showMainWindow({ name: "inGame" });
     sendToWebContent(lcuConst.champSelect, currentChampId);
   }
+}
 
-  //游戏开始了，清空变量值
-  if (data.timer.phase === "GAME_STARTING") {
-    myTeam = null;
-    champId = 0;
-    actionId = null;
-  }
+//清空变量值
+export function clearFlag() {
+  myTeam = null;
+  champId = 0;
+  actionId = null;
+  roomId = null;
 }

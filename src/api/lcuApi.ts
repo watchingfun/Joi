@@ -88,4 +88,18 @@ export default {
     ),
   applyRune: (data: RuneConfig) =>
     captureError<void>(window.ipcRenderer.invoke(lcuConst.applyRune, data)),
+
+  sendChatMsgToRoom: (
+    conversationId: string,
+    msg: string,
+    type: string = "chat",
+  ) =>
+    captureError<void>(
+      window.ipcRenderer.invoke(
+        lcuConst.sendChatMsgToRoom,
+        conversationId,
+        msg,
+        type,
+      ),
+    ),
 };

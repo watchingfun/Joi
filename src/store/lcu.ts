@@ -58,6 +58,7 @@ const useLCUStore = defineStore("lcu", () => {
   const champId = ref(0);
   const currentGameMode = ref<GameMode>();
   const currentPosition = ref<PositionName>();
+  const currentChatRoomId = ref<string>();
   const myTeam = ref<TeamMemberInfo[]>([]);
   const theirTeam = ref<TeamMemberInfo[]>([]);
 
@@ -179,6 +180,7 @@ const useLCUStore = defineStore("lcu", () => {
     champId,
     updateChampId,
     updateTeamsInfo,
+    currentChatRoomId,
     currentGameMode,
     currentPosition,
     myTeam,

@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     ChampionImg: (typeof import("./src/components/img/championImg.vue"))["default"];
     ChampionSelect: (typeof import("./src/components/ChampionSelect.vue"))["default"];
-    ChampSelectFlow: (typeof import("./src/components/gameFlow/champSelectFlow.vue"))["default"];
     ConnectStatus: (typeof import("./src/components/ConnectStatus.vue"))["default"];
     DBRuneCard: (typeof import("./src/components/DBRuneCard.vue"))["default"];
     EpicLoading: (typeof import("./src/components/EpicLoading.vue"))["default"];
@@ -50,7 +49,6 @@ declare module 'vue' {
     NPagination: (typeof import("naive-ui"))["NPagination"];
     NPopconfirm: (typeof import("naive-ui"))["NPopconfirm"];
     NRadio: (typeof import("naive-ui"))["NRadio"];
-    NRadioButton: (typeof import("naive-ui"))["NRadioButton"];
     NRadioGroup: (typeof import("naive-ui"))["NRadioGroup"];
     NScrollbar: (typeof import("naive-ui"))["NScrollbar"];
     NSelect: (typeof import("naive-ui"))["NSelect"];
