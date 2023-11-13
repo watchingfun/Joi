@@ -5,23 +5,22 @@ import { darkTheme, zhCN } from "naive-ui";
 </script>
 
 <template>
-  <n-config-provider
-    :inline-theme-disabled="true"
-    :locale="zhCN"
-    :theme="darkTheme"
-    :theme-overrides="darkThemeOverrides"
-  >
-    <n-global-style />
-    <n-dialog-provider>
-      <n-message-provider>
-        <router-view v-slot="{ Component }">
-          <keep-alive>
-            <component :is="Component" />
-          </keep-alive>
-        </router-view>
-      </n-message-provider>
-    </n-dialog-provider>
-  </n-config-provider>
+	<n-config-provider
+		:inline-theme-disabled="true"
+		:locale="zhCN"
+		:theme="darkTheme"
+		:theme-overrides="darkThemeOverrides">
+		<n-global-style />
+		<n-dialog-provider>
+			<n-message-provider>
+				<router-view v-slot="{ Component }">
+					<keep-alive>
+						<component :is="Component" />
+					</keep-alive>
+				</router-view>
+			</n-message-provider>
+		</n-dialog-provider>
+	</n-config-provider>
 </template>
 
 <style></style>

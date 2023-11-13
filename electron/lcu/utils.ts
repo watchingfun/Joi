@@ -21,46 +21,46 @@ export function getSelectChampIdAndPosition(data: ChampSelectPhaseSession): Sele
 }
 
 export function getBanPickResult(data: ChampSelectPhaseSession) {
-  const banPickResult: BanPickResult = { ban: [], pick: [] };
-  data.actions
-    .flatMap((actions) => actions)
-    .filter((i) => i.championId)
-    .forEach((i) => {
-      const { championId, completed, isAllyAction, actorCellId } = i;
-      if (i.type === "ban") {
-        banPickResult.ban.push({
-          championId,
-          completed,
-          isAllyAction,
-          actorCellId,
-        });
-      } else if (i.type === "pick") {
-        banPickResult.pick.push({
-          championId,
-          completed,
-          isAllyAction,
-          actorCellId,
-        });
-      }
-    });
-  return banPickResult;
+	const banPickResult: BanPickResult = { ban: [], pick: [] };
+	data.actions
+		.flatMap((actions) => actions)
+		.filter((i) => i.championId)
+		.forEach((i) => {
+			const { championId, completed, isAllyAction, actorCellId } = i;
+			if (i.type === "ban") {
+				banPickResult.ban.push({
+					championId,
+					completed,
+					isAllyAction,
+					actorCellId
+				});
+			} else if (i.type === "pick") {
+				banPickResult.pick.push({
+					championId,
+					completed,
+					isAllyAction,
+					actorCellId
+				});
+			}
+		});
+	return banPickResult;
 }
 
 export function convertPositionToOpggPosition(position: AssignedPosition) {
-  position = position.toLowerCase() as AssignedPosition;
-  return ({
-    bottom: "adc",
-    jungle: "jungle",
-    middle: "mid",
-    utility: "support",
-    top: "top",
-  }[position] || "mid") as PositionName;
+	position = position.toLowerCase() as AssignedPosition;
+	return ({
+		bottom: "adc",
+		jungle: "jungle",
+		middle: "mid",
+		utility: "support",
+		top: "top"
+	}[position] || "mid") as PositionName;
 }
 
 export function getCurrentAction(data: ChampSelectPhaseSession) {
-  return data.actions
-    .flatMap((actions) => actions)
-    .find((a) => a.actorCellId === data.localPlayerCellId && a.isInProgress);
+	return data.actions
+		.flatMap((actions) => actions)
+		.find((a) => a.actorCellId === data.localPlayerCellId && a.isInProgress);
 }
 
 export function parseGameSessionData(data: ChampSelectPhaseSession, gameMode: GameMode) {

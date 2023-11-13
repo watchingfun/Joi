@@ -1,79 +1,76 @@
 import { flatMap } from "lodash";
 
 export type RuneStatMod = {
-  id: number;
-  name: string;
-  desc: string;
-  icon: string;
+	id: number;
+	name: string;
+	desc: string;
+	icon: string;
 };
 
 export const runesStatMods: RuneStatMod[][] = [
-  [
-    {
-      id: 5008,
-      name: "适应之力",
-      desc: "+9 适应之力",
-      icon: "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
-    },
-    {
-      id: 5005,
-      name: "攻击速度",
-      desc: "10% 攻击速度",
-      icon: "perk-images/StatMods/StatModsAttackSpeedIcon.png",
-    },
-    {
-      id: 5007,
-      name: "技能急速",
-      desc: "+8 技能急速",
-      icon: "perk-images/StatMods/StatModsCDRScalingIcon.png",
-    },
-  ],
-  [
-    {
-      id: 5008,
-      name: "适应之力",
-      desc: "+9 适应之力",
-      icon: "perk-images/StatMods/StatModsAdaptiveForceIcon.png",
-    },
-    {
-      id: 5002,
-      name: "护甲",
-      desc: "+6 护甲",
-      icon: "perk-images/StatMods/StatModsArmorIcon.png",
-    },
-    {
-      id: 5003,
-      name: "魔法抗性",
-      desc: "+8 魔法抗性",
-      icon: "perk-images/StatMods/StatModsMagicResIcon.png",
-    },
-  ],
-  [
-    {
-      id: 5001,
-      name: "成长生命值",
-      desc: "+15-140生命值(基于等级)",
-      icon: "perk-images/StatMods/StatModsHealthScalingIcon.png",
-    },
-    {
-      id: 5002,
-      name: "护甲",
-      desc: "+6 护甲",
-      icon: "perk-images/StatMods/StatModsArmorIcon.png",
-    },
-    {
-      id: 5003,
-      name: "魔法抗性",
-      desc: "+8 魔法抗性",
-      icon: "perk-images/StatMods/StatModsMagicResIcon.png",
-    },
-  ],
+	[
+		{
+			id: 5008,
+			name: "适应之力",
+			desc: "+9 适应之力",
+			icon: "perk-images/StatMods/StatModsAdaptiveForceIcon.png"
+		},
+		{
+			id: 5005,
+			name: "攻击速度",
+			desc: "10% 攻击速度",
+			icon: "perk-images/StatMods/StatModsAttackSpeedIcon.png"
+		},
+		{
+			id: 5007,
+			name: "技能急速",
+			desc: "+8 技能急速",
+			icon: "perk-images/StatMods/StatModsCDRScalingIcon.png"
+		}
+	],
+	[
+		{
+			id: 5008,
+			name: "适应之力",
+			desc: "+9 适应之力",
+			icon: "perk-images/StatMods/StatModsAdaptiveForceIcon.png"
+		},
+		{
+			id: 5002,
+			name: "护甲",
+			desc: "+6 护甲",
+			icon: "perk-images/StatMods/StatModsArmorIcon.png"
+		},
+		{
+			id: 5003,
+			name: "魔法抗性",
+			desc: "+8 魔法抗性",
+			icon: "perk-images/StatMods/StatModsMagicResIcon.png"
+		}
+	],
+	[
+		{
+			id: 5001,
+			name: "成长生命值",
+			desc: "+15-140生命值(基于等级)",
+			icon: "perk-images/StatMods/StatModsHealthScalingIcon.png"
+		},
+		{
+			id: 5002,
+			name: "护甲",
+			desc: "+6 护甲",
+			icon: "perk-images/StatMods/StatModsArmorIcon.png"
+		},
+		{
+			id: 5003,
+			name: "魔法抗性",
+			desc: "+8 魔法抗性",
+			icon: "perk-images/StatMods/StatModsMagicResIcon.png"
+		}
+	]
 ];
 
-export const runesStatModMap = flatMap(runesStatMods).reduce(
-  (map: Map<number, RuneStatMod>, obj: RuneStatMod) => {
-    map.set(obj.id, obj);
-    return map;
-  },
-  new Map<number, RuneStatMod>(),
-);
+export const runesStatModMap = flatMap(runesStatMods).reduce((map: Map<number, RuneStatMod>, obj: RuneStatMod) => {
+	map.set(obj.id, obj);
+	return map;
+}, new Map<number, RuneStatMod>());

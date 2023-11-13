@@ -5,15 +5,15 @@ import { cloneDeep } from "lodash";
 import { getDB } from "./better-sqlite3";
 
 export interface SettingDB extends DBConfig {
-  getSetting: () => SettingModel;
-  updateSetting: (key: string, val: any) => void;
+	getSetting: () => SettingModel;
+	updateSetting: (key: string, val: any) => void;
 }
 
 const useDB = (db: Database.Database): SettingDB => ({
-  tableName: "app_setting",
-  tableVersion: 1,
-  initTableIfNotExists() {
-    db.exec(`create table IF NOT EXISTS app_setting
+	tableName: "app_setting",
+	tableVersion: 1,
+	initTableIfNotExists() {
+		db.exec(`create table IF NOT EXISTS app_setting
 (
     key   TEXT    not null,
     value TEXT,
@@ -21,31 +21,27 @@ const useDB = (db: Database.Database): SettingDB => ({
 );
 
 `);
-  },
+	},
 
-  initData() {
-    const insert = db.prepare(
-      "INSERT INTO app_setting (key, value) VALUES (:key, :value)",
-    );
-    insert.run({ key: "app", value: JSON.stringify(settingModelDefault) });
-  },
+	initData() {
+		const insert = db.prepare("INSERT INTO app_setting (key, value) VALUES (:key, :value)");
+		insert.run({ key: "app", value: JSON.stringify(settingModelDefault) });
+	},
 
-  getSetting() {
-    let setting = cloneDeep(settingModelDefault);
-    const stmt = db.prepare("SELECT key, value FROM app_setting");
-    const config = stmt.get() as any;
-    let dbRecord = JSON.parse(config?.value || "{}");
-    return { ...setting, ...dbRecord } as SettingModel;
-  },
+	getSetting() {
+		let setting = cloneDeep(settingModelDefault);
+		const stmt = db.prepare("SELECT key, value FROM app_setting");
+		const config = stmt.get() as any;
+		let dbRecord = JSON.parse(config?.value || "{}");
+		return { ...setting, ...dbRecord } as SettingModel;
+	},
 
-  updateSetting(key: string, val: Object) {
-    const insert = db.prepare(
-      "insert into app_setting (key, value) values (:key, :value)",
-    );
-    const deleteStmt = db.prepare("delete from app_setting where key = :key");
-    deleteStmt.run({ key });
-    insert.run({ key, value: JSON.stringify(val) });
-  },
+	updateSetting(key: string, val: Object) {
+		const insert = db.prepare("insert into app_setting (key, value) values (:key, :value)");
+		const deleteStmt = db.prepare("delete from app_setting where key = :key");
+		deleteStmt.run({ key });
+		insert.run({ key, value: JSON.stringify(val) });
+	}
 });
 
 const settingDB = useDB(getDB());

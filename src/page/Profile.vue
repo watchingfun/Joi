@@ -7,7 +7,7 @@ const message = useMessage();
 </script>
 
 <template>
-  <div class="m-auto">开发中</div>
+	<div class="m-auto">开发中</div>
 </template>
 
 <style scoped></style>

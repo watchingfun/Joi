@@ -2,47 +2,47 @@
  * @see https://www.electron.build/configuration/configuration
  */
 {
-  "appId": "YourAppID",
-  "asar": true,
-  "productName": "Joi",
-  "copyright": "Copyright © 2023 ${author}",
-  "directories": {
-    "output": "release/${version}",
+  appId: "YourAppID",
+  asar: true,
+  productName: "Joi",
+  copyright: "Copyright © 2023 ${author}",
+  directories: {
+    output: "release/${version}"
   },
-  "files": [
+  files: [
     "dist",
     "dist-electron",
     "dist-native"
   ],
-  "win": {
-    "icon": "public/icon.ico",
-    "target": [
+  win: {
+    icon: "public/icon.ico",
+    target: [
       {
-        "target": "nsis",
-        "arch": [
+        target: "nsis",
+        arch: [
           "x64"
         ]
       }
     ],
-    "requestedExecutionLevel": "highestAvailable",
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    requestedExecutionLevel: "highestAvailable",
+    artifactName: "${productName}-Windows-${version}-Setup.${ext}"
   },
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: false
   },
-  "mac": {
-    "target": [
+  mac: {
+    target: [
       "dmg"
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    artifactName: "${productName}-Mac-${version}-Installer.${ext}"
   },
-  "linux": {
-    "target": [
+  linux: {
+    target: [
       "AppImage"
     ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
+    artifactName: "${productName}-Linux-${version}.${ext}"
   }
 }

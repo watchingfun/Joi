@@ -1,3 +1,1 @@
-export function gameMode(){
-
-}
+export function gameMode() {}

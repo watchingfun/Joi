@@ -4,23 +4,23 @@ import http2, { IncomingHttpHeaders, IncomingHttpStatusHeader } from "http2";
 import WebSocket, { ClientOptions } from "ws";
 
 interface Credentials {
-  /**
-   * The system port the LCU API is running on
-   */
-  port: number;
-  /**
-   * The password for the LCU API
-   */
-  password: string;
-  /**
-   * The system process id for the LeagueClientUx process
-   */
-  pid: number;
-  /**
-   * Riot Games' self-signed root certificate (contents of .pem). If
-   * it is `undefined` then unsafe authentication will be used.
-   */
-  certificate?: string;
+	/**
+	 * The system port the LCU API is running on
+	 */
+	port: number;
+	/**
+	 * The password for the LCU API
+	 */
+	password: string;
+	/**
+	 * The system process id for the LeagueClientUx process
+	 */
+	pid: number;
+	/**
+	 * Riot Games' self-signed root certificate (contents of .pem). If
+	 * it is `undefined` then unsafe authentication will be used.
+	 */
+	certificate?: string;
 }
 interface AuthenticationOptions {
     /**
@@ -72,7 +72,7 @@ interface AuthenticationOptions {
      *
      * Default: 'powershell'
      */
-    windowsShell?: 'cmd' | 'powershell';
+    windowsShell?: "cmd" | "powershell";
 }
 /**
  * Indicates that the application does not run on an environment that the
@@ -104,79 +104,96 @@ declare class ClientNotFoundError extends Error {
 declare function authenticate(options?: AuthenticationOptions): Promise<Credentials>;
 
 interface LeagueClientOptions {
-    /**
-     * The time duration in milliseconds between each check for a client
-     * disconnect
-     *
-     * Default: 2500
-     */
-    pollInterval: number;
+	/**
+	 * The time duration in milliseconds between each check for a client
+	 * disconnect
+	 *
+	 * Default: 2500
+	 */
+	pollInterval: number;
 }
 declare interface LeagueClient {
-    on(event: 'connect', callback: (credentials: Credentials) => void): this;
-    on(event: 'disconnect', callback: () => void): this;
+	on(event: "connect", callback: (credentials: Credentials) => void): this;
+
+	on(event: "disconnect", callback: () => void): this;
 }
 declare class LeagueClient extends EventEmitter {
-    options?: LeagueClientOptions | undefined;
-    private isListening;
-    credentials?: Credentials;
-    constructor(credentials: Credentials, options?: LeagueClientOptions | undefined);
-    /**
-     * Start listening for League Client processes
-     */
-    start(): void;
-    /**
-     * Stop listening for client stop/start
-     */
-    stop(): void;
-    private onTick;
+	options?: LeagueClientOptions | undefined;
+	private isListening;
+	credentials?: Credentials;
+
+	constructor(credentials: Credentials, options?: LeagueClientOptions | undefined);
+
+	/**
+	 * Start listening for League Client processes
+	 */
+	start(): void;
+
+	/**
+	 * Stop listening for client stop/start
+	 */
+	stop(): void;
+
+	private onTick;
 }
 
 declare type HeaderPair = [string, string];
 declare type JsonObjectLike = Record<string, unknown>;
 interface HttpResponse {
-    readonly ok: boolean;
-    /** Was the request redirected at some point? */
-    readonly redirected: boolean;
-    /** Http status code */
-    readonly status: number;
-    /** Get the raw text response. */
-    text(): string;
-    /** Attempt to parse the text response into json. Will throw if invalid json */
-    json<T>(): string;
-    /** Http response headers */
-    headers(): HeaderPair[];
+	readonly ok: boolean;
+	/** Was the request redirected at some point? */
+	readonly redirected: boolean;
+	/** Http status code */
+	readonly status: number;
+
+	/** Get the raw text response. */
+	text(): string;
+
+	/** Attempt to parse the text response into json. Will throw if invalid json */
+	json<T>(): string;
+
+	/** Http response headers */
+	headers(): HeaderPair[];
 }
 interface HttpRequestOptions<T = JsonObjectLike> {
-    /**
-     * Relative URL (relative to LCU API base url) to send api request to
-     */
-    url: string;
-    /**
-     * Http verb to use for request
-     */
-    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-    /**
-     * Optionally a body to pass to PUT/PATCH/POST/DELETE. This is typically
-     * an object type as the library will parse this into JSON and send along
-     * with the request
-     */
-    body?: T;
+	/**
+	 * Relative URL (relative to LCU API base url) to send api request to
+	 */
+	url: string;
+	/**
+	 * Http verb to use for request
+	 */
+	method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+	/**
+	 * Optionally a body to pass to PUT/PATCH/POST/DELETE. This is typically
+	 * an object type as the library will parse this into JSON and send along
+	 * with the request
+	 */
+	body?: T;
 }
 
 declare class Http1Response implements HttpResponse {
-    private _message;
-    private _raw;
-    readonly ok: boolean;
-    readonly redirected: boolean;
-    readonly status: number;
-    constructor(_message: IncomingMessage, _raw: Buffer);
-    json<T = JsonObjectLike>(): T;
-    text(): string;
-    buffer(): Buffer;
-    headers(): HeaderPair[];
+	private _message;
+	private _raw;
+	readonly ok: boolean;
+	readonly redirected: boolean;
+	readonly status: number;
+
+	constructor(_message: IncomingMessage, _raw: Buffer);
+
+	json<T = JsonObjectLike>(): T;
+
+	text(): string;
+
+	buffer(): Buffer;
+
+	headers(): HeaderPair[];
 }
-declare function createHttp1Request<T>(options: HttpRequestOptions<T>, credentials: Credentials): Promise<Http1Response>;
+
+declare function createHttp1Request<T>(
+    options: HttpRequestOptions<T>,
+    credentials: Credentials
+): Promise<Http1Response>;
 
 /**
  * Create a HTTP/2.0 client session.
@@ -185,29 +202,39 @@ declare function createHttp1Request<T>(options: HttpRequestOptions<T>, credentia
  */
 declare function createHttpSession(credentials: Credentials): Promise<http2.ClientHttp2Session>;
 declare class Http2Response implements HttpResponse {
-    private _headers;
-    private _stream;
-    private _raw;
-    readonly ok: boolean;
-    readonly redirected: boolean;
-    readonly status: number;
-    constructor(_headers: IncomingHttpHeaders & IncomingHttpStatusHeader, _stream: http2.ClientHttp2Stream, _raw: Buffer);
-    json<T = JsonObjectLike>(): T;
-    text(): string;
-    buffer(): Buffer;
-    headers(): HeaderPair[];
+	private _headers;
+	private _stream;
+	private _raw;
+	readonly ok: boolean;
+	readonly redirected: boolean;
+	readonly status: number;
+
+	constructor(_headers: IncomingHttpHeaders & IncomingHttpStatusHeader, _stream: http2.ClientHttp2Stream, _raw: Buffer);
+
+	json<T = JsonObjectLike>(): T;
+
+	text(): string;
+
+	buffer(): Buffer;
+
+	headers(): HeaderPair[];
 }
-declare function createHttp2Request<T>(options: HttpRequestOptions<T>, session: http2.ClientHttp2Session, credentials: Credentials): Promise<Http2Response>;
+
+declare function createHttp2Request<T>(
+	options: HttpRequestOptions<T>,
+	session: http2.ClientHttp2Session,
+	credentials: Credentials
+): Promise<Http2Response>;
 
 interface EventResponse<T = any> {
-    /**
-     * The uri this event was dispatched at
-     */
-    uri: string;
-    /**
-     * The data, if any
-     */
-    data: T;
+	/**
+	 * The uri this event was dispatched at
+	 */
+	uri: string;
+	/**
+	 * The data, if any
+	 */
+	data: T;
 }
 /**
  * Callback function for an subscription listener
@@ -219,32 +246,56 @@ declare type EventCallback<T = any> = (data: T | null, event: EventResponse<T>) 
  * WebSocket extension
  */
 declare class LeagueWebSocket extends WebSocket {
-    subscriptions: Map<string, EventCallback[]>;
-    constructor(address: string, options: ClientOptions);
-    subscribe<T extends any = any>(path: string, effect: EventCallback<T>): void;
-    unsubscribe(path: string): void;
+	subscriptions: Map<string, EventCallback[]>;
+
+	constructor(address: string, options: ClientOptions);
+
+	subscribe<T extends any = any>(path: string, effect: EventCallback<T>): void;
+
+	unsubscribe(path: string): void;
 }
 interface ConnectionOptions {
-    /**
-     * Options that will be used to authenticate to the LCU WebSocket API
-     */
-    authenticationOptions?: AuthenticationOptions;
-    /**
-     * Polling interval in case connection fails.
-     *
-     * Default: 1000
-     */
-    pollInterval?: number;
-    /**
-     * Maximum number of retries to connect to the LCU WebSocket API.
-     * If set to -1, it will retry indefinitely.
-     * If set to 0, it will not retry.
-     * Default: 10
-     */
-    maxRetries?: number;
+	/**
+	 * Options that will be used to authenticate to the LCU WebSocket API
+	 */
+	authenticationOptions?: AuthenticationOptions;
+	/**
+	 * Polling interval in case connection fails.
+	 *
+	 * Default: 1000
+	 */
+	pollInterval?: number;
+	/**
+	 * Maximum number of retries to connect to the LCU WebSocket API.
+	 * If set to -1, it will retry indefinitely.
+	 * If set to 0, it will not retry.
+	 * Default: 10
+	 */
+	maxRetries?: number;
 }
 
 declare function createWebSocketConnection(credentials: Credentials): Promise<LeagueWebSocket>;
 
-
-export { AuthenticationOptions, ClientNotFoundError, ConnectionOptions, Credentials, EventCallback, EventResponse, HeaderPair, Http1Response, Http2Response, HttpRequestOptions, HttpResponse, InvalidPlatformError, JsonObjectLike, LeagueClient, LeagueClientOptions, LeagueWebSocket, authenticate, createHttp1Request, createHttp2Request, createHttpSession, createWebSocketConnection };
+export {
+	AuthenticationOptions,
+	ClientNotFoundError,
+	ConnectionOptions,
+	Credentials,
+	EventCallback,
+	EventResponse,
+	HeaderPair,
+	Http1Response,
+	Http2Response,
+	HttpRequestOptions,
+	HttpResponse,
+	InvalidPlatformError,
+	JsonObjectLike,
+	LeagueClient,
+	LeagueClientOptions,
+	LeagueWebSocket,
+	authenticate,
+	createHttp1Request,
+	createHttp2Request,
+	createHttpSession,
+	createWebSocketConnection
+};

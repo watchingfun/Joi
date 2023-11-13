@@ -31,28 +31,28 @@ XWehWA==
 `;
 
 export async function getAuthInfo(): Promise<Credentials> {
-  try {
-    //使用管道符解决wmic输出utf16le编码到文件的问题
-    //https://stackoverflow.com/questions/55310573/wmic-command-in-batch-outputting-non-utf-8-text-files
-    const rawStdout = await executeCommand(
-      "wmic PROCESS WHERE name='LeagueClientUx.exe' GET commandline /value  | find /v \"\"",
-    );
-    const portRegex = /--app-port=([0-9]+)(?= *"| --)/;
-    const passwordRegex = /--remoting-auth-token=(.+?)(?= *"| --)/;
-    const pidRegex = /--app-pid=([0-9]+)(?= *"| --)/;
-    const stdout = rawStdout.replace(/\n|\r/g, "");
-    const [, port] = stdout.match(portRegex);
-    const [, password] = stdout.match(passwordRegex);
-    const [, pid] = stdout.match(pidRegex);
-    logger.info("lcu port: %s password: %s", port, password);
-    return {
-      port: Number(port),
-      pid: Number(pid),
-      password,
-      certificate: RIOT_GAMES_CERT,
-    };
-  } catch (e) {
-    logger.error("getAuthInfo", e instanceof Error ? e.message : e);
-    throw new Error("提取LCU进程信息失败");
-  }
+    try {
+			//使用管道符解决wmic输出utf16le编码到文件的问题
+			//https://stackoverflow.com/questions/55310573/wmic-command-in-batch-outputting-non-utf-8-text-files
+			const rawStdout = await executeCommand(
+				"wmic PROCESS WHERE name='LeagueClientUx.exe' GET commandline /value  | find /v \"\""
+			);
+			const portRegex = /--app-port=([0-9]+)(?= *"| --)/;
+			const passwordRegex = /--remoting-auth-token=(.+?)(?= *"| --)/;
+			const pidRegex = /--app-pid=([0-9]+)(?= *"| --)/;
+			const stdout = rawStdout.replace(/\n|\r/g, "");
+			const [, port] = stdout.match(portRegex);
+			const [, password] = stdout.match(passwordRegex);
+			const [, pid] = stdout.match(pidRegex);
+			logger.info("lcu port: %s password: %s", port, password);
+			return {
+				port: Number(port),
+				pid: Number(pid),
+				password,
+				certificate: RIOT_GAMES_CERT
+			};
+		} catch (e) {
+			logger.error("getAuthInfo", e instanceof Error ? e.message : e);
+			throw new Error("提取LCU进程信息失败");
+		}
 }
