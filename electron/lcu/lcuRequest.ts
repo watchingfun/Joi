@@ -1,23 +1,22 @@
 import {
-  createHttp1Request,
-  createHttp2Request,
-  createHttpSession,
-  EventCallback,
-  HttpRequestOptions,
+	createHttp1Request,
+	createHttp2Request,
+	createHttpSession,
+	EventCallback,
+	HttpRequestOptions
 } from "../lib/league-connect";
 import { getCredentials, getLeagueWebSocket } from "./handleLCU";
 import { ClientHttp2Session } from "http2";
 import {
-  Action,
-  ChampSelectPhaseSession,
-  Conversation,
-  GameDetail,
-  GameSessionData,
-  MatchHistoryQueryResult,
-  PageRange,
-  PlayerChampionSelection,
-  RPC,
-  SummonerInfo,
+	Action,
+	ChampSelectPhaseSession,
+	Conversation,
+	GameDetail,
+	GameSessionData,
+	MatchHistoryQueryResult,
+	PageRange,
+	RPC,
+	SummonerInfo
 } from "../types/lcuType";
 import logger from "../lib/logger";
 import { RuneConfig } from "../types/type";
@@ -27,12 +26,12 @@ import { GameMode, PositionName } from "../types/opgg_rank_type";
 import { PerkRune } from "../types/rune";
 
 const httpRequest = async <T>(option: HttpRequestOptions<any>) => {
-  const response = await createHttp1Request(option, getCredentials());
-  if (response.ok) {
-    return (response.text() ? (response.json() as T) : null) as T;
-  } else {
-    throw new Error((response.json() as RPC).message);
-  }
+	const response = await createHttp1Request(option, getCredentials());
+	if (response.ok) {
+		return (response.text() ? (response.json() as T) : null) as T;
+	} else {
+		throw new Error((response.json() as RPC).message);
+	}
 };
 
 //获取当前召唤师信息
@@ -72,14 +71,6 @@ export function listenChampSelect(callback?: Function): Function {
   return () => ws.unsubscribe("/lol-champ-select/v1/session");
 }
 
-// (
-//     data: ChampSelectPhaseSession,
-//     event: EventResponse<ChampSelectPhaseSession>,
-// ) => {
-//   //callback && callback(data);
-//   //logger.debug("champ-select-session", JSON.stringify(data));
-// },
-
 // 获取当前选择的英雄
 export async function getCurrentChampId() {
   return await httpRequest<number>({
@@ -87,17 +78,6 @@ export async function getCurrentChampId() {
     url: "/lol-champ-select/v1/current-champion",
   });
 }
-
-// 获取召唤师选取的英雄记录
-const getSummonerSelectChampMap = (
-  playerChampionSelections: PlayerChampionSelection[],
-) => {
-  let champDict: Record<string, number> = {};
-  for (const summonerSelect of playerChampionSelections) {
-    champDict[summonerSelect.summonerInternalName] = summonerSelect.championId;
-  }
-  return champDict;
-};
 
 // 查询对局游戏信息(召唤师ID,昵称,英雄)
 export async function getGameInfo() {
@@ -223,21 +203,6 @@ export const queryGameDetails = async (gameId: number) => {
   });
 };
 
-//获取游戏模式
-export function getGameModeByQueue(
-  queue: number,
-  defaultValue: GameMode = "rank",
-): GameMode {
-  if ([420, 430, 440].includes(queue)) {
-    return "rank";
-  } else if (queue === 450) {
-    return "aram";
-  } else if ([900, 1010, 1900].includes(queue)) {
-    return "urf";
-  } else {
-    return defaultValue;
-  }
-}
 
 export const getCurrentQueue = async () => {
   const res = await httpRequest<GameSessionData>({

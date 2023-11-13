@@ -1,18 +1,12 @@
 import {createHttp1Request} from "../lib/league-connect";
 import {getCredentials} from "./handleLCU";
-import {
-  getCurrentQueue,
-  getCurrentSummoner,
-  getGameInfo,
-  getGameModeByQueue,
-  listenChampSelect,
-  queryMatchHistory,
-} from "./lcuRequest";
+import {getCurrentQueue, getCurrentSummoner, getGameInfo, listenChampSelect, queryMatchHistory,} from "./lcuRequest";
 import logger from "../lib/logger";
 import {setting} from "../config/";
 import {ChampSelectPhaseSession} from "../types/lcuType";
 import {clearFlag, handleGameSessionData} from "./handleGameSessionData";
 import {sendToWebContent} from "../util/util";
+import {getGameModeByQueue} from "./utils";
 import {lcuConst} from "../const/const";
 
 // 自动接受对局
@@ -69,6 +63,7 @@ export async function handelGameStart(eventKey: string) {
   } finally {
     if (unListenChampSelect) {
       unListenChampSelect();
+			unListenChampSelect = null;
     }
   }
 }
