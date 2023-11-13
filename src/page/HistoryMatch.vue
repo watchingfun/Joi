@@ -30,6 +30,9 @@ function refresh() {
 }
 
 function changeQueryRange() {
+	if (page.value > lcuStore.pageRange) {
+		page.value = 1;
+	}
 	fetchData({ puuid: lcuStore.querySummonerInfo?.puuid });
 }
 
@@ -189,17 +192,6 @@ const drawerShow = ref(false);
 }
 </style>
 <style>
-.n-spin-container {
-	display: flex;
-	flex-grow: 1;
-	height: 0;
-}
-
-.n-spin-content {
-	display: flex;
-	flex: 1;
-}
-
 .detail-drawer {
 	background-color: #181818e6 !important;
 	backdrop-filter: blur(10px);

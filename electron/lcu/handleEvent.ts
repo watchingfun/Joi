@@ -1,13 +1,13 @@
-import { createHttp1Request } from "../lib/league-connect";
-import { getCredentials } from "./handleLCU";
-import { getCurrentQueue, getCurrentSummoner, getGameInfo, listenChampSelect, queryMatchHistory } from "./lcuRequest";
+import {createHttp1Request} from "../lib/league-connect";
+import {getCredentials} from "./handleLCU";
+import {getCurrentQueue, getGameInfo, listenChampSelect} from "./lcuRequest";
 import logger from "../lib/logger";
-import { setting } from "../config/";
-import { ChampSelectPhaseSession } from "../types/lcuType";
-import { clearFlag, handleGameSessionData } from "./handleGameSessionData";
-import { sendToWebContent } from "../util/util";
-import { getGameModeByQueue } from "./utils";
-import { lcuConst } from "../const/const";
+import {setting} from "../config/";
+import {ChampSelectPhaseSession} from "../types/lcuType";
+import {clearFlag, handleGameSessionData} from "./handleGameSessionData";
+import {sendToWebContent} from "../util/util";
+import {getGameModeByQueue} from "./utils";
+import {lcuConst} from "../const/const";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -78,7 +78,6 @@ export function handelPreEndOfGame(eventKey: string) {
 	if (eventKey !== "PreEndOfGame") {
 		return;
 	}
-	getCurrentSummoner().then((info) => queryMatchHistory(info.puuid));
 }
 
 export default {

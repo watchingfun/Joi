@@ -10,8 +10,9 @@ import {
 	TeamMemberInfo
 } from "@@/types/lcuType";
 import useAppStore from "@/store/app";
-import router from "@/router";
+import useSettingStore from "@/store/setting";
 import { GameMode, PositionName } from "@@/types/opgg_rank_type";
+import { analysisTeam, generateAnalysisMsg } from "@/utils/gameAnalysis";
 
 export enum ConnectStatusEnum {
 	connecting,
@@ -60,11 +61,23 @@ const useLCUStore = defineStore("lcu", () => {
 	const myTeam = ref<TeamMemberInfo[]>([]);
 	const theirTeam = ref<TeamMemberInfo[]>([]);
 
-	watch(gameFlowPhase, (n, o) => {
-		if (n === "ChampSelect") {
-			void router.push({ name: "inGame" });
+	const queryMyTeamFlag = ref(false);
+	const queryTheirTeamFlag = ref(false);
+
+	async function analysisMyTeam() {
+		queryMyTeamFlag.value = true;
+		myTeam.value = await analysisTeam(myTeam.value).finally(() => (queryMyTeamFlag.value = false));
+		if (useSettingStore().settingModel.autoSendMyTeamAnalysis) {
+			const msg = generateAnalysisMsg(myTeam.value);
+			console.log("队伍分析", msg);
+			void lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, msg);
 		}
-	});
+	}
+
+	async function analysisTheirTeam() {
+		queryTheirTeamFlag.value = true;
+		await analysisTeam(theirTeam.value).finally(() => (queryTheirTeamFlag.value = false));
+	}
 
 	function updateChampId(id: number) {
 		champId.value = id;
@@ -179,7 +192,9 @@ const useLCUStore = defineStore("lcu", () => {
 		matchHistoryQueryResult,
 		refreshConnectStatus,
 		querySummonerInfo,
-		search
+		search,
+		analysisMyTeam,
+		analysisTheirTeam
 	};
 });
 

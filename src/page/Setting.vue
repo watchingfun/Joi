@@ -64,6 +64,11 @@ function handleCheckUpdate() {
 								<n-radio size="large" :value="false">自定义</n-radio>
 							</n-radio-group>
 						</div>
+
+						<h2 class="text-sm pt-2 font-bold">自动发送当前队伍评分：</h2>
+						<div class="py-[10px]">
+							<n-switch v-model:value="settingModel.autoSendMyTeamAnalysis"></n-switch>
+						</div>
 					</div>
 				</div>
 

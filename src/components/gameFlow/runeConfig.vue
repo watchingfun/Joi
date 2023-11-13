@@ -72,7 +72,7 @@ watch(
 </script>
 
 <template>
-	<n-spin :show="loadingRune" class="flex">
+	<n-spin :show="loadingRune" class="flex flex-1">
 		<n-tabs style="height: 100%" animated default-value="opgg" justify-content="space-evenly" type="line">
 			<n-tab-pane name="opgg" tab="OPGG">
 				<n-carousel draggable :slides-per-view="4" :loop="false" :dot-type="'line'">
@@ -98,5 +98,9 @@ watch(
 <style scoped>
 .rune-card {
 	width: 130px;
+}
+
+:deep(.n-spin-content) {
+	flex: 1;
 }
 </style>

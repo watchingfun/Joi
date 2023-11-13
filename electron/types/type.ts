@@ -7,6 +7,7 @@ export interface SettingModel {
 	autoAcceptDelay: number;
 	autoConfigRune: boolean;
 	autoConfigRuneOPGGPriority: boolean;
+	autoSendMyTeamAnalysis: boolean;
 
 	[prop: string]: any;
 }
@@ -17,7 +18,8 @@ export const settingModelDefault: SettingModel = {
 	autoAccept: true, //自动接收对局
 	autoAcceptDelay: 0, //自动接收对局延迟
 	autoConfigRune: false, //自动配置符文
-	autoConfigRuneOPGGPriority: false //自动配置符文优先使用opgg
+	autoConfigRuneOPGGPriority: false, //自动配置符文优先使用opgg
+	autoSendMyTeamAnalysis: false // 自动发送我方队伍分析数据到聊天室
 };
 
 export interface CustomRune {

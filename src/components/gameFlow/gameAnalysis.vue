@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import useLCUStore from "@/store/lcu";
+
+const lcuStore = useLCUStore();
+</script>
 
 <template>
 	<div class="flex"></div>
