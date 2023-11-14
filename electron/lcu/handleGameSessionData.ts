@@ -45,6 +45,7 @@ export async function handleGameSessionData(data: ChampSelectPhaseSession, gameM
 	const currentChampId = await getCurrentChampId().catch(() => {
 		return 0;
 	});
+	logger.info("currentChampId: ", currentChampId);
 	//发送给前台自动设置符文
 	if (currentChampId && currentChampId !== champId) {
 		champId = currentChampId;

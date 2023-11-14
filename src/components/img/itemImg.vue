@@ -27,7 +27,7 @@ defineOptions({
 const url = computed(() => {
 	if (props.itemId === 0) {
 		return "./img/blank.png";
-	} else return "item-images/" + props.itemId + ".png";
+	} else return "https://game.gtimg.cn/images/lol/act/img/item/" + props.itemId + ".png";
 });
 // props
 const props = defineProps({

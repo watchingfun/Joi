@@ -76,7 +76,9 @@ const useLCUStore = defineStore("lcu", () => {
 
 	async function analysisTheirTeam() {
 		queryTheirTeamFlag.value = true;
-		await analysisTeam(theirTeam.value).finally(() => (queryTheirTeamFlag.value = false));
+		theirTeam.value = await analysisTeam(theirTeam.value).finally(() => (queryTheirTeamFlag.value = false));
+		const msg = generateAnalysisMsg(theirTeam.value);
+		console.log("对方队伍分析", msg);
 	}
 
 	function updateChampId(id: number) {
@@ -135,6 +137,7 @@ const useLCUStore = defineStore("lcu", () => {
 		const myTeamMemberIndex = teams.findIndex((teams) => teams.find((t) => t.puuid === summonerInfo.value?.puuid));
 		updateMyTeamInfo(teams[myTeamMemberIndex]);
 		updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
+		void analysisTheirTeam();
 	}
 
 	async function fetchTeamMembersGameDetail(teams: TeamMemberInfo[]) {
@@ -151,15 +154,17 @@ const useLCUStore = defineStore("lcu", () => {
 
 	//刚进入房间时就只能得到召唤师信息，进入游戏前得到位置英雄等信息然后更新下
 	function updateMyTeamInfo(teamMembers: TeamMember[]) {
-		myTeam.value = teamMembers.map((t) => {
-			return {
-				assignedPosition: t.selectedPosition?.toLowerCase(),
-				championId: t.championId,
-				puuid: t.puuid,
-				summonerName: t.summonerName,
-				gameDetail: myTeam.value.find((i) => i.puuid === t.puuid)?.gameDetail
-			} as TeamMemberInfo;
-		});
+		myTeam.value = teamMembers
+			.map((t) => {
+				return {
+					assignedPosition: t.selectedPosition?.toLowerCase(),
+					championId: t.championId,
+					puuid: t.puuid,
+					summonerName: t.summonerName,
+					gameDetail: myTeam.value.find((i) => i.puuid === t.puuid)?.gameDetail
+				} as TeamMemberInfo;
+			})
+			.sort();
 	}
 
 	function updateTheirTeamInfo(teamMembers: TeamMember[]) {
@@ -182,7 +187,9 @@ const useLCUStore = defineStore("lcu", () => {
 		currentGameMode,
 		currentPosition,
 		myTeam,
+		queryMyTeamFlag,
 		theirTeam,
+		queryTheirTeamFlag,
 		gameFlowPhase,
 		connectStatus,
 		getCurrentSummoner,

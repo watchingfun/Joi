@@ -1,4 +1,6 @@
-export type PositionName = "adc" | "jungle" | "mid" | "support" | "top";
+export const PositionNameArr = ["adc", "jungle", "mid", "support", "top"] as const;
+export type PositionName = (typeof PositionNameArr)[number];
+
 export type GameMode = "rank" | "aram" | "urf";
 export type RoleType = keyof typeof roleMap;
 export const roleMap = {
@@ -24,6 +26,14 @@ export const positionMap = {
 	JUNGLE: "打野",
 	SUPPORT: "辅助"
 };
+
+export const assignedPositionNameMap = {
+	top: "上单",
+	mid: "中单",
+	adc: "射手",
+	jungle: "打野",
+	support: "辅助"
+} as Record<string, string>;
 
 export interface ChampionPopularData {
 	data: SummaryData;

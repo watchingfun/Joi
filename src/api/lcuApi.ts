@@ -19,7 +19,9 @@ async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
 		}
 	} catch (err) {
 		if (err instanceof Error) {
-			message.error(err.message);
+			const reg = /Error invoking remote method .+: Error: (.+)/;
+			const msg = reg.exec(err.message)?.[1] || err.message;
+			message.error(msg);
 		}
 		console.log("an error occurred: ", err);
 		throw err;

@@ -2,18 +2,16 @@ import { GameDetail, TeamMemberInfo } from "@@/types/lcuType";
 import lcuApi from "@/api/lcuApi";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
-	return (
-		await Promise.all(
-			teams.map(async (t) => {
-				const gameDetails = (await lcuApi.queryMatchHistory(t.puuid, 1))?.flatMap((i) => i.games.games);
-				return {
-					...t,
-					gameDetail: gameDetails,
-					score: computeScore(gameDetails)
-				} as TeamMemberInfo;
-			})
-		)
-	).sort((a, b) => a.score! - b.score!);
+	return await Promise.all(
+		teams.map(async (t) => {
+			const gameDetails = (await lcuApi.queryMatchHistory(t.puuid, 1))?.flatMap((i) => i.games.games);
+			return {
+				...t,
+				gameDetail: gameDetails,
+				score: computeScore(gameDetails)
+			} as TeamMemberInfo;
+		})
+	);
 }
 
 export function computeScore(gameDetail?: GameDetail[]) {
@@ -30,7 +28,8 @@ export function computeScore(gameDetail?: GameDetail[]) {
 	return (
 		filterResults.reduce((previousValue, detail) => {
 			const info = detail.participants[0];
-			const { kills, assists, deaths } = info.stats;
+			let { kills, assists, deaths } = info.stats;
+			deaths = deaths || 1;
 			let score =
 				info.timeline.role !== "SUPPORT"
 					? (kills * 1.2 + assists * 0.8) / (deaths * 1.2)
@@ -46,7 +45,7 @@ export function computeScore(gameDetail?: GameDetail[]) {
 }
 
 export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
-	let msg = ["\n"];
+	let msg = ["\n\n"];
 	teams
 		.map((t) => {
 			return { puuid: t.puuid, summonerName: t.summonerName, score: t.score };

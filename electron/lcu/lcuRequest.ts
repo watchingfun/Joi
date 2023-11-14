@@ -44,10 +44,20 @@ export async function getCurrentSummoner() {
 
 //通过昵称召唤师信息
 export async function getSummonerByName(nickname: string) {
-	return await httpRequest<SummonerInfo>({
-		method: "GET",
-		url: `/lol-summoner/v1/summoners/?name=${encodeURI(nickname)}`
-	});
+	const response = await createHttp1Request(
+		{
+			method: "GET",
+			url: `/lol-summoner/v1/summoners/?name=${encodeURI(nickname)}`
+		},
+		getCredentials()
+	);
+	if (response.ok) {
+		return response.json() as SummonerInfo;
+	} else if (response.status === 404) {
+		throw new Error("找不到该召唤师: " + nickname);
+	} else {
+		throw new Error((response.json() as RPC).message);
+	}
 }
 
 //通过puuid查询召唤师信息
@@ -99,6 +109,8 @@ export async function applyRune(data: RuneConfig) {
 		await httpRequest({
 			method: "DELETE",
 			url: `lol-perks/v1/pages/${current.id}`
+		}).catch(() => {
+			throw new Error("删除符文页出错");
 		});
 	}
 	// 写入新的符文页

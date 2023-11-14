@@ -2,7 +2,7 @@
 import { Stats } from "@@/types/lcuType";
 import { toRefs } from "vue";
 import RuneImg from "@/components/img/runeImg.vue";
-import RuneCard from "@/components/img/RuneCard.vue";
+import RuneCard from "@/components/img/runeCardImg.vue";
 
 const props = defineProps<{ stats: Stats }>();
 const { stats } = toRefs(props);

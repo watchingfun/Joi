@@ -93,6 +93,17 @@ watch(
 			cacheQueryGameDetails(value)
 				.then((res) => {
 					gameDetail.value = res;
+
+					//todo 测试用 要删除
+					const test = res!.participantIdentities.map((p) => ({
+						puuid: p.player.puuid,
+						summonerName: p.player.summonerName
+					}));
+					lcuStore.myTeam = test.splice(0, 5);
+					lcuStore.theirTeam = test;
+					lcuStore.analysisMyTeam();
+					lcuStore.analysisTheirTeam();
+					//////////
 				})
 				.finally(() => setTimeout(() => (fetchDetailLoading.value = false), 100));
 	}

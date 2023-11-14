@@ -6,6 +6,9 @@ import MatchmakingFlow from "@/components/gameFlow/matchmakingFlow.vue";
 import InGameFlow from "@/components/gameFlow/inGameFlow.vue";
 
 const lcuStore = useLCUStore();
+//todo 测试用 要删除
+lcuStore.gameFlowPhase = "ChampSelect";
+lcuStore.queryMyTeamFlag = false;
 </script>
 
 <template>
