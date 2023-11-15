@@ -1,5 +1,6 @@
 import { GameDetail, TeamMemberInfo } from "@@/types/lcuType";
 import lcuApi from "@/api/lcuApi";
+import { chatDividerLine } from "@@/const/const";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
 	return await Promise.all(
@@ -45,12 +46,12 @@ export function computeScore(gameDetail?: GameDetail[]) {
 }
 
 export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
-	let msg = ["\n\n"];
+	let msg = ["\n" + chatDividerLine];
 	teams
 		.map((t) => {
 			return { puuid: t.puuid, summonerName: t.summonerName, score: t.score };
 		})
 		.sort((a, b) => (a.score! > b.score! ? 1 : a.score === b.score ? 0 : -1))
-		.forEach((i) => msg.push(`${i.summonerName}: ${i.score}`));
-	return msg.join("\n");
+		.forEach((i) => msg.push(`${i.summonerName}:\t${i.score}`));
+	return msg.join("\n") + "\n" + chatDividerLine + "——WeGame";
 }

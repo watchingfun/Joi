@@ -25,6 +25,7 @@ const message = useMessage();
 
 const loadingRune = ref(false);
 
+//todo 自动应用符文放到 store,避免组件未加载无法执行
 const applyRune = (rune: Rune | CustomRune) => {
 	let name: string;
 	if ("name" in rune) {

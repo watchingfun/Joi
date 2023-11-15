@@ -603,7 +603,7 @@ export interface Ban {
 	pickTurn: number;
 }
 
-export type AssignedPosition = "bottom" | "jungle" | "middle" | "utility" | "top" | string;
+export type AssignedPosition = "bottom" | "jungle" | "middle" | "utility" | "top" | "none" | string;
 
 export interface SelectedResult {
 	championId: number;

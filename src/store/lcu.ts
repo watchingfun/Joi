@@ -156,12 +156,14 @@ const useLCUStore = defineStore("lcu", () => {
 	function updateMyTeamInfo(teamMembers: TeamMember[]) {
 		myTeam.value = teamMembers
 			.map((t) => {
+				const originInfo = myTeam.value.find((i) => i.puuid === t.puuid);
 				return {
 					assignedPosition: t.selectedPosition?.toLowerCase(),
 					championId: t.championId,
 					puuid: t.puuid,
 					summonerName: t.summonerName,
-					gameDetail: myTeam.value.find((i) => i.puuid === t.puuid)?.gameDetail
+					score: originInfo!.score,
+					gameDetail: originInfo!.gameDetail
 				} as TeamMemberInfo;
 			})
 			.sort();

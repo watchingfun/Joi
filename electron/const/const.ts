@@ -22,4 +22,4 @@ export const lcuConst = {
 	sendChatMsgToRoom: "lcu:sendChatMsgToRoom" //发送聊天消息到对局房间
 };
 
-export const chatDividerLine = "----------------------------------------------------------------------------------";
+export const chatDividerLine = "-----------------------------------------";

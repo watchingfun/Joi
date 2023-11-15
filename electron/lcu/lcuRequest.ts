@@ -155,6 +155,8 @@ export const sendChatMsgToRoom = async (conversationId: string, msg: string, typ
 			body: msg,
 			type: type
 		}
+	}).catch((e) => {
+		throw new Error("发送聊天到房间出错: " + e.message);
 	});
 };
 
@@ -165,28 +167,35 @@ export const cursorQueryMatchHistory = async (
 	begIndex: number,
 	endIndex: number
 ) => {
-	return (
-		await createHttp2Request(
-			{
-				method: "GET",
-				url: `/lol-match-history/v1/products/lol/${puuid}/matches?begIndex=${begIndex}&endIndex=${endIndex}`
-			},
-			session,
-			getCredentials()
-		)
-	).json() as MatchHistoryQueryResult;
+	const response = await createHttp2Request(
+		{
+			method: "GET",
+			url: `/lol-match-history/v1/products/lol/${puuid}/matches?begIndex=${begIndex}&endIndex=${endIndex}`
+		},
+		session,
+		getCredentials()
+	);
+	if (response.ok) {
+		return response.json() as MatchHistoryQueryResult;
+	} else {
+		logger.error("QueryMatchHistory error", response.text(), puuid, begIndex, endIndex);
+		throw new Error((response.json() as RPC).message);
+	}
 };
 
 // 根据召唤师ID查询战绩
 export const queryMatchHistory = async (puuid: string, page: PageRange = 1) => {
 	let specialDict: MatchHistoryQueryResult[] = [];
 	const session = await createHttpSession(getCredentials());
-	for (let i = 0; i < page; i++) {
-		const matchHistory = await cursorQueryMatchHistory(session, puuid, 20 * i, 20 * (i + 1) - 1);
-		specialDict.push(matchHistory);
+	try {
+		for (let i = 0; i < page; i++) {
+			const matchHistory = await cursorQueryMatchHistory(session, puuid, 20 * i, 20 * (i + 1) - 1);
+			specialDict.push(matchHistory);
+		}
+		return specialDict;
+	} finally {
+		session.close();
 	}
-	session.close();
-	return specialDict;
 };
 
 //获取一局游戏的详细数据

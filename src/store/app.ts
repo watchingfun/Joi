@@ -5,7 +5,7 @@ import { ConfigProviderProps, createDiscreteApi, darkTheme, lightTheme } from "n
 
 const useAppStore = defineStore("app", () => {
 	const bootTime = ref(dayjs());
-	const themeRef = ref<"light" | "dark">("light");
+	const themeRef = ref<"light" | "dark">("dark");
 	const configProviderPropsRef = computed<ConfigProviderProps>(() => ({
 		theme: themeRef.value === "light" ? lightTheme : darkTheme
 	}));
