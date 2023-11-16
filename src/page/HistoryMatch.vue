@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
+import useLCUStore from "@/store/lcu";
 import GameInfoList from "@/components/GameInfoList.vue";
 import GameDetailInfo from "@/components/GameDetailInfo.vue";
 import lcuApi from "@/api/lcuApi";
@@ -9,15 +9,15 @@ import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";
 import ProfileImg from "@/components/img/profileImg.vue";
-import router from "@/router";
 import LazyDeferred from "@/components/LazyDeferred";
-import { onBeforeRouteUpdate } from "vue-router";
 import EpicLoading from "@/components/EpicLoading.vue";
+import useGameHistory from "@/hooks/useGameHistory";
 
 const lcuStore = useLCUStore();
 const page = ref(1);
-const loading = ref(false);
 const message = useMessage();
+
+const { loading, fetchData } = useGameHistory();
 
 const matchHistoryList = computed(() => {
 	return lcuStore.matchHistoryQueryResult?.[page.value - 1]?.games?.games || [];
@@ -36,24 +36,6 @@ function changeQueryRange() {
 	fetchData({ puuid: lcuStore.querySummonerInfo?.puuid });
 }
 
-function fetchData({
-	summonerName,
-	puuid
-}: {
-	summonerName?: string;
-	puuid?: string;
-} = {}) {
-	console.log("fetchData", { summonerName, puuid });
-	if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
-		message.error("未连接客户端！");
-		return;
-	}
-	loading.value = true;
-	lcuStore.getMatchHistoryQueryResult({ summonerName, puuid }).finally(() => {
-		loading.value = false;
-	});
-}
-
 const clickedGameInfo = ref<GameDetail>();
 
 const gameDetail = ref<GameDetail>();
@@ -67,10 +49,7 @@ function jumpDetail(gameRecord: GameDetail) {
 
 function jumpSummoner(player: Player) {
 	drawerShow.value = false;
-	router.push({
-		name: "historyMatch",
-		params: { puuid: player.puuid }
-	});
+	fetchData({ puuid: player.puuid });
 }
 
 //缓存对局查询
@@ -78,12 +57,6 @@ const cacheQueryGameDetails = memoize(lcuApi.queryGameDetails);
 cacheQueryGameDetails.cache = new LRUCache({ max: 500 });
 
 onMounted(() => fetchData());
-
-onBeforeRouteUpdate((to, from, next) => {
-	const { params } = to;
-	fetchData(params);
-	next();
-});
 
 watch(
 	() => clickedGameInfo.value?.gameId,

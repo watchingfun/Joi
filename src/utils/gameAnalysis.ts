@@ -46,12 +46,12 @@ export function computeScore(gameDetail?: GameDetail[]) {
 }
 
 export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
-	let msg = ["\n" + chatDividerLine];
+	let msg = ["队伍评分：\n" + chatDividerLine];
 	teams
 		.map((t) => {
 			return { puuid: t.puuid, summonerName: t.summonerName, score: t.score };
 		})
 		.sort((a, b) => (a.score! > b.score! ? 1 : a.score === b.score ? 0 : -1))
 		.forEach((i) => msg.push(`${i.summonerName}:\t${i.score}`));
-	return msg.join("\n") + "\n" + chatDividerLine + "——WeGame";
+	return msg.join("\n") + "\n" + chatDividerLine;
 }

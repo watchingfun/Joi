@@ -15,12 +15,7 @@ const emit = defineEmits<{
 <template>
 	<div>
 		<template v-for="(record, index) in matchHistoryList" :key="record.gameId">
-			<lazy-component>
-				<template #loading>
-					<div style="height: 100px"></div>
-				</template>
-				<GameInfo :record="record" @click="() => emit('jumpDetail', record)"></GameInfo>
-			</lazy-component>
+			<GameInfo :record="record" @click="() => emit('jumpDetail', record)"></GameInfo>
 			<div class="divider" v-if="index + 1 !== matchHistoryList?.length" />
 		</template>
 	</div>

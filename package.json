@@ -1,6 +1,6 @@
 {
   "name": "joi",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "main": "dist-electron/main.js",
   "repository": {
     "type": "git",
@@ -61,7 +61,6 @@
     "echarts": "^5.4.3",
     "electron-acrylic-window": "^0.5.11",
     "epic-spinners": "^2.0.0",
-    "lazy-load-vue3": "^2.0.1",
     "lodash": "^4.17.21",
     "lru-cache": "^10.0.1",
     "overlayscrollbars-vue": "^0.5.5",

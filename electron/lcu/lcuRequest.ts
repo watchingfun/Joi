@@ -24,6 +24,7 @@ import { getChampData, getNoneRankRunes, getRankRunes } from "./opgg";
 import runesDB from "../db/runes";
 import { GameMode, PositionName } from "../types/opgg_rank_type";
 import { PerkRune } from "../types/rune";
+import { retryWrapper } from "../util/util";
 
 const httpRequest = async <T>(option: HttpRequestOptions<any>) => {
 	const response = await createHttp1Request(option, getCredentials());
@@ -92,7 +93,7 @@ export async function getGameInfo() {
 		method: "GET",
 		url: `/lol-gameflow/v1/session`
 	});
-	logger.debug("matchSession", JSON.stringify(matchSession));
+	//logger.debug("matchSession", JSON.stringify(matchSession));
 	return matchSession;
 }
 
@@ -189,7 +190,10 @@ export const queryMatchHistory = async (puuid: string, page: PageRange = 1) => {
 	const session = await createHttpSession(getCredentials());
 	try {
 		for (let i = 0; i < page; i++) {
-			const matchHistory = await cursorQueryMatchHistory(session, puuid, 20 * i, 20 * (i + 1) - 1);
+			const matchHistory = await retryWrapper(
+				() => cursorQueryMatchHistory(session, puuid, 20 * i, 20 * (i + 1) - 1),
+				500
+			)();
 			specialDict.push(matchHistory);
 		}
 		return specialDict;

@@ -26,7 +26,7 @@ const routes = [
 				meta: { title: "对局" }
 			},
 			{
-				path: "historyMatch/:summonerName?/:puuid?",
+				path: "historyMatch",
 				name: "historyMatch",
 				component: HistoryMatch,
 				meta: { title: "历史战绩" }

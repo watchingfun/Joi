@@ -64,13 +64,17 @@ const useLCUStore = defineStore("lcu", () => {
 	const queryMyTeamFlag = ref(false);
 	const queryTheirTeamFlag = ref(false);
 
+	function sendTeamScoreToRoom() {
+		const msg = generateAnalysisMsg(myTeam.value);
+		console.log("队伍分析", msg);
+		void lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, msg);
+	}
+
 	async function analysisMyTeam() {
 		queryMyTeamFlag.value = true;
 		myTeam.value = await analysisTeam(myTeam.value).finally(() => (queryMyTeamFlag.value = false));
 		if (useSettingStore().settingModel.autoSendMyTeamAnalysis) {
-			const msg = generateAnalysisMsg(myTeam.value);
-			console.log("队伍分析", msg);
-			void lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, msg);
+			sendTeamScoreToRoom();
 		}
 	}
 
@@ -203,7 +207,8 @@ const useLCUStore = defineStore("lcu", () => {
 		querySummonerInfo,
 		search,
 		analysisMyTeam,
-		analysisTheirTeam
+		analysisTheirTeam,
+		sendTeamScoreToRoom
 	};
 });
 

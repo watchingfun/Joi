@@ -22,6 +22,9 @@ const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag } = storeToRefs(l
 				</n-spin>
 			</n-tab-pane>
 		</n-tabs>
+		<div class="absolute right-0 pr-[24px]">
+			<n-button @click="lcuStore.sendTeamScoreToRoom">发送评分</n-button>
+		</div>
 	</div>
 </template>
 
