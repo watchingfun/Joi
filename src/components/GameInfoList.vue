@@ -2,20 +2,23 @@
 import { GameDetail } from "@@/types/lcuType";
 import { toRefs } from "vue";
 import GameInfo from "@/components/GameInfo.vue";
+import LazyDeferred from "@/components/LazyDeferred.vue";
 
 const props = defineProps({
 	matchHistoryList: { type: Array<GameDetail>, default: [] }
 });
 const { matchHistoryList } = toRefs(props);
 const emit = defineEmits<{
-	jumpDetail: [record: GameDetail];
+	jumpDetail: [gameId: number];
 }>();
 </script>
 
 <template>
 	<div>
 		<template v-for="(record, index) in matchHistoryList" :key="record.gameId">
-			<GameInfo :record="record" @click="() => emit('jumpDetail', record)"></GameInfo>
+			<LazyDeferred class="h-[100px]" once>
+				<GameInfo :record="record" @click="() => emit('jumpDetail', record.gameId)"></GameInfo>
+			</LazyDeferred>
 			<div class="divider" v-if="index + 1 !== matchHistoryList?.length" />
 		</template>
 	</div>

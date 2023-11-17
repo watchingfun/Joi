@@ -35,7 +35,6 @@ import router from "@/router";
 import useLCUStore from "@/store/lcu";
 import { storeToRefs } from "pinia";
 import { TabsInst } from "naive-ui";
-import useGameHistory from "@/hooks/useGameHistory";
 
 const parentEl = useParentElement();
 const navStore = useNavStore();
@@ -71,8 +70,9 @@ watch(
 	}
 );
 
-const searchVal = storeToRefs(useLCUStore()).search;
-const { fetchData } = useGameHistory();
+const lcuStore = useLCUStore();
+
+const searchVal = storeToRefs(lcuStore).search;
 
 function search() {
 	router
@@ -80,7 +80,7 @@ function search() {
 			name: "historyMatch"
 		})
 		.then(() => {
-			fetchData({ summonerName: searchVal.value });
+			lcuStore.fetchSummonerMatchHistoryData({ summonerName: searchVal.value });
 		});
 }
 </script>

@@ -8,8 +8,7 @@ import { RuneConfig, RunesDBObj } from "@@/types/type";
 async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
 	const { message } = useAppStore();
 	if (useLCUStore().connectStatus !== ConnectStatusEnum.connected) {
-		message.error("客户端未连接，LCU api不可用！");
-		return;
+		throw new Error("客户端未连接，LCU api不可用！");
 	}
 	try {
 		if (func instanceof Promise) {

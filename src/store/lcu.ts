@@ -1,15 +1,7 @@
 import { defineStore } from "pinia";
 import { Ref, ref } from "vue";
 import lcuApi from "@/api/lcuApi";
-import {
-	MatchHistoryQueryResult,
-	PageRange,
-	PageRanges,
-	SummonerInfo,
-	TeamMember,
-	TeamMemberInfo
-} from "@@/types/lcuType";
-import useAppStore from "@/store/app";
+import { MatchHistoryQueryResult, PageRange, SummonerInfo, TeamMember, TeamMemberInfo } from "@@/types/lcuType";
 import useSettingStore from "@/store/setting";
 import { GameMode, PositionName } from "@@/types/opgg_rank_type";
 import { analysisTeam, generateAnalysisMsg } from "@/utils/gameAnalysis";
@@ -32,6 +24,11 @@ export type GameFlowPhase =
 	| "EndOfGame"
 	| "None";
 
+export interface SummonerGameHistoryResult {
+	summonerInfo: SummonerInfo;
+	matchHistoryQueryResult: Array<MatchHistoryQueryResult>;
+}
+
 export const gameFlowPhaseMap: Record<GameFlowPhase, string> = {
 	Lobby: "大厅",
 	Matchmaking: "匹配中",
@@ -47,12 +44,12 @@ export const gameFlowPhaseMap: Record<GameFlowPhase, string> = {
 
 const useLCUStore = defineStore("lcu", () => {
 	const connectStatus = ref(ConnectStatusEnum.disconnect) as Ref<ConnectStatusEnum>;
-
-	const pageRange = ref<PageRange>(PageRanges[0]);
 	const summonerInfo = ref<SummonerInfo>();
-	const querySummonerInfo = ref<SummonerInfo>();
 	const search = ref("");
-	const matchHistoryQueryResult = ref<Array<MatchHistoryQueryResult>>([]);
+
+	const summonerQueryList = ref<Array<SummonerGameHistoryResult>>([]);
+	const summonerQueryLoading = ref(false);
+
 	const gameFlowPhase = ref<GameFlowPhase>("None");
 	const champId = ref(0);
 	const currentGameMode = ref<GameMode>();
@@ -90,44 +87,56 @@ const useLCUStore = defineStore("lcu", () => {
 	}
 
 	async function getCurrentSummoner() {
-		const res = (await lcuApi.getCurrentSummoner()) as SummonerInfo;
-		if (res && !res?.errorCode) {
-			summonerInfo.value = res;
-		}
-		return summonerInfo.value;
+		return await lcuApi.getCurrentSummoner();
 	}
 
-	async function getMatchHistoryQueryResult({ summonerName, puuid }: { summonerName?: string; puuid?: string }) {
+	async function getMatchHistoryQueryResult(
+		{
+			summonerName,
+			puuid,
+			pageRange = 1
+		}: {
+			summonerName?: string;
+			puuid?: string;
+			pageRange: PageRange;
+		} = { pageRange: 1 }
+	) {
+		let summonerResult: SummonerInfo;
 		//优先通过puuid查询,如果没有就用名字查询
 		if (puuid) {
-			if (querySummonerInfo.value?.puuid === puuid) {
-			} else {
-				querySummonerInfo.value = await lcuApi.getSummonerByPuuid(puuid);
-				if (!querySummonerInfo.value) {
-					useAppStore().message.warning(`查询不到召唤师[${puuid}]`);
-					matchHistoryQueryResult.value = [];
-					return;
-				}
+			if (summonerQueryList.value.find((s) => s.summonerInfo.puuid === puuid)) {
+				return;
 			}
+			summonerResult = await lcuApi.getSummonerByPuuid(puuid);
 		} else if (summonerName) {
-			if (querySummonerInfo.value?.displayName === summonerName) {
-				puuid = querySummonerInfo.value?.puuid;
-			} else {
-				querySummonerInfo.value = await lcuApi.getSummonerByName(summonerName);
-				puuid = querySummonerInfo.value?.puuid;
-				if (!puuid) {
-					useAppStore().message.warning(`查询不到召唤师[${summonerName}]`);
-					matchHistoryQueryResult.value = [];
-					return;
-				}
+			if (summonerQueryList.value.find((s) => s.summonerInfo.displayName === summonerName)) {
+				return;
 			}
+			summonerResult = await lcuApi.getSummonerByName(summonerName);
 		} else {
 			//如果名字和puuid都没传，那就是查询自己
-			querySummonerInfo.value = summonerInfo.value?.puuid ? summonerInfo.value : await getCurrentSummoner();
-			puuid = querySummonerInfo.value?.puuid;
+			summonerResult = summonerInfo.value?.puuid ? summonerInfo.value : await getCurrentSummoner();
 		}
+		const historyResults = (await lcuApi.queryMatchHistory(summonerResult.puuid as string, pageRange)) || [];
+		summonerQueryList.value.push({ summonerInfo: summonerResult, matchHistoryQueryResult: historyResults });
+	}
 
-		matchHistoryQueryResult.value = (await lcuApi.queryMatchHistory(puuid as string, pageRange.value)) || [];
+	async function fetchSummonerMatchHistoryData(
+		{
+			summonerName,
+			puuid,
+			pageRange = 1
+		}: {
+			summonerName?: string;
+			puuid?: string;
+			pageRange?: PageRange;
+		} = { pageRange: 1 }
+	) {
+		console.log("fetchData", { summonerName, puuid });
+		summonerQueryLoading.value = true;
+		return await getMatchHistoryQueryResult({ summonerName, puuid, pageRange }).finally(() => {
+			summonerQueryLoading.value = false;
+		});
 	}
 
 	function refreshConnectStatus() {
@@ -200,11 +209,11 @@ const useLCUStore = defineStore("lcu", () => {
 		connectStatus,
 		getCurrentSummoner,
 		getMatchHistoryQueryResult,
-		pageRange,
+		fetchSummonerMatchHistoryData,
+		summonerQueryLoading,
 		summonerInfo,
-		matchHistoryQueryResult,
+		summonerQueryList,
 		refreshConnectStatus,
-		querySummonerInfo,
 		search,
 		analysisMyTeam,
 		analysisTheirTeam,

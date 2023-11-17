@@ -10,7 +10,7 @@ import Rune from "@/page/Rune.vue";
 
 const routes = [
 	{
-		path: "/:index?",
+		path: "/",
 		component: IndexLayout,
 		children: [
 			{

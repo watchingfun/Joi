@@ -6,6 +6,7 @@ import { executeCommand, retryWrapper, sendToWebContent } from "../util/util";
 import LCUEventHandlers from "./handleEvent";
 import { lcuConst } from "../const/const";
 import * as lcuRequestModule from "./lcuRequest";
+import { getCurrentSummoner } from "./lcuRequest";
 import logger from "../lib/logger";
 
 let credentials: Credentials | null;
@@ -13,7 +14,7 @@ let ws: LeagueWebSocket | null;
 let processChecker: ProcessChecker | null;
 let wsIsConnecting = false;
 //重试包装
-const createWebSocketConnectionRetry = retryWrapper(createWebSocketConnection);
+const createWebSocketConnectionRetry = retryWrapper(createWebSocketConnection, 4, 1500);
 
 export function getCredentials() {
 	if (!credentials) {
@@ -49,6 +50,8 @@ export function startGuardTask() {
 			sendToWebContent(lcuConst.connecting);
 			try {
 				await initLeagueWebSocket();
+				//这里尝试获取当前召唤师信息，获取成功了才算连接成功；因为可能客户端还未完成登录过程
+				await retryWrapper(getCurrentSummoner)();
 				sendToWebContent(lcuConst.connected);
 				logger.info("guardTask", "connected to LeagueClient");
 			} catch (e) {
