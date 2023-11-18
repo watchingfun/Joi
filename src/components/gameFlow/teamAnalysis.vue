@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TeamMemberInfo } from "@@/types/lcuType";
+import { GameDetail, TeamMemberInfo } from "@@/types/lcuType";
 import { use } from "echarts/core";
 import { EChartsOption } from "echarts";
 import { BarChart } from "echarts/charts";
@@ -8,6 +8,7 @@ import { CanvasRenderer } from "echarts/renderers";
 import VChart from "vue-echarts";
 import { assignedPositionNameMap } from "@@/types/opgg_rank_type";
 import { ComputedRef } from "vue";
+import HistoryList from "@/components/HistoryList.vue";
 
 const props = defineProps<{ teams: TeamMemberInfo[] }>();
 const { teams } = toRefs(props);
@@ -97,13 +98,49 @@ const option = computed(() => {
 	};
 }) as ComputedRef<EChartsOption>;
 
+const showDetail = ref(false);
+const historyListData = ref<Array<GameDetail>>([]);
+const showSummonerName = ref("");
+
 function handleClick(event: any) {
-	console.log(event);
+	showDetail.value = true;
+	showSummonerName.value = event.name;
+	historyListData.value = teamMap.value[event.name].gameDetail || [];
 }
 </script>
 
 <template>
 	<v-chart class="w-full h-full" :option="option" @click="handleClick" />
+	<n-modal
+		v-model:show="showDetail"
+		preset="card"
+		class="team-member-history-modal"
+		:title="showSummonerName"
+		style="
+			margin-top: 10px;
+			width: 95%;
+			height: 85vh;
+			display: flex;
+			flex-flow: column;
+			background: rgb(22 27 43 / 95%);
+			backdrop-filter: blur(4px);
+			border: 1px solid rgb(122 122 122 / 58%);
+			border-radius: 8px;
+			overflow: hidden;
+		">
+		<div class="flex flex-1 flex-col h-0">
+			<HistoryList :match-history-list="historyListData"></HistoryList>
+		</div>
+	</n-modal>
 </template>
 
 <style scoped></style>
+<style>
+.team-member-history-modal .n-card__content {
+	padding: unset !important;
+	display: flex;
+	flex-flow: column;
+	flex: 1;
+	height: 0;
+}
+</style>
