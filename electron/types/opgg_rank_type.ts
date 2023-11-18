@@ -29,10 +29,10 @@ export const positionMap = {
 
 export const assignedPositionNameMap = {
 	top: "上单",
-	mid: "中单",
-	adc: "射手",
+	middle: "中单",
+	bottom: "下路",
 	jungle: "打野",
-	support: "辅助"
+	utility: "辅助"
 } as Record<string, string>;
 
 export interface ChampionPopularData {

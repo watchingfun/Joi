@@ -102,8 +102,8 @@ const showSummonerName = ref("");
 
 function handleClick(event: any) {
 	showDetail.value = true;
-	showSummonerName.value = event.name;
-	historyListData.value = teamMap.value[event.name].gameDetail || [];
+	showSummonerName.value = teams.value[event.dataIndex].summonerName;
+	historyListData.value = teams.value[event.dataIndex].gameDetail || [];
 }
 </script>
 

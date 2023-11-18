@@ -3,7 +3,7 @@ import PlayerGameInfo from "@/components/PlayerGameInfo.vue";
 import { toRefs } from "vue";
 import { GameDetail } from "@@/types/lcuType";
 
-const props = defineProps<{ detail: GameDetail; puuid?: string }>();
+const props = defineProps<{ detail?: GameDetail; puuid?: string }>();
 const { detail } = toRefs(props);
 defineOptions({
 	inheritAttrs: false
@@ -17,9 +17,9 @@ defineOptions({
 				<PlayerGameInfo
 					v-bind="$attrs"
 					:info="data"
-					:play-info="detail.participantIdentities[i]"
+					:play-info="detail!.participantIdentities[i]"
 					:class="[
-						props.puuid === detail.participantIdentities[i].player.puuid ? 'highlight-row' : ''
+						props.puuid === detail!.participantIdentities[i].player.puuid ? 'highlight-row' : ''
 					]"></PlayerGameInfo>
 				<n-divider v-if="i === 4"></n-divider>
 			</template>

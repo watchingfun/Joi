@@ -31,10 +31,20 @@ export function computeScore(gameDetail?: GameDetail[]) {
 			const info = detail.participants[0];
 			let { kills, assists, deaths } = info.stats;
 			deaths = deaths || 1;
-			let score =
-				info.timeline.role !== "SUPPORT"
-					? (kills * 1.2 + assists * 0.8) / (deaths * 1.2)
-					: (kills * 1.2 + assists * 1.2) / (deaths * 1.2);
+      let score;
+			if (info.timeline.role === "SUPPORT" && detail.gameMode !== "ARAM") {
+				score = (kills + assists * 1.2) / deaths; //非大乱斗模式的辅助英雄
+			} else {
+				score = (kills + assists) / deaths;
+			}
+			if (detail.gameMode === "ARAM" || info.timeline.role !== "SUPPORT") {
+				if (deaths > 15 && kills <= 10) {
+					score -= 1;
+				}
+				if (deaths > 20 && kills <= 10) {
+					score -= 1;
+				}
+			}
 			if (info.stats.win) {
 				score += 1;
 			} else {
