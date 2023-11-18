@@ -47,9 +47,6 @@ const useLCUStore = defineStore("lcu", () => {
 	const summonerInfo = ref<SummonerInfo>();
 	const search = ref("");
 
-	const summonerQueryList = ref<Array<SummonerGameHistoryResult>>([]);
-	const summonerQueryLoading = ref(false);
-
 	const gameFlowPhase = ref<GameFlowPhase>("None");
 	const champId = ref(0);
 	const currentGameMode = ref<GameMode>();
@@ -104,39 +101,15 @@ const useLCUStore = defineStore("lcu", () => {
 		let summonerResult: SummonerInfo;
 		//优先通过puuid查询,如果没有就用名字查询
 		if (puuid) {
-			if (summonerQueryList.value.find((s) => s.summonerInfo.puuid === puuid)) {
-				return;
-			}
 			summonerResult = await lcuApi.getSummonerByPuuid(puuid);
 		} else if (summonerName) {
-			if (summonerQueryList.value.find((s) => s.summonerInfo.displayName === summonerName)) {
-				return;
-			}
 			summonerResult = await lcuApi.getSummonerByName(summonerName);
 		} else {
 			//如果名字和puuid都没传，那就是查询自己
 			summonerResult = summonerInfo.value?.puuid ? summonerInfo.value : await getCurrentSummoner();
 		}
 		const historyResults = (await lcuApi.queryMatchHistory(summonerResult.puuid as string, pageRange)) || [];
-		summonerQueryList.value.push({ summonerInfo: summonerResult, matchHistoryQueryResult: historyResults });
-	}
-
-	async function fetchSummonerMatchHistoryData(
-		{
-			summonerName,
-			puuid,
-			pageRange = 1
-		}: {
-			summonerName?: string;
-			puuid?: string;
-			pageRange?: PageRange;
-		} = { pageRange: 1 }
-	) {
-		console.log("fetchData", { summonerName, puuid });
-		summonerQueryLoading.value = true;
-		return await getMatchHistoryQueryResult({ summonerName, puuid, pageRange }).finally(() => {
-			summonerQueryLoading.value = false;
-		});
+		return { summonerInfo: summonerResult, matchHistoryQueryResult: historyResults } as SummonerGameHistoryResult;
 	}
 
 	function refreshConnectStatus() {
@@ -209,10 +182,7 @@ const useLCUStore = defineStore("lcu", () => {
 		connectStatus,
 		getCurrentSummoner,
 		getMatchHistoryQueryResult,
-		fetchSummonerMatchHistoryData,
-		summonerQueryLoading,
 		summonerInfo,
-		summonerQueryList,
 		refreshConnectStatus,
 		search,
 		analysisMyTeam,

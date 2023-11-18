@@ -75,13 +75,11 @@ const lcuStore = useLCUStore();
 const searchVal = storeToRefs(lcuStore).search;
 
 function search() {
-	router
-		.push({
-			name: "historyMatch"
-		})
-		.then(() => {
-			lcuStore.fetchSummonerMatchHistoryData({ summonerName: searchVal.value });
-		});
+	router.push({
+		name: "historyMatch",
+		params: { summonerName: searchVal.value },
+		query: { time: new Date().getTime() }
+	});
 }
 </script>
 <style scoped>

@@ -68,7 +68,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="w-full h-full lazy-deferred" ref="el">
+	<div class="lazy-deferred" ref="el">
 		<transition-fade mode="out-in">
 			<template v-if="show">
 				<slot></slot>

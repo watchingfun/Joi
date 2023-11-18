@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GameDetail } from "@@/types/lcuType";
+import { GameDetail, Player } from "@@/types/lcuType";
 import { toRefs } from "vue";
 import GameInfo from "@/components/GameInfo.vue";
 import LazyDeferred from "@/components/LazyDeferred.vue";
@@ -9,7 +9,7 @@ const props = defineProps({
 });
 const { matchHistoryList } = toRefs(props);
 const emit = defineEmits<{
-	jumpDetail: [gameId: number];
+	jumpDetail: [gameId: number, player: Player];
 }>();
 </script>
 
@@ -17,7 +17,9 @@ const emit = defineEmits<{
 	<div>
 		<template v-for="(record, index) in matchHistoryList" :key="record.gameId">
 			<LazyDeferred class="h-[100px]" once>
-				<GameInfo :record="record" @click="() => emit('jumpDetail', record.gameId)"></GameInfo>
+				<GameInfo
+					:record="record"
+					@click="() => emit('jumpDetail', record.gameId, record.participantIdentities[0].player)"></GameInfo>
 			</LazyDeferred>
 			<div class="divider" v-if="index + 1 !== matchHistoryList?.length" />
 		</template>

@@ -57,6 +57,7 @@
     "@morev/vue-transitions": "^2.3.6",
     "@vueuse/components": "^10.5.0",
     "@vueuse/core": "^10.5.0",
+    "animate.css": "^4.1.1",
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "electron-acrylic-window": "^0.5.11",

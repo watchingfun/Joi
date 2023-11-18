@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { Participant, ParticipantIdentity, Player } from "@@/types/lcuType";
-import { computed, toRefs } from "vue";
+import { toRefs } from "vue";
 import ChampionImg from "@/components/img/championImg.vue";
 import SpellImg from "@/components/img/spellImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
 import { DocumentCopy16Regular } from "@vicons/fluent";
-import useLCUStore from "@/store/lcu";
 import Perks from "@/components/img/Perks.vue";
 
 const props = defineProps<{
@@ -13,9 +12,7 @@ const props = defineProps<{
 	playInfo: ParticipantIdentity;
 }>();
 const { info } = toRefs(props);
-const lcuStore = useLCUStore();
 
-const currentSummonerId = computed(() => lcuStore.summonerInfo?.summonerId);
 const message = useMessage();
 
 function copyName(name: string) {
@@ -27,12 +24,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 
 <template>
 	<div class="relative">
-		<div
-			:class="[
-				'row-item',
-				info?.stats.win ? 'win' : 'fail',
-				playInfo?.player?.summonerId === currentSummonerId ? 'me' : ''
-			]">
+		<div :class="['row-item', info?.stats.win ? 'win' : 'fail']">
 			<div class="ml-[10px] avatar cursor-pointer" title="点击头像查看最近战绩">
 				<champion-img
 					@click="() => emit('jumpSummoner', playInfo?.player)"
