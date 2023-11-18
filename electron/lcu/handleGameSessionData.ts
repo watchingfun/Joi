@@ -14,7 +14,7 @@ let roomId: string | null;
 export async function handleGameSessionData(data: ChampSelectPhaseSession, gameMode: GameMode) {
 	//进行简单解析
 	const sessionData = parseGameSessionData(data, gameMode);
-	logger.debug("ChampSelectPhaseSession", JSON.stringify(data));
+	//logger.debug("ChampSelectPhaseSession", JSON.stringify(data));
 	sendToWebContent(lcuConst.gameSessionData, sessionData);
 
 	//发送当前对局我方成员

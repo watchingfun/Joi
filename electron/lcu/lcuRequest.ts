@@ -192,7 +192,7 @@ export const queryMatchHistory = async (puuid: string, page: PageRange = 1) => {
 		for (let i = 0; i < page; i++) {
 			const matchHistory = await retryWrapper(
 				() => cursorQueryMatchHistory(session, puuid, 20 * i, 20 * (i + 1) - 1),
-				500
+				5
 			)();
 			specialDict.push(matchHistory);
 		}

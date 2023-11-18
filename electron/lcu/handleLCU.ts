@@ -18,7 +18,7 @@ const createWebSocketConnectionRetry = retryWrapper(createWebSocketConnection, 4
 
 export function getCredentials() {
 	if (!credentials) {
-		throw new Error("credentials unset!");
+		throw new Error("未连接上客户端，LCU api不可用！");
 	}
 	return credentials;
 }

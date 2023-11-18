@@ -1,17 +1,14 @@
 import { lcuConst } from "@@/const/const";
 import { GameDetail, MatchHistoryQueryResult, PageRange, SummonerInfo } from "@@/types/lcuType";
-import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import useAppStore from "@/store/app";
 import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
 import { RuneConfig, RunesDBObj } from "@@/types/type";
+import { isPromise } from "@vue/shared";
 
 async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
 	const { message } = useAppStore();
-	if (useLCUStore().connectStatus !== ConnectStatusEnum.connected) {
-		throw new Error("客户端未连接，LCU api不可用！");
-	}
 	try {
-		if (func instanceof Promise) {
+		if (isPromise(func)) {
 			return await func;
 		} else {
 			return func(...args) as T;

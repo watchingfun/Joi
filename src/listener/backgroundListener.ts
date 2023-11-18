@@ -35,6 +35,7 @@ export function setupListener() {
 		}
 	);
 	window.ipcRenderer.on(lcuConst.gameTeams, async (event: IpcRendererEvent, teams: TeamMember[][]) => {
+		console.log("gameTeams", teams);
 		lcuStore.updateTeamsInfo(teams);
 	});
 

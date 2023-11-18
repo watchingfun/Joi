@@ -17,7 +17,10 @@ const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag } = storeToRefs(l
 				</n-spin>
 			</n-tab-pane>
 			<n-tab-pane tab="对方队伍" name="theirTeam">
-				<n-spin :show="queryTheirTeamFlag">
+				<div v-if="lcuStore.gameFlowPhase === 'ChampSelect'" class="text-2xl flex h-full items-center justify-center">
+					等待进入对局
+				</div>
+				<n-spin :show="queryTheirTeamFlag" v-else>
 					<team-analysis :teams="theirTeam" />
 				</n-spin>
 			</n-tab-pane>

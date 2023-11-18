@@ -8,6 +8,7 @@ import { analysisTeam, generateAnalysisMsg } from "@/utils/gameAnalysis";
 import { CustomRune } from "@@/types/type";
 import { champDict } from "@@/const/lolDataConfig";
 import { convertOPGGRuneFormat } from "@@/lcu/opgg";
+import useAppStore from "@/store/app";
 
 export enum ConnectStatusEnum {
 	connecting,
@@ -89,7 +90,10 @@ const useLCUStore = defineStore("lcu", () => {
 	}
 
 	async function getCurrentSummoner() {
-		return await lcuApi.getCurrentSummoner();
+		if (!summonerInfo.value?.puuid) {
+			summonerInfo.value = await lcuApi.getCurrentSummoner();
+		}
+		return summonerInfo.value;
 	}
 
 	async function getMatchHistoryQueryResult(
@@ -111,7 +115,7 @@ const useLCUStore = defineStore("lcu", () => {
 			summonerResult = await lcuApi.getSummonerByName(summonerName);
 		} else {
 			//如果名字和puuid都没传，那就是查询自己
-			summonerResult = summonerInfo.value?.puuid ? summonerInfo.value : await getCurrentSummoner();
+			summonerResult = await getCurrentSummoner();
 		}
 		const historyResults = (await lcuApi.queryMatchHistory(summonerResult.puuid as string, pageRange)) || [];
 		return { summonerInfo: summonerResult, matchHistoryQueryResult: historyResults } as SummonerGameHistoryResult;
@@ -124,8 +128,9 @@ const useLCUStore = defineStore("lcu", () => {
 	}
 
 	//更新队伍信息
-	function updateTeamsInfo(teams: TeamMember[][]) {
-		const myTeamMemberIndex = teams.findIndex((teams) => teams.find((t) => t.puuid === summonerInfo.value?.puuid));
+	async function updateTeamsInfo(teams: TeamMember[][]) {
+		const currentSummoner = await getCurrentSummoner();
+		const myTeamMemberIndex = teams.findIndex((arr) => arr.find((t) => t.puuid === currentSummoner.puuid));
 		updateMyTeamInfo(teams[myTeamMemberIndex]);
 		updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
 		void analysisTheirTeam();
@@ -185,6 +190,7 @@ const useLCUStore = defineStore("lcu", () => {
 		},
 		{ immediate: true }
 	);
+	const message = useAppStore().message;
 	const applyRune = (rune: Rune | CustomRune) => {
 		let name: string;
 		if ("name" in rune) {
@@ -193,7 +199,7 @@ const useLCUStore = defineStore("lcu", () => {
 			name = "OP.GG " + champDict[champId.value + ""]?.label;
 		}
 		lcuApi.applyRune(convertOPGGRuneFormat(rune, name)).then(() => {
-			useMessage().success("符文已应用");
+			message.success("符文已应用");
 		});
 	};
 
@@ -213,8 +219,8 @@ const useLCUStore = defineStore("lcu", () => {
 					applyRune(customRunes.value[0]);
 				}
 			}
-		} catch (e) {
-			if (e instanceof Error) useMessage().error(e.message);
+		} catch (e: any) {
+			message.error(e.message);
 		} finally {
 			loadingRune.value = false;
 		}

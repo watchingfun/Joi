@@ -64,7 +64,7 @@ export const retryWrapper = function <T>(
 			return await asyncFunc(...args);
 		} catch (e) {
 			if (retryTime <= 0) throw e;
-			logger.debug(
+			logger.error(
 				`error occurred:${e.message}, retryWrapper, 将在 ${retryInterval} 毫秒后重试，剩余重试次数 ${retryTime}`
 			);
 			retryTime -= 1;
