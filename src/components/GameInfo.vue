@@ -58,7 +58,7 @@ const gameModeBackground = (str: string) => {
 		<div :class="['row-item', record.participants[0].stats.win ? 'win' : 'fail']">
 			<div class="ml-[10px]">
 				<champion-img
-					:style="{ width: '40px', height: '40px' }"
+					:style="{ width: '3em', height: '3em' }"
 					:level="record.participants[0].stats.champLevel"
 					:champion-id="record.participants[0].championId"></champion-img>
 			</div>
@@ -90,7 +90,7 @@ const gameModeBackground = (str: string) => {
 							class="item ml-1"
 							:style="{
 								borderRadius: index === 6 ? '50%' : '5px',
-								width: '40px'
+								width: '2.5em'
 							}"
 							:itemId="record.participants[0].stats['item' + index] as number" />
 					</template>
@@ -114,7 +114,7 @@ const gameModeBackground = (str: string) => {
 				</div>
 			</div>
 		</div>
-		<div class="date-info min-text">
+		<div class="date-info">
 			{{ formatDate(record.gameCreationDate) }}
 		</div>
 	</div>
@@ -122,7 +122,7 @@ const gameModeBackground = (str: string) => {
 
 <style scoped>
 .row-item {
-	height: 100px;
+	height: 6em;
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: center;
@@ -143,12 +143,13 @@ const gameModeBackground = (str: string) => {
 	position: absolute;
 	top: 0;
 	right: 0;
-	color: #e5e5e5d1;
-	margin: 3px 5px 0 0;
+	color: rgba(229, 229, 229, 0.58);
+	margin: 0px 5px;
+	font-size: 0.8em;
 }
 
 .min-text {
-	font-size: 12px;
+	font-size: 0.9em;
 }
 
 .row-item:active {
@@ -184,13 +185,13 @@ const gameModeBackground = (str: string) => {
 }
 
 .info {
-	font-size: 12px;
+	font-size: 0.9em;
 	width: 110px;
 	margin-left: 20px;
 }
 
 .info .game-mode {
-	font-size: 14px;
+	font-size: 1em;
 	display: inline-block;
 	padding: 1px;
 	border-radius: 2px;
@@ -213,32 +214,30 @@ const gameModeBackground = (str: string) => {
 }
 
 .spell img {
-	width: 20px;
+	width: 1.5em;
 }
 
 .rune img {
-	width: 20px;
+	width: 1.5em;
 }
 
 .kda-group {
-	margin-left: 20px;
+	flex: 1;
+	margin: 0px 25px 0 35px;
 	display: grid;
-	grid-template-columns: 2fr 2fr 1fr;
+	grid-template-columns: 2fr 2fr 1.5fr;
+	grid-column-gap: 5px;
 }
 
 .kda-group .kda,
 .gold,
 .minions {
-	font-size: 12px;
+	font-size: 0.85em;
 }
 
 .kda-group .title {
-	font-size: 14px;
+	font-size: 0.9em;
 	color: #fbc8b3;
-}
-
-.kda {
-	width: 65px;
 }
 
 .item-group {

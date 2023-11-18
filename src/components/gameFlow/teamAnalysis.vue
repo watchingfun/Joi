@@ -56,9 +56,7 @@ const option = computed(() => {
 					}) || [],
 				axisLabel: {
 					interval: 0,
-					textStyle: {
-						color: "rgba(255,255,255,0.8)"
-					}
+					color: "rgba(255,255,255,0.8)"
 				},
 				axisTick: {
 					alignWithLabel: true
@@ -128,7 +126,7 @@ function handleClick(event: any) {
 			border-radius: 8px;
 			overflow: hidden;
 		">
-		<div class="flex flex-1 flex-col h-0">
+		<div class="flex flex-1 flex-col h-0" style="font-size: 12px">
 			<HistoryList :match-history-list="historyListData"></HistoryList>
 		</div>
 	</n-modal>

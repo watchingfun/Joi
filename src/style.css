@@ -9,6 +9,7 @@
     font-family: "NotoSansSC-Regular", sans-serif;
     -webkit-font-smoothing: antialiased; /*chrome、safari*/
     -moz-osx-font-smoothing: grayscale; /*firefox*/
+    font-size: 14px;
 }
 
 @font-face {

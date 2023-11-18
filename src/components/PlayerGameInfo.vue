@@ -28,16 +28,16 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 			<div class="ml-[10px] avatar cursor-pointer" title="点击头像查看最近战绩">
 				<champion-img
 					@click="() => emit('jumpSummoner', playInfo?.player)"
-					style="width: 40px; height: 40px"
+					style="width: 3em; height: 3em"
 					:level="info?.stats.champLevel"
 					:champion-id="info?.championId"></champion-img>
 			</div>
 			<div
 				class="relative inline-flex cursor-pointer"
-				style="width: 145px"
+				style="width: 8em"
 				@click="() => copyName(playInfo.player.summonerName)">
 				<div
-					style="width: 100px; font-size: 12px"
+					style="width: 8em; font-size: 0.8em"
 					:title="playInfo.player.summonerName"
 					:class="[
 						'inline-block',
@@ -48,15 +48,15 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 					]">
 					{{ playInfo.player.summonerName }}
 				</div>
-				<div class="mr-2 copy" style="position: absolute; top: 0; right: 0; font-size: 18px">
+				<div class="mr-2 copy" style="position: absolute; top: 0; right: 0; font-size: 1em">
 					<DocumentCopy16Regular />
 				</div>
 			</div>
 
 			<div class="item-group">
 				<div class="spell">
-					<spell-img :width="10" :spell-id="info?.spell1Id"></spell-img>
-					<spell-img :width="10" :spell-id="info?.spell2Id"></spell-img>
+					<spell-img :spell-id="info?.spell1Id"></spell-img>
+					<spell-img :spell-id="info?.spell2Id"></spell-img>
 				</div>
 				<div class="rune">
 					<perks :stats="info?.stats"></perks>
@@ -65,7 +65,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 					<template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">
 						<item-img
 							class="item ml-1"
-							:width="20"
+							style="width: 2em"
 							:style="{
 								borderRadius: index === 6 ? '50%' : '5px'
 							}"
@@ -190,33 +190,32 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 }
 
 .spell img {
-	width: 20px;
+	width: 1.2em;
 }
 
-.rune img {
-	width: 20px;
+.rune :deep(img) {
+	width: 1.2em !important;
+	height: 1.2em !important;
 }
 
 .kda-group {
-	margin-left: 20px;
+	flex: 1;
+	margin: 0 5px 0 15px;
 	display: grid;
-	grid-template-columns: 2fr 2fr 2fr 2fr;
+	grid-template-columns: 2.5fr 2fr 2fr 2fr;
+	grid-gap: 5px;
 }
 
 .kda-group .kda,
 .gold,
 .minions,
 .damage {
-	font-size: 12px;
+	font-size: 0.75em;
 }
 
 .kda-group .title {
-	font-size: 12px;
+	font-size: 0.85em;
 	color: #fbc8b3;
-}
-
-.kda {
-	width: 65px;
 }
 
 .item-group {
@@ -232,17 +231,12 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 
 .copy {
 	display: none;
-	font-size: 16px;
+	font-size: 1.2em;
 }
 
 .copy svg {
-	width: 1em;
-	height: 1em;
-}
-
-.me {
-	background: #ffffff5c;
-	cursor: unset;
+	width: 1.2em;
+	height: 1.2em;
 }
 
 .summonerName {

@@ -1,75 +1,11 @@
 <script setup lang="ts">
 import RuneCard from "@/components/RuneCard.vue";
-import useSettingStore from "@/store/setting";
-import { Ref } from "vue";
-import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
-import { CustomRune } from "@@/types/type";
-import { champDict } from "@@/const/lolDataConfig";
-import lcuApi from "@/api/lcuApi";
-import { convertOPGGRuneFormat } from "@@/lcu/opgg";
+import useLCUStore from "@/store/lcu";
+import { storeToRefs } from "pinia";
 
-const props = defineProps<{
-	champId: number;
-	gameMode?: GameMode;
-	position?: PositionName;
-}>();
-
-const settingStore = useSettingStore();
-
-const { champId, gameMode, position } = toRefs(props);
-
-const opggRunes = ref([]) as Ref<Rune[]>;
-const customRunes = ref([]) as Ref<CustomRune[]>;
-
-const message = useMessage();
-
-const loadingRune = ref(false);
-
-//todo 自动应用符文放到 store,避免组件未加载无法执行
-const applyRune = (rune: Rune | CustomRune) => {
-	let name: string;
-	if ("name" in rune) {
-		name = rune?.name;
-	} else {
-		name = "OP.GG " + champDict[champId.value + ""]?.label;
-	}
-	lcuApi.applyRune(convertOPGGRuneFormat(rune, name)).then(() => {
-		message.success("符文已应用");
-	});
-};
-
-const fetchRune = async (champId: number) => {
-	loadingRune.value = true;
-	const gameModeVal = unref(gameMode);
-	const positionVal = unref(position);
-	try {
-		customRunes.value = await lcuApi
-			.getCustomRunes(champId, gameModeVal, positionVal)
-			.then((res) => res?.map((i) => i.value) || []);
-		opggRunes.value = (await lcuApi.getOPGGRunes(champId, gameModeVal, positionVal)) || [];
-		if (settingStore.settingModel.autoConfigRune) {
-			if (settingStore.settingModel.autoConfigRuneOPGGPriority && opggRunes.value.length) {
-				applyRune(opggRunes.value[0]);
-			} else if (customRunes.value.length) {
-				applyRune(customRunes.value[0]);
-			}
-		}
-	} catch (e) {
-		if (e instanceof Error) message.error(e.message);
-	} finally {
-		loadingRune.value = false;
-	}
-};
-
-watch(
-	champId,
-	(n, o) => {
-		if (n) {
-			fetchRune(n);
-		}
-	},
-	{ immediate: true }
-);
+const lcuStore = useLCUStore();
+const { applyRune } = lcuStore;
+const { loadingRune, opggRunes, customRunes } = storeToRefs(lcuStore);
 </script>
 
 <template>

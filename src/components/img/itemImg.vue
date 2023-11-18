@@ -1,13 +1,7 @@
 <template>
 	<n-tooltip :style="{ maxWidth: '400px' }" trigger="hover" :keep-alive-on-hover="false" :disabled="!props.itemId">
 		<template #trigger>
-			<img
-				v-bind="$attrs"
-				:width="props.width"
-				:height="props.width"
-				:src="url"
-				:class="[props.itemId === 0 ? 'none' : '']"
-				alt="itemImage" />
+			<img v-bind="$attrs" :src="url" :class="[props.itemId === 0 ? 'none' : '']" alt="itemImage" />
 		</template>
 		<div>
 			<b>{{ itemsMap.get(String(props.itemId))?.name }}</b>
@@ -31,7 +25,6 @@ const url = computed(() => {
 });
 // props
 const props = defineProps({
-	width: { type: Number, required: false },
 	itemId: { type: Number, required: true }
 });
 </script>

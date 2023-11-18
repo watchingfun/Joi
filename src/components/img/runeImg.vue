@@ -1,12 +1,11 @@
 <template>
-	<img :width="props.width" :height="props.width" :src="url" alt="runeImage" />
+	<img :src="url" alt="runeImage" />
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
 import { runesFlatMap } from "@/common/runes";
 // props
 const props = defineProps({
-	width: { type: Number, required: false },
 	runeId: { type: Number, required: true }
 });
 const url = computed(() => {

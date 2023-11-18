@@ -1,13 +1,12 @@
 <template>
-	<img :width="props.width" :height="props.width" v-bind="$attrs" :src="url" alt="spellImage" />
+	<img v-bind="$attrs" :src="url" alt="spellImage" />
 </template>
 <script setup lang="ts">
 import { computed } from "vue";
 import { spells } from "@@/const/lolDataConfig";
 // props
 const props = defineProps({
-	spellId: { type: Number, required: true },
-	width: { type: Number, required: false }
+	spellId: { type: Number, required: true }
 });
 const url = computed(() => {
 	if (!spells[props.spellId]) {

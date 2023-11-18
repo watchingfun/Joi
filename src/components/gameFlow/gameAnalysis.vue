@@ -9,7 +9,7 @@ const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag } = storeToRefs(l
 </script>
 
 <template>
-	<div class="flex flex-1">
+	<div class="flex flex-1 relative">
 		<n-tabs animated>
 			<n-tab-pane tab="我方队伍" name="myTeam">
 				<n-spin :show="queryMyTeamFlag">

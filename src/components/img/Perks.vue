@@ -12,8 +12,8 @@ const { stats } = toRefs(props);
 	<n-tooltip :style="{ maxWidth: '400px' }" :keep-alive-on-hover="false">
 		<template #trigger>
 			<div>
-				<rune-img :rune-id="stats.perk0" :width="20"></rune-img>
-				<rune-img :rune-id="stats.perkSubStyle" :width="20" style="padding: 2px"></rune-img>
+				<rune-img :rune-id="stats.perk0" style="width: 1.5em; height: 1.5em"></rune-img>
+				<rune-img :rune-id="stats.perkSubStyle" style="padding: 2px; width: 1.5em; height: 1.5em"></rune-img>
 			</div>
 		</template>
 		<template #default>

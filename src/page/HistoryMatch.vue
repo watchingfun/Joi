@@ -6,8 +6,8 @@ import ProfileImg from "@/components/img/profileImg.vue";
 import HistoryList from "@/components/HistoryList.vue";
 import { useResizeObserver } from "@vueuse/core";
 import { TransitionExpand } from "@morev/vue-transitions";
-import { onBeforeRouteUpdate } from "vue-router";
 import { ReactiveVariable } from "vue/macros";
+import router from "@/router";
 
 const lcuStore = useLCUStore();
 
@@ -157,10 +157,14 @@ function closeTab(index: number) {
 	summonerQueryList.value.splice(index, 1);
 }
 
-onBeforeRouteUpdate((to, from, next) => {
-	fetchData(to.params);
-	next();
-});
+watch(
+	() => router.currentRoute.value,
+	(n, o) => {
+		if (n.name === "historyMatch" && (n.params.puuid || n.params.summonerName)) {
+			fetchData(n.params);
+		}
+	}
+);
 </script>
 
 <template>

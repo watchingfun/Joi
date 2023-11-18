@@ -3,8 +3,11 @@ import { Ref, ref } from "vue";
 import lcuApi from "@/api/lcuApi";
 import { MatchHistoryQueryResult, PageRange, SummonerInfo, TeamMember, TeamMemberInfo } from "@@/types/lcuType";
 import useSettingStore from "@/store/setting";
-import { GameMode, PositionName } from "@@/types/opgg_rank_type";
+import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
 import { analysisTeam, generateAnalysisMsg } from "@/utils/gameAnalysis";
+import { CustomRune } from "@@/types/type";
+import { champDict } from "@@/const/lolDataConfig";
+import { convertOPGGRuneFormat } from "@@/lcu/opgg";
 
 export enum ConnectStatusEnum {
 	connecting,
@@ -58,6 +61,8 @@ const useLCUStore = defineStore("lcu", () => {
 	const queryMyTeamFlag = ref(false);
 	const queryTheirTeamFlag = ref(false);
 
+	const settingStore = useSettingStore();
+
 	function sendTeamScoreToRoom() {
 		const msg = generateAnalysisMsg(myTeam.value);
 		console.log("队伍分析", msg);
@@ -67,7 +72,7 @@ const useLCUStore = defineStore("lcu", () => {
 	async function analysisMyTeam() {
 		queryMyTeamFlag.value = true;
 		myTeam.value = await analysisTeam(myTeam.value).finally(() => (queryMyTeamFlag.value = false));
-		if (useSettingStore().settingModel.autoSendMyTeamAnalysis) {
+		if (settingStore.settingModel.autoSendMyTeamAnalysis) {
 			sendTeamScoreToRoom();
 		}
 	}
@@ -167,6 +172,54 @@ const useLCUStore = defineStore("lcu", () => {
 		});
 	}
 
+	const opggRunes = ref([]) as Ref<Rune[]>;
+	const customRunes = ref([]) as Ref<CustomRune[]>;
+	const loadingRune = ref(false);
+
+	watch(
+		champId,
+		(n, o) => {
+			if (n) {
+				void fetchRune(n);
+			}
+		},
+		{ immediate: true }
+	);
+	const applyRune = (rune: Rune | CustomRune) => {
+		let name: string;
+		if ("name" in rune) {
+			name = rune?.name;
+		} else {
+			name = "OP.GG " + champDict[champId.value + ""]?.label;
+		}
+		lcuApi.applyRune(convertOPGGRuneFormat(rune, name)).then(() => {
+			useMessage().success("符文已应用");
+		});
+	};
+
+	const fetchRune = async (champId: number) => {
+		loadingRune.value = true;
+		const gameModeVal = unref(currentGameMode);
+		const positionVal = unref(currentPosition);
+		try {
+			customRunes.value = await lcuApi
+				.getCustomRunes(champId, gameModeVal, positionVal)
+				.then((res) => res?.map((i) => i.value) || []);
+			opggRunes.value = (await lcuApi.getOPGGRunes(champId, gameModeVal, positionVal)) || [];
+			if (settingStore.settingModel.autoConfigRune) {
+				if (settingStore.settingModel.autoConfigRuneOPGGPriority && opggRunes.value.length) {
+					applyRune(opggRunes.value[0]);
+				} else if (customRunes.value.length) {
+					applyRune(customRunes.value[0]);
+				}
+			}
+		} catch (e) {
+			if (e instanceof Error) useMessage().error(e.message);
+		} finally {
+			loadingRune.value = false;
+		}
+	};
+
 	return {
 		champId,
 		updateChampId,
@@ -187,7 +240,11 @@ const useLCUStore = defineStore("lcu", () => {
 		search,
 		analysisMyTeam,
 		analysisTheirTeam,
-		sendTeamScoreToRoom
+		sendTeamScoreToRoom,
+		loadingRune,
+		applyRune,
+		customRunes,
+		opggRunes
 	};
 });
 

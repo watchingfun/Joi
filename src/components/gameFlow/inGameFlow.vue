@@ -34,11 +34,7 @@ const tabVal = ref<"rune" | "analysis">("rune");
 				<div class="flex flex-1">
 					<transition-slide class="flex flex-col flex-1" :offset="[-16, 0]" mode="out-in">
 						<keep-alive>
-							<rune-config
-								v-if="tabVal === 'rune'"
-								:champId="champId"
-								:game-mode="lcuStore.currentGameMode"
-								:position="lcuStore.currentPosition"></rune-config>
+							<rune-config v-if="tabVal === 'rune'"></rune-config>
 							<game-analysis v-else-if="tabVal === 'analysis'"></game-analysis>
 						</keep-alive>
 					</transition-slide>

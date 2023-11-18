@@ -16,7 +16,7 @@ const emit = defineEmits<{
 <template>
 	<div>
 		<template v-for="(record, index) in matchHistoryList" :key="record.gameId">
-			<LazyDeferred class="h-[100px]" once>
+			<LazyDeferred class="h-[6em]" once>
 				<GameInfo
 					:record="record"
 					@click="() => emit('jumpDetail', record.gameId, record.participantIdentities[0].player)"></GameInfo>
