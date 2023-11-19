@@ -162,7 +162,6 @@ const useLCUStore = defineStore("lcu", () => {
 					gameDetail: originInfo!.gameDetail
 				} as TeamMemberInfo;
 			})
-			.sort();
 	}
 
 	function updateTheirTeamInfo(teamMembers: TeamMember[]) {

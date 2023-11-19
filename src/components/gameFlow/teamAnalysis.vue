@@ -9,6 +9,7 @@ import VChart from "vue-echarts";
 import { assignedPositionNameMap } from "@@/types/opgg_rank_type";
 import { ComputedRef } from "vue";
 import HistoryList from "@/components/HistoryList.vue";
+import { champDict } from "@@/const/lolDataConfig";
 
 const props = defineProps<{ teams: TeamMemberInfo[] }>();
 const { teams } = toRefs(props);
@@ -22,6 +23,26 @@ const teamMap = computed(() => {
 			return p;
 		},
 		{} as Record<string, TeamMemberInfo>
+	);
+});
+
+const championImageUrlMap = computed(() => {
+	return teams.value.reduce(
+		(p, c) => {
+			const championAlias = champDict[c.championId!]?.alias;
+			const url = championAlias
+				? `https://game.gtimg.cn/images/lol/act/img/champion/${championAlias}.png`
+				: "./img/non-champion.png";
+			p[c.championId!] = {
+				height: 40,
+				align: "center",
+				backgroundColor: {
+					image: url
+				}
+			};
+			return p;
+		},
+		{} as Record<string, any>
 	);
 });
 
@@ -41,6 +62,7 @@ const option = computed(() => {
 			left: "3%",
 			right: "4%",
 			bottom: "3%",
+			top: "10%",
 			containLabel: true
 		},
 		xAxis: [
@@ -56,7 +78,21 @@ const option = computed(() => {
 					}) || [],
 				axisLabel: {
 					interval: 0,
-					color: "rgba(255,255,255,0.8)"
+					color: "rgba(255,255,255,0.8)",
+					formatter: function (value, index) {
+						if (teams.value[index].championId) {
+							return `{${teams.value[index].championId!}|}\n{value|${value}}`;
+						} else {
+							return `{value|${value}}`;
+						}
+					},
+					rich: {
+						...championImageUrlMap.value,
+						value: {
+							lineHeight: 30,
+							align: "center"
+						}
+					}
 				},
 				axisTick: {
 					alignWithLabel: true
