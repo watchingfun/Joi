@@ -26,3 +26,54 @@
 ![Image](./screenshot/1699032210821.png)
 ![Image](./screenshot/1699032237668.png)
 ![Image](./screenshot/1699032266914.png)
+
+## 编译步骤
+
+### 所需环境
+
+- Node v18
+- Python 3.x
+- Visual Studio 2022 (Visual C++ Build Tools) 安装工作负载 使用C++的桌面开发
+
+npmrc 添加配置项
+
+```
+#npm镜像
+registry=https://registry.npmmirror.com/
+
+#electron下载镜像
+electron-mirror=https://npmmirror.com/mirrors/electron/
+
+#msbuild路径,需要改成自己vs安装位置
+msbuild_path=F:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe
+
+#vs版本
+msvs_version=2022
+```
+
+### 步骤
+
+安装依赖
+
+```
+npm install
+```
+
+编译原生模块
+
+```
+npm run rebuild
+```
+
+打包
+
+```
+npm run build
+```
+
+## 参考资料
+
+- https://github.com/XHXIAIEIN/LeagueCustomLobby
+- https://github.com/real-web-world/hh-lol-prophet
+- https://github.com/XilyFeAAAA/RIVEN
+- https://github.com/electron-vite/electron-vite-vue
