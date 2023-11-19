@@ -21,7 +21,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build && electron-builder",
-    "rebuild": "electron rebuild.js"
+    "rebuild": "electron rebuild.js",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
@@ -39,6 +40,7 @@
     "electron-devtools-installer": "^3.2.0",
     "naive-ui": "^2.35.0",
     "node-gyp": "^9.4.0",
+    "patch-package": "^8.0.0",
     "postcss": "^8.4.31",
     "prettier": "3.0.3",
     "sass": "^1.68.0",

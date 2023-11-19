@@ -1,0 +1,12 @@
+diff --git a/node_modules/sudo-prompt/index.js b/node_modules/sudo-prompt/index.js
+index acfd41b..f77dbaa 100644
+--- a/node_modules/sudo-prompt/index.js
++++ b/node_modules/sudo-prompt/index.js
+@@ -648,6 +648,7 @@ function WindowsWriteElevateScript(instance, end) {
+ function WindowsWriteExecuteScript(instance, end) {
+   var script = [];
+   script.push('@echo off');
++  script.push('chcp 65001>nul')
+   script.push(
+     'call "' + instance.pathCommand + '"' +
+     ' > "' + instance.pathStdout + '" 2> "' + instance.pathStderr + '"'
