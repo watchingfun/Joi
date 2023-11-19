@@ -8,17 +8,18 @@ export function showMainWindow(route?: string | { name: string }) {
 	if (windows.length) {
 		const win = windows.at(0);
 		if (route) {
-			win.webContents.send("jumpRoute", route);
+			win?.webContents.send("jumpRoute", route);
 		}
 		//win.restore();
-		win.show();
+		win?.show();
 	}
 }
+
 export function sendToWebContent(channel: string, data?: any) {
 	const windows = BrowserWindow.getAllWindows();
 	if (windows.length) {
 		const win = windows.at(0);
-		win.webContents.send(channel, data);
+		win?.webContents.send(channel, data);
 	}
 }
 
@@ -62,7 +63,7 @@ export const retryWrapper = function <T>(
 	const retryCallback = async function (...args: any[]): Promise<T> {
 		try {
 			return await asyncFunc(...args);
-		} catch (e) {
+		} catch (e: any) {
 			if (retryTime <= 0) throw e;
 			logger.error(
 				`error occurred:${e.message}, retryWrapper, 将在 ${retryInterval} 毫秒后重试，剩余重试次数 ${retryTime}`

@@ -69,6 +69,11 @@ function handleCheckUpdate() {
 						<div class="py-[10px]">
 							<n-switch v-model:value="settingModel.autoSendMyTeamAnalysis"></n-switch>
 						</div>
+
+						<h2 class="text-sm pt-2 font-bold">游戏结束后自动再来一局：</h2>
+						<div class="py-[10px]">
+							<n-switch v-model:value="settingModel.autoPlayAgain"></n-switch>
+						</div>
 					</div>
 				</div>
 

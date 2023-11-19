@@ -19,7 +19,9 @@ export const lcuConst = {
 	getCustomRunes: "lcu:getCustomRunes", //根据英雄，位置 游戏模式 获取自定义符文
 	getOPGGRunes: "lcu:getOPGGRunes", //根据英雄，位置 游戏模式 获取opgg符文
 	applyRune: "lcu:applyRune", //应用符文
-	sendChatMsgToRoom: "lcu:sendChatMsgToRoom" //发送聊天消息到对局房间
+	sendChatMsgToRoom: "lcu:sendChatMsgToRoom", //发送聊天消息到对局房间
+	playAgain: "lcu:playAgain", // 回到大厅
+	matchmaking: "lcu:matchmaking" //开始匹配 寻找对局
 };
 
 export const chatDividerLine = "-----------------------------------------";

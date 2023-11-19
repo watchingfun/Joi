@@ -1,13 +1,13 @@
-import {createHttp1Request} from "../lib/league-connect";
-import {getCredentials} from "./handleLCU";
-import {getCurrentQueue, getGameInfo, listenChampSelect} from "./lcuRequest";
+import { createHttp1Request } from "../lib/league-connect";
+import { getCredentials } from "./handleLCU";
+import { getCurrentQueue, getGameInfo, listenChampSelect, matchmaking, playAgain } from "./lcuRequest";
 import logger from "../lib/logger";
-import {setting} from "../config/";
-import {ChampSelectPhaseSession} from "../types/lcuType";
-import {clearFlag, handleGameSessionData} from "./handleGameSessionData";
-import {sendToWebContent} from "../util/util";
-import {getGameModeByQueue} from "./utils";
-import {lcuConst} from "../const/const";
+import { setting } from "../config/";
+import { ChampSelectPhaseSession } from "../types/lcuType";
+import { clearFlag, handleGameSessionData } from "./handleGameSessionData";
+import { sendToWebContent } from "../util/util";
+import { getGameModeByQueue } from "./utils";
+import { lcuConst } from "../const/const";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -73,10 +73,28 @@ export function handelInProgress(eventKey: string) {
 	}
 }
 
-//游戏结束
+//游戏结束等待结算
+export function handelWaitingForStats(eventKey: string) {
+	if (eventKey !== "WaitingForStats") {
+		return;
+	}
+}
+
+//游戏结束前
 export function handelPreEndOfGame(eventKey: string) {
 	if (eventKey !== "PreEndOfGame") {
 		return;
+	}
+}
+
+//游戏结束
+export async function handelEndOfGame(eventKey: string) {
+	if (eventKey !== "EndOfGame") {
+		return;
+	}
+	if (setting.model.autoPlayAgain) {
+		await playAgain();
+		await matchmaking();
 	}
 }
 

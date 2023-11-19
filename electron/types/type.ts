@@ -1,25 +1,16 @@
 import { GameMode, PositionName, RoleType } from "./opgg_rank_type";
 
-export interface SettingModel {
-	exitAsk: boolean;
-	exitDirectly: boolean;
-	autoAccept: boolean;
-	autoAcceptDelay: number;
-	autoConfigRune: boolean;
-	autoConfigRuneOPGGPriority: boolean;
-	autoSendMyTeamAnalysis: boolean;
+export type SettingModel = Extract<typeof settingModelDefault, { [prop: string]: any }>;
 
-	[prop: string]: any;
-}
-
-export const settingModelDefault: SettingModel = {
+export const settingModelDefault = {
 	exitAsk: true, //点击关闭时询问
 	exitDirectly: false, //点击关闭时直接退出
 	autoAccept: true, //自动接收对局
 	autoAcceptDelay: 0, //自动接收对局延迟
 	autoConfigRune: false, //自动配置符文
 	autoConfigRuneOPGGPriority: false, //自动配置符文优先使用opgg
-	autoSendMyTeamAnalysis: false // 自动发送我方队伍分析数据到聊天室
+	autoSendMyTeamAnalysis: false, // 自动发送我方队伍分析数据到聊天室
+	autoPlayAgain: false //游戏结束后自动回到大厅 然后搜索对局
 };
 
 export interface CustomRune {

@@ -258,3 +258,20 @@ export const queryTeamMemberGameDetail = async (puuid: string) => {
 	const isFulfilled = <T>(p: PromiseSettledResult<T>): p is PromiseFulfilledResult<T> => p.status === "fulfilled";
 	return result.filter(isFulfilled<GameDetail>).map((p) => p.value);
 };
+
+
+//再来一局（回到大厅）
+export const playAgain = async () => {
+	return await httpRequest<void>({
+		method: "POST",
+		url: `/lol-lobby/v2/play-again`
+	});
+};
+
+//开始匹配 寻找对局
+export const matchmaking = async () => {
+	return await httpRequest<void>({
+		method: "POST",
+		url: `/lol-lobby/v2/lobby/matchmaking/search`
+	});
+};
