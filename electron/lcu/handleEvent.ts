@@ -103,5 +103,7 @@ export default {
 	handelChampSelect,
 	handelGameStart,
 	handelInProgress,
-	handelPreEndOfGame
+	handelWaitingForStats,
+	handelPreEndOfGame,
+	handelEndOfGame
 };
