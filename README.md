@@ -32,7 +32,7 @@
 ### 所需环境
 
 - Node v18
-- Python 3.x
+- Python 3.9
 - Visual Studio 2022 (Visual C++ Build Tools) 安装工作负载 使用C++的桌面开发
 
 npmrc 添加配置项
