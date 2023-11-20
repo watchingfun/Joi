@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import useSettingStore from "@/store/setting";
 import { storeToRefs } from "pinia";
 import { checkUpdate } from "@/utils/updateCheck";
+import commonApi from "@/api/commonApi";
 
 const router = useRouter();
 
@@ -18,6 +19,10 @@ function goBack() {
 function handleCheckUpdate() {
 	fetching.value = true;
 	checkUpdate().finally(() => (fetching.value = false));
+}
+
+function handleOpenLogDir() {
+	commonApi.openLogDir();
 }
 </script>
 
@@ -89,6 +94,12 @@ function handleCheckUpdate() {
 							</n-radio-group>
 							<n-checkbox v-model:checked="settingModel.exitAsk" class="ml-[50px]">每次询问</n-checkbox>
 						</div>
+					</div>
+				</div>
+
+				<div class="setting-group mt-4">
+					<div class="flex flex-row gap-5 items-center">
+						<n-button @click="handleOpenLogDir"> 打开日志文件夹</n-button>
 					</div>
 				</div>
 

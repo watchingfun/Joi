@@ -1,4 +1,4 @@
-import { lcuConst } from "@@/const/const";
+import { Handle } from "@@/const/const";
 import { GameDetail, MatchHistoryQueryResult, PageRange, SummonerInfo } from "@@/types/lcuType";
 import useAppStore from "@/store/app";
 import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
@@ -25,25 +25,25 @@ async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
 }
 
 export default {
-	lcuKillRender: () => captureError<void>(window.ipcRenderer.invoke(lcuConst.killRender)),
-	getCurrentSummoner: () => captureError<SummonerInfo>(window.ipcRenderer.invoke(lcuConst.getCurrentSummoner)),
+	lcuKillRender: () => captureError<void>(window.ipcRenderer.invoke(Handle.killRender)),
+	getCurrentSummoner: () => captureError<SummonerInfo>(window.ipcRenderer.invoke(Handle.getCurrentSummoner)),
 	queryMatchHistory: (puuid: string, page: PageRange) =>
-		captureError<MatchHistoryQueryResult[]>(window.ipcRenderer.invoke(lcuConst.queryMatchHistory, puuid, page)),
+		captureError<MatchHistoryQueryResult[]>(window.ipcRenderer.invoke(Handle.queryMatchHistory, puuid, page)),
 	queryGameDetails: (gameId: number) =>
-		captureError<GameDetail>(window.ipcRenderer.invoke(lcuConst.queryGameDetails, gameId)),
+		captureError<GameDetail>(window.ipcRenderer.invoke(Handle.queryGameDetails, gameId)),
 	queryTeamMemberGameDetail: (puuid: string) =>
-		captureError<GameDetail[]>(window.ipcRenderer.invoke(lcuConst.queryTeamMemberGameDetail, puuid)),
-	queryConnectStatus: () => window.ipcRenderer.invoke(lcuConst.queryConnectStatus) as Promise<boolean>,
+		captureError<GameDetail[]>(window.ipcRenderer.invoke(Handle.queryTeamMemberGameDetail, puuid)),
+	queryConnectStatus: () => window.ipcRenderer.invoke(Handle.queryConnectStatus) as Promise<boolean>,
 	getSummonerByName: (nickname: string) =>
-		captureError<SummonerInfo>(window.ipcRenderer.invoke(lcuConst.getSummonerByName, nickname)),
+		captureError<SummonerInfo>(window.ipcRenderer.invoke(Handle.getSummonerByName, nickname)),
 	getSummonerByPuuid: (puuid: string) =>
-		captureError<SummonerInfo>(window.ipcRenderer.invoke(lcuConst.getSummonerByPuuid, puuid)),
+		captureError<SummonerInfo>(window.ipcRenderer.invoke(Handle.getSummonerByPuuid, puuid)),
 	getCustomRunes: (champId: number, gameMode?: GameMode, position?: PositionName) =>
-		captureError<RunesDBObj[]>(window.ipcRenderer.invoke(lcuConst.getCustomRunes, champId, gameMode, position)),
+		captureError<RunesDBObj[]>(window.ipcRenderer.invoke(Handle.getCustomRunes, champId, gameMode, position)),
 	getOPGGRunes: (champId: number, gameMode?: GameMode, position?: PositionName) =>
-		captureError<Rune[]>(window.ipcRenderer.invoke(lcuConst.getOPGGRunes, champId, gameMode, position)),
-	applyRune: (data: RuneConfig) => captureError<void>(window.ipcRenderer.invoke(lcuConst.applyRune, data)),
+		captureError<Rune[]>(window.ipcRenderer.invoke(Handle.getOPGGRunes, champId, gameMode, position)),
+	applyRune: (data: RuneConfig) => captureError<void>(window.ipcRenderer.invoke(Handle.applyRune, data)),
 
 	sendChatMsgToRoom: (conversationId: string, msg: string, type: string = "chat") =>
-		captureError<void>(window.ipcRenderer.invoke(lcuConst.sendChatMsgToRoom, conversationId, msg, type))
+		captureError<void>(window.ipcRenderer.invoke(Handle.sendChatMsgToRoom, conversationId, msg, type))
 };

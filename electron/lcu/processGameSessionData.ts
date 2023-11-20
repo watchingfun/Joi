@@ -2,7 +2,7 @@ import { ChampSelectPhaseSession, TeamMemberInfo } from "../types/lcuType";
 import { getCurrentAction, parseGameSessionData } from "./utils";
 import { GameMode } from "../types/opgg_rank_type";
 import { sendToWebContent, showMainWindow } from "../util/util";
-import { lcuConst } from "../const/const";
+import { Handle } from "../const/const";
 import logger from "../lib/logger";
 import { getCurrentChampId, getSummonerByPuuid } from "./lcuRequest";
 
@@ -11,11 +11,11 @@ let actionId: number | null;
 let myTeam: TeamMemberInfo[] | null;
 let roomId: string | null;
 
-export async function handleGameSessionData(data: ChampSelectPhaseSession, gameMode: GameMode) {
+export async function processGameSessionData(data: ChampSelectPhaseSession, gameMode: GameMode) {
 	//进行简单解析
 	const sessionData = parseGameSessionData(data, gameMode);
 	//logger.debug("ChampSelectPhaseSession", JSON.stringify(data));
-	sendToWebContent(lcuConst.gameSessionData, sessionData);
+	sendToWebContent(Handle.gameSessionData, sessionData);
 
 	//发送当前对局我方成员
 	if (!myTeam) {
@@ -28,9 +28,9 @@ export async function handleGameSessionData(data: ChampSelectPhaseSession, gameM
 			logger.error("查询成员信息失败：", (e as Error)?.message);
 			return [];
 		});
-		sendToWebContent(lcuConst.gameSessionMyTeam, myTeam);
+		sendToWebContent(Handle.gameSessionMyTeam, myTeam);
 		roomId = data.chatDetails.multiUserChatId;
-		sendToWebContent(lcuConst.gameSessionRoomId, roomId);
+		sendToWebContent(Handle.gameSessionRoomId, roomId);
 	}
 
 	//获取当前活动
@@ -50,7 +50,7 @@ export async function handleGameSessionData(data: ChampSelectPhaseSession, gameM
 	if (currentChampId && currentChampId !== champId) {
 		champId = currentChampId;
 		showMainWindow({ name: "inGame" });
-		sendToWebContent(lcuConst.champSelect, currentChampId);
+		sendToWebContent(Handle.champSelect, currentChampId);
 	}
 }
 

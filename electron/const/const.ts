@@ -1,4 +1,4 @@
-export const lcuConst = {
+export const Handle = {
 	connected: "lcu:connected", //客户端连接完成时发送信号
 	connecting: "lcu:connecting", //客户端连接中时发送信号
 	disconnect: "lcu:disconnect", //客户端断开连接时发送信号
@@ -21,7 +21,8 @@ export const lcuConst = {
 	applyRune: "lcu:applyRune", //应用符文
 	sendChatMsgToRoom: "lcu:sendChatMsgToRoom", //发送聊天消息到对局房间
 	playAgain: "lcu:playAgain", // 回到大厅
-	matchmaking: "lcu:matchmaking" //开始匹配 寻找对局
+	matchmaking: "lcu:matchmaking", //开始匹配 寻找对局
+	openLogDir: "openLogDir" //打开日志文件夹
 };
 
 export const chatDividerLine = "-----------------------------------------";

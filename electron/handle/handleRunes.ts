@@ -1,7 +1,7 @@
 import { ipcMain } from "electron";
 import runesDB from "../db/runes";
 
-export function setupRunesListener() {
+export function setupHandleRunes() {
 	ipcMain.handle("queryCustomRunes", (event, query) => {
 		console.log("queryCustomRunes", query);
 		return runesDB.queryPageRunes(query);

@@ -1,16 +1,14 @@
 import path from "path";
 import { app, ipcMain, shell } from "electron";
+import { BrowserWindow as AcrylicBrowserWindow } from "electron-acrylic-window";
 import { setupTitleBarHandler } from "./handle/handleTitleBar";
-import { setupTray } from "./handle/handleTray";
-import "./lcu/handleLCU";
-import { startGuardTask } from "./lcu/handleLCU";
+import { startGuardTask } from "./lcu/connector";
 import installExtension from "electron-devtools-installer";
 import logger from "./lib/logger";
 import { getPath } from "./util/util";
 import { initDb } from "./db";
-import { setupRunesListener } from "./handle/handleRunes";
 import child_process from "child_process";
-import Input = Electron.Input;
+import { setupHandles } from "./handle";
 
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
@@ -34,7 +32,7 @@ process
 		logger.error(err);
 		throw err;
 	});
-const BrowserWindow = isWin11 ? require("electron-acrylic-window").BrowserWindow : require("electron").BrowserWindow;
+
 // The built directory structure
 //
 // ├─┬ dist
@@ -47,7 +45,11 @@ const BrowserWindow = isWin11 ? require("electron-acrylic-window").BrowserWindow
 process.env.DIST = path.join(getPath(), "../dist");
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, "../public");
 
-let win: typeof BrowserWindow | null;
+type AcrylicBrowserWindowType = typeof AcrylicBrowserWindow;
+const BrowserWindowAdapter = (
+	isWin11 ? require("electron-acrylic-window").BrowserWindow : require("electron").BrowserWindow
+) as AcrylicBrowserWindowType;
+let win: AcrylicBrowserWindow;
 
 if (!app.requestSingleInstanceLock()) {
 	app.quit();
@@ -55,14 +57,12 @@ if (!app.requestSingleInstanceLock()) {
 } else {
 	app.on("second-instance", (event, commandLine, workingDirectory) => {
 		// Someone tried to run a second instance, we should focus our window.
-		if (win) {
-			win.show();
-		}
+		win?.show();
 	});
 }
 
-export function createWindow() {
-	win = new BrowserWindow({
+export async function createWindow() {
+	win = new BrowserWindowAdapter({
 		width: 800,
 		height: 600,
 		webPreferences: {
@@ -94,12 +94,12 @@ export function createWindow() {
 	});
 
 	if (process.env.VITE_DEV_SERVER_URL) {
-		win.loadURL(process.env.VITE_DEV_SERVER_URL);
+		await win.loadURL(process.env.VITE_DEV_SERVER_URL);
 		//win.webContents.openDevTools();
 	} else {
-		win.loadFile(path.join(process.env.DIST, "index.html"));
+		await win.loadFile(path.join(process.env.DIST, "index.html"));
 		//拦截快捷键Control+R
-		win.webContents.on("before-input-event", (event: Event, input: Input) => {
+		win.webContents.on("before-input-event", (event: Electron.Event, input: Electron.Input) => {
 			if (input.control && input.key.toLowerCase() === "r") {
 				event.preventDefault();
 			}
@@ -114,13 +114,12 @@ app.on("window-all-closed", () => {
 });
 
 ipcMain.on("open-url", (e, args) => {
-	shell.openExternal(args);
+	void shell.openExternal(args);
 });
 
 app.whenReady().then(() => {
-	createWindow();
-	setupTray();
-	setupRunesListener();
+	void createWindow();
+	setupHandles();
 	installExtension(VUEJS3_DEVTOOLS)
 		.then((name) => logger.debug(`Added Extension:  ${name}`))
 		.catch((err) => logger.debug("An error occurred: ", err));

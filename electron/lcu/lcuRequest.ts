@@ -5,7 +5,7 @@ import {
 	EventCallback,
 	HttpRequestOptions
 } from "../lib/league-connect";
-import { getCredentials, getLeagueWebSocket } from "./handleLCU";
+import { getCredentials, getLeagueWebSocket } from "./connector";
 import { ClientHttp2Session } from "http2";
 import {
 	Action,

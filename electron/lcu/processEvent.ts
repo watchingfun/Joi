@@ -1,13 +1,13 @@
 import { createHttp1Request } from "../lib/league-connect";
-import { getCredentials } from "./handleLCU";
+import { getCredentials } from "./connector";
 import { getCurrentQueue, getGameInfo, listenChampSelect, matchmaking, playAgain } from "./lcuRequest";
 import logger from "../lib/logger";
 import { setting } from "../config/";
 import { ChampSelectPhaseSession } from "../types/lcuType";
-import { clearFlag, handleGameSessionData } from "./handleGameSessionData";
+import { clearFlag, processGameSessionData } from "./processGameSessionData";
 import { sendToWebContent } from "../util/util";
 import { getGameModeByQueue } from "./utils";
-import { lcuConst } from "../const/const";
+import { Handle } from "../const/const";
 
 // 自动接受对局
 export function handelAutoAcceptGame(eventKey: string) {
@@ -45,7 +45,7 @@ export async function handelChampSelect(eventKey: string) {
 	const gameMode = getGameModeByQueue(await getCurrentQueue());
 	unListenChampSelect && unListenChampSelect();
 	unListenChampSelect = listenChampSelect((phaseSession: ChampSelectPhaseSession) => {
-		handleGameSessionData(phaseSession, gameMode);
+		processGameSessionData(phaseSession, gameMode);
 	});
 }
 
@@ -57,7 +57,7 @@ export async function handelGameStart(eventKey: string) {
 	try {
 		const gameSessionData = await getGameInfo();
 		const { teamOne, teamTwo } = gameSessionData.gameData;
-		sendToWebContent(lcuConst.gameTeams, [teamOne, teamTwo]);
+		sendToWebContent(Handle.gameTeams, [teamOne, teamTwo]);
 	} finally {
 		if (unListenChampSelect) {
 			unListenChampSelect();
