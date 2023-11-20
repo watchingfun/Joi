@@ -73,6 +73,7 @@ npm run build
 
 ## 参考资料
 
+- https://hextechdocs.dev/getting-started-with-the-lcu-api/
 - https://github.com/XHXIAIEIN/LeagueCustomLobby
 - https://github.com/real-web-world/hh-lol-prophet
 - https://github.com/XilyFeAAAA/RIVEN
