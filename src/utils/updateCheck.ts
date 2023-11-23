@@ -1,4 +1,4 @@
-import { LatestReleases } from "@/common/github";
+import { LatestReleases } from "@@/types/github";
 import useAppStore from "@/store/app";
 
 export const fetchLatestReleases = async () => {

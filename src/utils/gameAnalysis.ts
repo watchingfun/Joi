@@ -1,11 +1,14 @@
-import { GameDetail, TeamMemberInfo } from "@@/types/lcuType";
+import { GameDetail, MatchHistoryQueryResult, TeamMemberInfo } from "@@/types/lcuType";
 import lcuApi from "@/api/lcuApi";
 import { chatDividerLine } from "@@/const/const";
+import { intersectionWith } from "lodash";
+import { retryWrapper } from "@/utils/util";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
 	return await Promise.all(
 		teams.map(async (t) => {
-			const gameDetails = (await lcuApi.queryMatchHistory(t.puuid, 1))?.flatMap((i) => i.games.games);
+			const gameDetails = (await retryWrapper<MatchHistoryQueryResult>(() => lcuApi.queryMatchHistory(t.puuid, 1), 5)())
+				.games.games;
 			return {
 				...t,
 				gameDetail: gameDetails,
@@ -13,6 +16,28 @@ export async function analysisTeam(teams: TeamMemberInfo[]) {
 			} as TeamMemberInfo;
 		})
 	);
+}
+
+//分析组队信息
+export async function analysisTeamUpInfo(teams: TeamMemberInfo[]) {
+	const teamUpGroups: Array<Array<string>> = [];
+	for (const member of teams) {
+		if (!member.gameDetail?.[0].gameId) {
+			continue;
+		}
+		if (teamUpGroups.find((teamUps) => teamUps.includes(member.puuid))) {
+			continue;
+		}
+		const previousGameDetail = await lcuApi.queryGameDetails(member.gameDetail![0].gameId!);
+		const plays = previousGameDetail.participantIdentities.map((i) => i.player);
+		//取上一把的友方队伍
+		const friendlyPlays = plays?.findIndex((p) => p.puuid === member.puuid) > 4 ? plays?.slice(5) : plays?.slice(0, 5);
+		const teamUp = intersectionWith(teams, friendlyPlays, (t, p) => t.puuid === p.puuid).map((t) => t.puuid);
+		if (teamUp.length > 1) {
+			teamUpGroups.push(teamUp);
+		}
+	}
+	return teamUpGroups;
 }
 
 export function computeScore(gameDetail?: GameDetail[]) {
@@ -31,7 +56,7 @@ export function computeScore(gameDetail?: GameDetail[]) {
 			const info = detail.participants[0];
 			let { kills, assists, deaths } = info.stats;
 			deaths = deaths || 1;
-      let score;
+			let score;
 			if (info.timeline.role === "SUPPORT" && detail.gameMode !== "ARAM") {
 				score = (kills + assists * 1.2) / deaths; //非大乱斗模式的辅助英雄
 			} else {

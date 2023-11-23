@@ -1,5 +1,5 @@
 import { Handle } from "@@/const/const";
-import { GameDetail, MatchHistoryQueryResult, PageRange, SummonerInfo } from "@@/types/lcuType";
+import { GameDetail, MatchHistoryQueryResult, SummonerInfo } from "@@/types/lcuType";
 import useAppStore from "@/store/app";
 import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
 import { RuneConfig, RunesDBObj } from "@@/types/type";
@@ -27,8 +27,8 @@ async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
 export default {
 	lcuKillRender: () => captureError<void>(window.ipcRenderer.invoke(Handle.killRender)),
 	getCurrentSummoner: () => captureError<SummonerInfo>(window.ipcRenderer.invoke(Handle.getCurrentSummoner)),
-	queryMatchHistory: (puuid: string, page: PageRange) =>
-		captureError<MatchHistoryQueryResult[]>(window.ipcRenderer.invoke(Handle.queryMatchHistory, puuid, page)),
+	queryMatchHistory: (puuid: string, page: number = 1, pageSize: number = 8) =>
+		captureError<MatchHistoryQueryResult>(window.ipcRenderer.invoke(Handle.queryMatchHistory, puuid, page, pageSize)),
 	queryGameDetails: (gameId: number) =>
 		captureError<GameDetail>(window.ipcRenderer.invoke(Handle.queryGameDetails, gameId)),
 	queryTeamMemberGameDetail: (puuid: string) =>

@@ -666,6 +666,7 @@ export interface TeamMemberInfo {
 	championId?: number;
 	puuid: string;
 	summonerName: string;
+	summonerInfo: SummonerInfo;
 	gameDetail?: GameDetail[];
 	score?: number;
 }

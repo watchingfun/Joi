@@ -20,10 +20,14 @@ export async function processGameSessionData(data: ChampSelectPhaseSession, game
 	//发送当前对局我方成员
 	if (!myTeam) {
 		myTeam = await Promise.all(
-			data.myTeam.map(async (t) => ({
-				puuid: t.puuid,
-				summonerName: (await getSummonerByPuuid(t.puuid)).displayName
-			}))
+			data.myTeam.map(async (t) => {
+				const summonerInfo = await getSummonerByPuuid(t.puuid);
+				return {
+					puuid: t.puuid,
+					summonerName: summonerInfo.displayName,
+					summonerInfo: summonerInfo
+				};
+			})
 		).catch((e) => {
 			logger.error("查询成员信息失败：", (e as Error)?.message);
 			return [];

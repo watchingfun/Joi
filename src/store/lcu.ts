@@ -1,10 +1,10 @@
 import { defineStore } from "pinia";
 import { Ref, ref } from "vue";
 import lcuApi from "@/api/lcuApi";
-import { MatchHistoryQueryResult, PageRange, SummonerInfo, TeamMember, TeamMemberInfo } from "@@/types/lcuType";
+import { SummonerInfo, TeamMember, TeamMemberInfo } from "@@/types/lcuType";
 import useSettingStore from "@/store/setting";
 import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
-import { analysisTeam, generateAnalysisMsg } from "@/utils/gameAnalysis";
+import { analysisTeam, analysisTeamUpInfo, generateAnalysisMsg } from "@/utils/gameAnalysis";
 import { CustomRune } from "@@/types/type";
 import { champDict } from "@@/const/lolDataConfig";
 import { convertOPGGRuneFormat } from "@@/lcu/opgg";
@@ -27,11 +27,6 @@ export type GameFlowPhase =
 	| "PreEndOfGame"
 	| "EndOfGame"
 	| "None";
-
-export interface SummonerGameHistoryResult {
-	summonerInfo: SummonerInfo;
-	matchHistoryQueryResult: Array<MatchHistoryQueryResult>;
-}
 
 export const gameFlowPhaseMap: Record<GameFlowPhase, string> = {
 	Lobby: "大厅",
@@ -58,6 +53,8 @@ const useLCUStore = defineStore("lcu", () => {
 	const currentChatRoomId = ref<string>();
 	const myTeam = ref<TeamMemberInfo[]>([]);
 	const theirTeam = ref<TeamMemberInfo[]>([]);
+
+	const theirTeamUpInfo = ref<Array<Array<string>>>([]);
 
 	const queryMyTeamFlag = ref(false);
 	const queryTheirTeamFlag = ref(false);
@@ -96,31 +93,6 @@ const useLCUStore = defineStore("lcu", () => {
 		return summonerInfo.value;
 	}
 
-	async function getMatchHistoryQueryResult(
-		{
-			summonerName,
-			puuid,
-			pageRange = 1
-		}: {
-			summonerName?: string;
-			puuid?: string;
-			pageRange: PageRange;
-		} = { pageRange: 1 }
-	) {
-		let summonerResult: SummonerInfo;
-		//优先通过puuid查询,如果没有就用名字查询
-		if (puuid) {
-			summonerResult = await lcuApi.getSummonerByPuuid(puuid);
-		} else if (summonerName) {
-			summonerResult = await lcuApi.getSummonerByName(summonerName);
-		} else {
-			//如果名字和puuid都没传，那就是查询自己
-			summonerResult = await getCurrentSummoner();
-		}
-		const historyResults = (await lcuApi.queryMatchHistory(summonerResult.puuid as string, pageRange)) || [];
-		return { summonerInfo: summonerResult, matchHistoryQueryResult: historyResults } as SummonerGameHistoryResult;
-	}
-
 	function refreshConnectStatus() {
 		lcuApi.queryConnectStatus().then((connected: boolean = false) => {
 			connectStatus.value = connected ? ConnectStatusEnum.connected : ConnectStatusEnum.disconnect;
@@ -132,8 +104,22 @@ const useLCUStore = defineStore("lcu", () => {
 		const currentSummoner = await getCurrentSummoner();
 		const myTeamMemberIndex = teams.findIndex((arr) => arr.find((t) => t.puuid === currentSummoner.puuid));
 		updateMyTeamInfo(teams[myTeamMemberIndex]);
-		updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
-		void analysisTheirTeam();
+		await updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
+		await analysisTheirTeam();
+		theirTeamUpInfo.value = await analysisTeamUpInfo(theirTeam.value);
+		//如果对面5黑，并且都是隐藏生涯，就判断是胜率队
+		if (
+			theirTeamUpInfo.value.length === 5 &&
+			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE").length === 5
+		) {
+			new window.Notification("胜率队检测", { body: "对方为胜率队" });
+			console.log("对方胜率队");
+		} else if (theirTeamUpInfo.value.length > 1) {
+			let i = 1;
+			const msg = theirTeamUpInfo.value.map((t) => `组队${i++}: 队伍人数${t.length}`).join("\n");
+			new window.Notification("对面存在开黑组队", { body: msg });
+			console.log("对面存在开黑组队：", JSON.stringify(theirTeamUpInfo.value));
+		}
 	}
 
 	async function fetchTeamMembersGameDetail(teams: TeamMemberInfo[]) {
@@ -150,29 +136,33 @@ const useLCUStore = defineStore("lcu", () => {
 
 	//刚进入房间时就只能得到召唤师信息，进入游戏前得到位置英雄等信息然后更新下
 	function updateMyTeamInfo(teamMembers: TeamMember[]) {
-		myTeam.value = teamMembers
-			.map((t) => {
-				const originInfo = myTeam.value.find((i) => i.puuid === t.puuid);
+		myTeam.value = teamMembers.map((t) => {
+			const originInfo = myTeam.value.find((i) => i.puuid === t.puuid);
+			return {
+				...originInfo,
+				assignedPosition: t.selectedPosition?.toLowerCase(),
+				championId: t.championId
+			} as TeamMemberInfo;
+		});
+	}
+
+	async function updateTheirTeamInfo(teamMembers: TeamMember[]) {
+		theirTeam.value = await Promise.all(
+			teamMembers.map(async (t) => {
+				const summonerInfo = await lcuApi.getSummonerByPuuid(t.puuid);
 				return {
 					assignedPosition: t.selectedPosition?.toLowerCase(),
 					championId: t.championId,
 					puuid: t.puuid,
 					summonerName: t.summonerName,
-					score: originInfo!.score,
-					gameDetail: originInfo!.gameDetail
+					gameDetail: [],
+					summonerInfo: summonerInfo
 				} as TeamMemberInfo;
 			})
-	}
-
-	function updateTheirTeamInfo(teamMembers: TeamMember[]) {
-		theirTeam.value = teamMembers.map((t) => {
-			return {
-				assignedPosition: t.selectedPosition?.toLowerCase(),
-				championId: t.championId,
-				puuid: t.puuid,
-				summonerName: t.summonerName,
-				gameDetail: []
-			} as TeamMemberInfo;
+		).catch((e) => {
+			message.error(e.message);
+			console.log("查询对方成员信息失败：", (e as Error)?.message);
+			return [];
 		});
 	}
 
@@ -239,7 +229,6 @@ const useLCUStore = defineStore("lcu", () => {
 		gameFlowPhase,
 		connectStatus,
 		getCurrentSummoner,
-		getMatchHistoryQueryResult,
 		summonerInfo,
 		refreshConnectStatus,
 		search,

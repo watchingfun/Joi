@@ -30,7 +30,8 @@ function jumpSummoner(player: Player) {
 	drawerShow.value = false;
 	router.push({
 		name: "historyMatch",
-		params: { puuid: player.puuid }
+		params: { puuid: player.puuid },
+		query: { time: new Date().getTime() }
 	});
 }
 </script>

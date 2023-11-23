@@ -1,6 +1,15 @@
 // src/authentication.ts
 import cp from "node:child_process";
 import util from "node:util";
+// src/client.ts
+import { EventEmitter } from "events";
+// src/http.ts
+import https from "https";
+import { TextEncoder, TextEncoder as TextEncoder2 } from "util";
+import assert from "assert";
+import assert2 from "assert";
+// src/http2.ts
+import http2 from "http2";
 
 // src/cert.ts
 var RIOT_GAMES_CERT = `
@@ -118,9 +127,6 @@ async function authenticate(options) {
 	}
 }
 
-// src/client.ts
-import { EventEmitter } from "events";
-
 var DEFAULT_POLL_INTERVAL2 = 2500;
 var LeagueClient = class extends EventEmitter {
 	constructor(credentials, options) {
@@ -187,11 +193,6 @@ function processExists(pid) {
 		return (err == null ? void 0 : err.code) === "EPERM";
 	}
 }
-
-// src/http.ts
-import https from "https";
-import { TextEncoder } from "util";
-import assert from "assert";
 
 // src/trim.ts
 function trim(s) {
@@ -286,11 +287,6 @@ async function createHttp1Request(options, credentials) {
 		request.end();
 	});
 }
-
-// src/http2.ts
-import http2 from "http2";
-import { TextEncoder as TextEncoder2 } from "util";
-import assert2 from "assert";
 
 async function createHttpSession(credentials) {
 	const certificate = credentials.certificate ?? RIOT_GAMES_CERT;
@@ -473,4 +469,3 @@ export {
 	createHttpSession,
 	createWebSocketConnection
 };
-//# sourceMappingURL=league-connect.js.map

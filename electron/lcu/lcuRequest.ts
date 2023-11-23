@@ -1,12 +1,5 @@
-import {
-	createHttp1Request,
-	createHttp2Request,
-	createHttpSession,
-	EventCallback,
-	HttpRequestOptions
-} from "../lib/league-connect";
+import { createHttp1Request, EventCallback, HttpRequestOptions } from "../lib/league-connect";
 import { getCredentials, getLeagueWebSocket } from "./connector";
-import { ClientHttp2Session } from "http2";
 import {
 	Action,
 	ChampSelectPhaseSession,
@@ -14,7 +7,6 @@ import {
 	GameDetail,
 	GameSessionData,
 	MatchHistoryQueryResult,
-	PageRange,
 	RPC,
 	SummonerInfo
 } from "../types/lcuType";
@@ -24,7 +16,8 @@ import { getChampData, getNoneRankRunes, getRankRunes } from "./opgg";
 import runesDB from "../db/runes";
 import { GameMode, PositionName } from "../types/opgg_rank_type";
 import { PerkRune } from "../types/rune";
-import { retryWrapper } from "../util/util";
+import { memoize } from "lodash";
+import { LRUCache } from "lru-cache";
 
 const httpRequest = async <T>(option: HttpRequestOptions<any>) => {
 	const response = await createHttp1Request(option, getCredentials());
@@ -161,45 +154,23 @@ export const sendChatMsgToRoom = async (conversationId: string, msg: string, typ
 	});
 };
 
-// 根据召唤师ID 游标查询战绩
-export const cursorQueryMatchHistory = async (
-	session: ClientHttp2Session,
-	puuid: string,
-	begIndex: number,
-	endIndex: number
-) => {
-	const response = await createHttp2Request(
-		{
-			method: "GET",
-			url: `/lol-match-history/v1/products/lol/${puuid}/matches?begIndex=${begIndex}&endIndex=${endIndex}`
-		},
-		session,
-		getCredentials()
-	);
-	if (response.ok) {
-		return response.json() as MatchHistoryQueryResult;
-	} else {
-		logger.error("QueryMatchHistory error", response.text(), puuid, begIndex, endIndex);
-		throw new Error((response.json() as RPC).message);
-	}
-};
-
-// 根据召唤师ID查询战绩
-export const queryMatchHistory = async (puuid: string, page: PageRange = 1) => {
-	let specialDict: MatchHistoryQueryResult[] = [];
-	const session = await createHttpSession(getCredentials());
-	try {
-		for (let i = 0; i < page; i++) {
-			const matchHistory = await retryWrapper(
-				() => cursorQueryMatchHistory(session, puuid, 20 * i, 20 * (i + 1) - 1),
-				5
-			)();
-			specialDict.push(matchHistory);
-		}
-		return specialDict;
-	} finally {
-		session.close();
-	}
+/**
+ *
+ * @param puuid
+ * @param page 页数，起始值1
+ * @param pageSize 每页数量大小默认值8
+ * 根据召唤师puuid分页查询战绩
+ */
+export const queryMatchHistory = async (puuid: string, page: number = 1, pageSize: number = 8) => {
+	const begIndex = (page - 1) * pageSize;
+	const endIndex = page * pageSize - 1;
+	return await httpRequest<MatchHistoryQueryResult>({
+		method: "GET",
+		url: `/lol-match-history/v1/products/lol/${puuid}/matches?begIndex=${begIndex}&endIndex=${endIndex}`
+	}).catch((e: any) => {
+		logger.error("QueryMatchHistory error", e.message, puuid, begIndex, endIndex);
+		throw e;
+	});
 };
 
 //获取一局游戏的详细数据
@@ -209,6 +180,10 @@ export const queryGameDetails = async (gameId: number) => {
 		url: `/lol-match-history/v1/games/${gameId}`
 	});
 };
+
+//获取一局游戏的详细数据 带缓存
+const queryGameDetailsAndCache = memoize(queryGameDetails);
+queryGameDetailsAndCache.cache = new LRUCache({ max: 500 });
 
 export const getCurrentQueue = async () => {
 	const res = await httpRequest<GameSessionData>({
@@ -248,17 +223,16 @@ export const getOPGGRunes = async (champId: number, gameMode: GameMode, position
 };
 
 //查询玩家最近20场游戏对局详情
-export const queryTeamMemberGameDetail = async (puuid: string) => {
-	const gameHistory = (await queryMatchHistory(puuid)).flatMap((m) => m.games.games);
-	const result = await Promise.allSettled(
-		gameHistory.map(async (game) => {
-			return await queryGameDetails(game.gameId);
-		})
-	);
-	const isFulfilled = <T>(p: PromiseSettledResult<T>): p is PromiseFulfilledResult<T> => p.status === "fulfilled";
-	return result.filter(isFulfilled<GameDetail>).map((p) => p.value);
-};
-
+// export const queryTeamMemberGameDetail = async (puuid: string) => {
+// 	const gameHistory = (await queryMatchHistory(puuid)).flatMap((m) => m.games.games);
+// 	const result = await Promise.allSettled(
+// 		gameHistory.map(async (game) => {
+// 			return await queryGameDetails(game.gameId);
+// 		})
+// 	);
+// 	const isFulfilled = <T>(p: PromiseSettledResult<T>): p is PromiseFulfilledResult<T> => p.status === "fulfilled";
+// 	return result.filter(isFulfilled<GameDetail>).map((p) => p.value);
+// };
 
 //再来一局（回到大厅）
 export const playAgain = async () => {

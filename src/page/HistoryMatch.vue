@@ -1,22 +1,44 @@
 <script setup lang="ts">
-import useLCUStore, { SummonerGameHistoryResult } from "@/store/lcu";
+import useLCUStore from "@/store/lcu";
 import { computed, onMounted, ref } from "vue";
-import { PageRange, PageRanges } from "@@/types/lcuType";
+import { MatchHistoryQueryResult, SummonerInfo } from "@@/types/lcuType";
 import ProfileImg from "@/components/img/profileImg.vue";
 import HistoryList from "@/components/HistoryList.vue";
 import { useResizeObserver } from "@vueuse/core";
 import { TransitionExpand } from "@morev/vue-transitions";
 import { ReactiveVariable } from "vue/macros";
 import router from "@/router";
+import lcuApi from "@/api/lcuApi";
+import { AngleLeft, AngleRight } from "@vicons/fa";
+import EpicLoading from "@/components/EpicLoading.vue";
+
+interface SummonerGameHistoryResult {
+	summonerInfo: SummonerInfo;
+	matchHistoryQueryResult: Array<MatchHistoryQueryResult>;
+}
 
 const lcuStore = useLCUStore();
 
+const leaveClass = [
+	"absolute animate__animated animate__fadeOutLeft animate__faster",
+	"absolute animate__animated animate__fadeOutRight animate__faster"
+];
+const enterClass = [
+	"absolute animate__animated animate__fadeInRight animate__faster",
+	"absolute animate__animated animate__fadeInLeft animate__faster"
+];
+
+const pageLeaveClass = ref("");
+const pageEnterClass = ref("");
+
+const pageSizeOptions = [8, 20, 30] as const;
+type PageSizeOptions = (typeof pageSizeOptions)[number];
 const pageObj = reactive([
 	{
 		page: 1,
-		pageRange: 1
+		pageSize: 8
 	}
-]) as ReactiveVariable<Array<{ page: number; pageRange: PageRange }>>;
+]) as ReactiveVariable<Array<{ page: number; pageSize: PageSizeOptions }>>;
 //当前页数
 const page = computed({
 	set: (val: number) => {
@@ -26,13 +48,13 @@ const page = computed({
 		return pageObj[tabIndex.value].page;
 	}
 });
-//查询总页数
-const pageRange = computed({
-	set: (val: PageRange) => {
-		pageObj[tabIndex.value].pageRange = val;
+//每页数量
+const pageSize = computed({
+	set: (val: PageSizeOptions) => {
+		pageObj[tabIndex.value].pageSize = val;
 	},
 	get: () => {
-		return pageObj[tabIndex.value].pageRange;
+		return pageObj[tabIndex.value].pageSize;
 	}
 });
 
@@ -84,55 +106,61 @@ const onClickDropdownOutside = () => {
 	showDropdown.value = false;
 };
 
-const fetchData = async (
-	{
-		summonerName,
-		puuid,
-		pageRange = 1
-	}: {
-		summonerName?: string;
-		puuid?: string;
-		pageRange?: PageRange;
-	} = { pageRange: 1 }
-) => {
+const fetchData = async ({
+	summonerName,
+	puuid,
+	refresh = false
+}: { summonerName?: string; puuid?: string; refresh?: boolean } = {}) => {
 	console.log("fetchData", { summonerName, puuid });
 	summonerQueryLoading.value = true;
-	const result = await lcuStore.getMatchHistoryQueryResult({ summonerName, puuid, pageRange }).finally(() => {
-		summonerQueryLoading.value = false;
-	});
+	//判断是否已存在tab
 	const existIndex = summonerQueryList.value.findIndex(
 		(s) => s.summonerInfo.displayName === summonerName || s.summonerInfo.puuid === puuid
 	);
-	if (existIndex !== -1) {
-		summonerQueryList.value = summonerQueryList.value.toSpliced(existIndex, 1, result);
-		tabIndex.value = existIndex;
-		return;
-	} else if (!puuid && !summonerName) {
-		summonerQueryList.value = summonerQueryList.value.toSpliced(0, 1, result);
-		tabIndex.value = 0;
-	} else {
-		summonerQueryList.value.push(result);
-		pageObj.push({ page: 1, pageRange: 1 });
+	//不存在就查询
+	if (existIndex === -1) {
+		let summoner: SummonerInfo;
+		if (!puuid && !summonerName) {
+			summoner = await lcuStore.getCurrentSummoner();
+		} else if (summonerName) {
+			summoner = await lcuApi.getSummonerByName(summonerName!);
+		} else {
+			summoner = await lcuApi.getSummonerByPuuid(puuid!);
+		}
+		summonerQueryList.value.push({ summonerInfo: summoner, matchHistoryQueryResult: [] });
 		tabIndex.value = summonerQueryList.value.length - 1;
+		pageObj.push({ page: 1, pageSize: pageSizeOptions[0] });
+		puuid = summoner.puuid;
+	} else {
+		tabIndex.value = existIndex;
+		puuid = currentTabSummoner.value?.puuid;
+	}
+	const result = await lcuApi.queryMatchHistory(puuid, page.value, pageSize.value).finally(() => {
+		summonerQueryLoading.value = false;
+	});
+	if (refresh) {
+		summonerQueryList.value[tabIndex.value].matchHistoryQueryResult = [result];
+	} else {
+		summonerQueryList.value[tabIndex.value].matchHistoryQueryResult.push(result);
 	}
 };
 
 //当前查询的召唤师
-const currentSummoner = computed(() => {
+const currentTabSummoner = computed(() => {
 	return summonerQueryList.value[tabIndex.value]?.summonerInfo;
+});
+const currentTabMatchQueryResult = computed(() => {
+	return summonerQueryList.value[tabIndex.value]?.matchHistoryQueryResult || [];
 });
 
 function refresh() {
 	page.value = 1;
-	pageRange.value = 1;
-	fetchData({ puuid: currentSummoner.value?.puuid, pageRange: pageRange.value });
+	fetchData({ puuid: currentTabSummoner.value?.puuid, refresh: true });
 }
 
 function changeQueryRange() {
-	if (page.value > pageRange.value) {
-		page.value = 1;
-	}
-	fetchData({ puuid: currentSummoner.value?.puuid, pageRange: pageRange.value });
+	page.value = 1;
+	fetchData({ puuid: currentTabSummoner.value?.puuid, refresh: true });
 }
 
 onMounted(() => {
@@ -155,6 +183,21 @@ function closeTab(index: number) {
 	tabIndex.value = index - 1;
 	pageObj.splice(index, 1);
 	summonerQueryList.value.splice(index, 1);
+}
+
+function nextPage() {
+	pageEnterClass.value = enterClass[0];
+	pageLeaveClass.value = leaveClass[0];
+	page.value = page.value + 1;
+	if (page.value > currentTabMatchQueryResult.value.length) {
+		fetchData({ puuid: currentTabSummoner.value?.puuid });
+	}
+}
+
+function prePage() {
+	pageEnterClass.value = enterClass[1];
+	pageLeaveClass.value = leaveClass[1];
+	page.value = page.value - 1;
 }
 
 watch(
@@ -199,49 +242,97 @@ watch(
 				:on-clickoutside="onClickDropdownOutside"
 				@select="handleDropdownSelect" />
 			<div class="flex flex-row flex-nowrap items-center gap-[10px] min-h-[50px]">
-				<div class="flex flex-row items-center" v-if="currentSummoner?.displayName">
-					<n-tag :bordered="false" :type="currentSummoner?.privacy === 'PUBLIC' ? 'info' : 'warning'"
-						>{{ currentSummoner?.privacy === "PUBLIC" ? "生涯公开" : "生涯隐藏" }}
+				<div class="flex flex-row items-center" v-if="currentTabSummoner?.displayName">
+					<n-tag :bordered="false" :type="currentTabSummoner?.privacy === 'PUBLIC' ? 'info' : 'warning'"
+						>{{ currentTabSummoner?.privacy === "PUBLIC" ? "生涯公开" : "生涯隐藏" }}
 					</n-tag>
-					<profile-img round class="m-2" :profile-icon-id="currentSummoner.profileIconId"></profile-img>
+					<profile-img round class="m-2" :profile-icon-id="currentTabSummoner.profileIconId"></profile-img>
 					<n-button
 						text
 						class="truncate cursor-pointer"
-						:title="currentSummoner.displayName"
-						@click="() => copy(currentSummoner?.displayName as string)">
-						{{ currentSummoner?.displayName }}
+						:title="currentTabSummoner.displayName"
+						@click="() => copy(currentTabSummoner?.displayName as string)">
+						{{ currentTabSummoner?.displayName }}
 					</n-button>
 				</div>
-				<n-tooltip trigger="click">
-					<template #trigger>
-						<n-select
-							style="width: 80px"
-							size="small"
-							v-model:value="pageRange"
-							@update:value="changeQueryRange"
-							placeholder="Select"
-							:options="PageRanges.map((i) => ({ label: i * 20, value: i }))">
-						</n-select>
-					</template>
-					一般最近20场够用了，获取超过最近20场别频繁查询，有封号风险
-				</n-tooltip>
-				<n-pagination small simple :page-count="pageRange" :page-size="20" v-model:page="page" />
-				<n-button type="primary" strong secondary size="small" plain @click="refresh" style="margin-right: 24px"
-					>刷新
-				</n-button>
+				<div class="flex flex-row items-center gap-[5px]">
+					<n-button strong secondary size="small" :disabled="page === 1 || summonerQueryLoading" @click="prePage">
+						<n-icon size="20">
+							<angle-left />
+						</n-icon>
+					</n-button>
+					<n-select
+						style="width: 80px"
+						size="small"
+						v-model:value="page"
+						:options="
+							currentTabMatchQueryResult.map((obj, index) => ({
+								label: index + 1,
+								value: index + 1
+							}))
+						">
+					</n-select>
+					<n-button
+						strong
+						secondary
+						size="small"
+						@click="nextPage"
+						:disabled="
+							summonerQueryLoading ||
+							(currentTabMatchQueryResult.length > 0 &&
+								currentTabMatchQueryResult[page - 1]?.games.gameCount !== pageSize)
+						">
+						<n-icon size="20">
+							<angle-right />
+						</n-icon>
+					</n-button>
+					<n-select
+						style="width: 95px"
+						size="small"
+						v-model:value="pageSize"
+						@update:value="changeQueryRange"
+						:options="pageSizeOptions.map((i) => ({ label: i + '条/页', value: i }))">
+					</n-select>
+					<n-button
+						type="primary"
+						strong
+						secondary
+						size="small"
+						plain
+						@click="refresh"
+						style="margin-right: 24px"
+						:loading="summonerQueryLoading"
+						>刷新
+					</n-button>
+				</div>
 			</div>
 		</div>
 		<div :style="{ flexShrink: 0, height: headerHeight }"></div>
 		<div class="flex flex-col flex-1 h-0 relative">
 			<transition-group
-				enter-active-class="absolute animate__animated animate__zoomInLeft animate__fast"
-				leave-active-class="absolute animate__animated animate__fadeOutRight animate__fast">
+				enter-active-class="absolute animate__animated animate__fadeInRight animate__fast"
+				leave-active-class="absolute animate__animated animate__zoomOut animate__fast">
 				<template v-for="(record, index) in summonerQueryList" :key="record.summonerInfo.puuid">
-					<HistoryList
-						class="absolute w-full h-full"
-						v-show="tabIndex === index"
-						:matchHistoryList="record.matchHistoryQueryResult[page - 1]?.games?.games || []"
-						:loading="summonerQueryLoading"></HistoryList>
+					<div v-show="tabIndex === index" class="absolute w-full h-full">
+						<n-spin :show="summonerQueryLoading" class="absolute w-full h-full" :rotate="false">
+							<div class="flex flex-1 flex-col h-0">
+								<transition-group :enter-active-class="pageEnterClass" :leave-active-class="pageLeaveClass">
+									<template
+										v-for="(queryResult, i) in record.matchHistoryQueryResult"
+										:key="queryResult.games.gameIndexBegin + queryResult.games.gameCount">
+										<HistoryList
+											class="absolute w-full h-full"
+											v-show="page - 1 === i"
+											:matchHistoryList="queryResult?.games?.games || []"
+											:loading="summonerQueryLoading"></HistoryList>
+									</template>
+								</transition-group>
+							</div>
+							<template #icon>
+								<epic-loading loading style="height: 0; flex: 1"></epic-loading>
+							</template>
+						</n-spin>
+					</div>
 				</template>
 			</transition-group>
 		</div>
@@ -259,7 +350,9 @@ watch(
 	width: 42px;
 }
 
-.scroll-wrapper :deep(div[data-overlayscrollbars-contents]) {
+:deep(.n-spin-content) {
+	display: flex;
+	flex-flow: column;
 	height: 100%;
 }
 </style>
