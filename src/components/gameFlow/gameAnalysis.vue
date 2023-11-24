@@ -5,7 +5,8 @@ import TeamAnalysis from "@/components/gameFlow/teamAnalysis.vue";
 
 const lcuStore = useLCUStore();
 
-const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag } = storeToRefs(lcuStore);
+const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag, myTeamUpInfo, theirTeamUpInfo, theirTeamIsSuck } =
+	storeToRefs(lcuStore);
 </script>
 
 <template>
@@ -13,7 +14,7 @@ const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag } = storeToRefs(l
 		<n-tabs animated>
 			<n-tab-pane tab="我方队伍" name="myTeam">
 				<n-spin :show="queryMyTeamFlag">
-					<team-analysis :teams="myTeam" />
+					<team-analysis :teams="myTeam" :team-up-info="myTeamUpInfo" />
 				</n-spin>
 			</n-tab-pane>
 			<n-tab-pane tab="对方队伍" name="theirTeam">
@@ -21,7 +22,7 @@ const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag } = storeToRefs(l
 					等待进入对局
 				</div>
 				<n-spin :show="queryTheirTeamFlag" v-else>
-					<team-analysis :teams="theirTeam" />
+					<team-analysis :teams="theirTeam" :team-up-info="theirTeamUpInfo" />
 				</n-spin>
 			</n-tab-pane>
 		</n-tabs>

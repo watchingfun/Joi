@@ -43,7 +43,8 @@ declare module 'vue' {
 		NDropdown: (typeof import("naive-ui"))["NDropdown"];
 		NGi: (typeof import("naive-ui"))["NGi"];
 		NGlobalStyle: (typeof import("naive-ui"))["NGlobalStyle"];
-		NGrid: (typeof import("naive-u"naive-ui"d""NIcon"c;on: (typeof import("naive-ui"))["NIcon"];
+		NGrid: (typeof import("naive-ui"))["NGrid"];
+		NIcon: (typeof import("naive-ui"))["NIcon"];
 		NImage: (typeof import("naive-ui"))["NImage"];
 		NInput: (typeof import("naive-ui"))["NInput"];
 		NMessageProvider: (typeof import("naive-ui"))["NMessageProvider"];
@@ -65,6 +66,7 @@ declare module 'vue' {
 		NTabs: (typeof import("naive-ui"))["NTabs"];
 		NTag: (typeof import("naive-ui"))["NTag"];
 		NTooltip: (typeof import("naive-ui"))["NTooltip"];
+		on: (typeof import("naive-ui"))["NIcon"];
 		PerkImg: (typeof import("./src/components/img/perkImg.vue"))["default"];
 		Perks: (typeof import("./src/components/img/Perks.vue"))["default"];
 		PlayerGameInfo: (typeof import("./src/components/PlayerGameInfo.vue"))["default"];

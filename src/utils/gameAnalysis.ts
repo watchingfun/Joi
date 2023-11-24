@@ -1,14 +1,18 @@
 import { GameDetail, MatchHistoryQueryResult, TeamMemberInfo } from "@@/types/lcuType";
 import lcuApi from "@/api/lcuApi";
-import { chatDividerLine } from "@@/const/const";
+import { chatDividerLine, Handle } from "@@/const/const";
 import { intersectionWith } from "lodash";
 import { retryWrapper } from "@/utils/util";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
 	return await Promise.all(
 		teams.map(async (t) => {
-			const gameDetails = (await retryWrapper<MatchHistoryQueryResult>(() => lcuApi.queryMatchHistory(t.puuid, 1), 5)())
-				.games.games;
+			const gameDetails = (
+				await retryWrapper<MatchHistoryQueryResult>(
+					() => window.ipcRenderer.invoke(Handle.queryMatchHistory, t.puuid, 1, 8),
+					5
+				)()
+			).games.games;
 			return {
 				...t,
 				gameDetail: gameDetails,
@@ -64,7 +68,7 @@ export function computeScore(gameDetail?: GameDetail[]) {
 			}
 			if (detail.gameMode === "ARAM" || info.timeline.role !== "SUPPORT") {
 				if (deaths > 15 && kills <= 10) {
-					score -= 1;
+					score -= 0.5;
 				}
 				if (deaths > 20 && kills <= 10) {
 					score -= 1;

@@ -48,11 +48,12 @@ export function startGuardTask() {
 			sendToWebContent(Handle.connecting);
 			try {
 				await initLeagueWebSocket();
-				//这里尝试获取当前召唤师信息，获取成功了才算连接成功；因为可能客户端还未完成登录过程
-				await retryWrapper(getCurrentSummoner)();
+				//这里尝试获取当前召唤师信息，获取成功了才算连接成功；因为可能客户端还未完成登录过程,比如说一区排队的情况
+				await retryWrapper(getCurrentSummoner, 60, 5000)();
 				sendToWebContent(Handle.connected);
 				logger.info("guardTask", "connected to LeagueClient");
 			} catch (e) {
+				ws = null;
 				logger.error("guardTask", e instanceof Error ? e.message : e);
 				sendToWebContent(Handle.disconnect);
 			}

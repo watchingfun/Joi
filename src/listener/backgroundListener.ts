@@ -42,7 +42,7 @@ export function setupListener() {
 	window.ipcRenderer.on(Handle.gameSessionMyTeam, async (event: IpcRendererEvent, myTeam: TeamMemberInfo[]) => {
 		lcuStore.myTeam = myTeam;
 		lcuStore.theirTeam = [];
-		setTimeout(lcuStore.analysisMyTeam, 2000);
+		setTimeout(lcuStore.analysisMyTeam, 4000);
 	});
 
 	window.ipcRenderer.on(Handle.gameSessionRoomId, async (event: IpcRendererEvent, chatRoomId: string) => {

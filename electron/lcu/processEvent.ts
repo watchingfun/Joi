@@ -1,6 +1,13 @@
 import { createHttp1Request } from "../lib/league-connect";
 import { getCredentials } from "./connector";
-import { getCurrentQueue, getGameInfo, listenChampSelect, matchmaking, playAgain } from "./lcuRequest";
+import {
+	checkSelfIsLobbyLeader,
+	getCurrentQueue,
+	getGameInfo,
+	listenChampSelect,
+	matchmaking,
+	playAgain
+} from "./lcuRequest";
 import logger from "../lib/logger";
 import { setting } from "../config/";
 import { ChampSelectPhaseSession } from "../types/lcuType";
@@ -94,7 +101,7 @@ export async function handelEndOfGame(eventKey: string) {
 	}
 	if (setting.model.autoPlayAgain) {
 		await playAgain();
-		await matchmaking();
+		if (await checkSelfIsLobbyLeader()) await matchmaking();
 	}
 }
 

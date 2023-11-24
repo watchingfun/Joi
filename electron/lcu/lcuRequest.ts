@@ -6,6 +6,7 @@ import {
 	Conversation,
 	GameDetail,
 	GameSessionData,
+	LobbyMember,
 	MatchHistoryQueryResult,
 	RPC,
 	SummonerInfo
@@ -97,7 +98,7 @@ export async function applyRune(data: RuneConfig) {
 		method: "GET",
 		url: "lol-perks/v1/pages"
 	});
-	const current = currentRuneList.find((i) => i.current && i.isDeletable);
+	const current = currentRuneList.find((i) => i.name.startsWith("OP.GG")) || currentRuneList.find((i) => i.isDeletable);
 	if (current != undefined) {
 		// 删除当前符文页
 		await httpRequest({
@@ -248,4 +249,18 @@ export const matchmaking = async () => {
 		method: "POST",
 		url: `/lol-lobby/v2/lobby/matchmaking/search`
 	});
+};
+
+//查询大厅成员
+export const getLobbyMembers = async () => {
+	return await httpRequest<LobbyMember[]>({
+		method: "GET",
+		url: "/lol-lobby/v2/lobby/members"
+	});
+};
+//检查自己是否房主
+export const checkSelfIsLobbyLeader = async () => {
+	const lobbyMembers = await getLobbyMembers();
+	const selfPuuid = (await getCurrentSummoner()).puuid;
+	return lobbyMembers.find((m) => (m.puuid = selfPuuid)).isLeader;
 };

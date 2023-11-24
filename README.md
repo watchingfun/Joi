@@ -17,8 +17,10 @@
 - [x] 发送聊天
 - [ ] 游戏对局内发送聊天
 - [ ] 小黑屋功能
+- [ ] 自动ban pick英雄
+- [ ] 大乱斗自动抢英雄
 - [x] 对局分析
-- [ ] 自动检测大乱斗胜率队
+- [x] 自动检测大乱斗胜率队
 - [x] 应用检查更新功能
 
 ## 截图
@@ -74,6 +76,7 @@ npm run build
 ## 参考资料
 
 - https://hextechdocs.dev/getting-started-with-the-lcu-api/
+- https://www.mingweisamuel.com/lcu-schema/tool/#
 - https://github.com/XHXIAIEIN/LeagueCustomLobby
 - https://github.com/real-web-world/hh-lol-prophet
 - https://github.com/XilyFeAAAA/RIVEN

@@ -54,7 +54,12 @@ const useLCUStore = defineStore("lcu", () => {
 	const myTeam = ref<TeamMemberInfo[]>([]);
 	const theirTeam = ref<TeamMemberInfo[]>([]);
 
+	//我方队伍组队信息
+	const myTeamUpInfo = ref<Array<Array<string>>>([]);
+	//对方队伍主队信息
 	const theirTeamUpInfo = ref<Array<Array<string>>>([]);
+	//对方为胜率队
+	const theirTeamIsSuck = ref(false);
 
 	const queryMyTeamFlag = ref(false);
 	const queryTheirTeamFlag = ref(false);
@@ -63,8 +68,12 @@ const useLCUStore = defineStore("lcu", () => {
 
 	function sendTeamScoreToRoom() {
 		const msg = generateAnalysisMsg(myTeam.value);
+		if (gameFlowPhase.value !== "ChampSelect") {
+			message.warning("只能在选英雄阶段发送");
+			return;
+		}
 		console.log("队伍分析", msg);
-		void lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, msg);
+		void lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, msg, "groupchat");
 	}
 
 	async function analysisMyTeam() {
@@ -73,6 +82,7 @@ const useLCUStore = defineStore("lcu", () => {
 		if (settingStore.settingModel.autoSendMyTeamAnalysis) {
 			sendTeamScoreToRoom();
 		}
+		myTeamUpInfo.value = await analysisTeamUpInfo(myTeam.value);
 	}
 
 	async function analysisTheirTeam() {
@@ -106,19 +116,25 @@ const useLCUStore = defineStore("lcu", () => {
 		updateMyTeamInfo(teams[myTeamMemberIndex]);
 		await updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
 		await analysisTheirTeam();
+		theirTeamIsSuck.value = false;
 		theirTeamUpInfo.value = await analysisTeamUpInfo(theirTeam.value);
 		//如果对面5黑，并且都是隐藏生涯，就判断是胜率队
 		if (
+			currentGameMode.value === "aram" &&
 			theirTeamUpInfo.value.length === 5 &&
 			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE").length === 5
 		) {
 			new window.Notification("胜率队检测", { body: "对方为胜率队" });
-			console.log("对方胜率队");
-		} else if (theirTeamUpInfo.value.length > 1) {
+			theirTeamIsSuck.value = true;
+		} else if (theirTeamUpInfo.value.length != 0) {
 			let i = 1;
-			const msg = theirTeamUpInfo.value.map((t) => `组队${i++}: 队伍人数${t.length}`).join("\n");
+			const msg = theirTeamUpInfo.value
+				.map(
+					(t) =>
+						`组队${i++}: ${t.map((puuid) => theirTeam.value.find((tm) => tm.puuid === puuid)?.summonerName).join("\t")}`
+				)
+				.join("\n");
 			new window.Notification("对面存在开黑组队", { body: msg });
-			console.log("对面存在开黑组队：", JSON.stringify(theirTeamUpInfo.value));
 		}
 	}
 
@@ -226,6 +242,9 @@ const useLCUStore = defineStore("lcu", () => {
 		queryMyTeamFlag,
 		theirTeam,
 		queryTheirTeamFlag,
+		myTeamUpInfo,
+		theirTeamUpInfo,
+		theirTeamIsSuck,
 		gameFlowPhase,
 		connectStatus,
 		getCurrentSummoner,

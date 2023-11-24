@@ -580,6 +580,39 @@ export interface XpDiffPerMinDeltas {}
 
 export interface XpPerMinDeltas {}
 
+export interface LobbyMember {
+	allowedChangeActivity: boolean;
+	allowedInviteOthers: boolean;
+	allowedKickOthers: boolean;
+	allowedStartActivity: boolean;
+	allowedToggleInvite: boolean;
+	autoFillEligible: boolean;
+	autoFillProtectedForPromos: boolean;
+	autoFillProtectedForSoloing: boolean;
+	autoFillProtectedForStreaking: boolean;
+	botChampionId: number;
+	botDifficulty: string;
+	botId: string;
+	firstPositionPreference: string;
+	intraSubteamPosition: any;
+	isBot: boolean;
+	isLeader: boolean;
+	isSpectator: boolean;
+	playerSlots: any[];
+	puuid: string;
+	ready: boolean;
+	secondPositionPreference: string;
+	showGhostedBanner: boolean;
+	subteamIndex: any;
+	summonerIconId: number;
+	summonerId: number;
+	summonerInternalName: string;
+	summonerLevel: number;
+	summonerName: string;
+	teamId: number;
+	tftNPEQueueBypass: boolean;
+}
+
 export interface Team {
 	bans: Ban[];
 	baronKills: number;

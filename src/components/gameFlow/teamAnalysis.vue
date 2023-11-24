@@ -11,8 +11,8 @@ import { ComputedRef } from "vue";
 import HistoryList from "@/components/HistoryList.vue";
 import { champDict } from "@@/const/lolDataConfig";
 
-const props = defineProps<{ teams: TeamMemberInfo[] }>();
-const { teams } = toRefs(props);
+const props = defineProps<{ teams: TeamMemberInfo[]; teamUpInfo: Array<Array<string>> }>();
+const { teams, teamUpInfo } = toRefs(props);
 
 use([TooltipComponent, GridComponent, BarChart, CanvasRenderer]);
 
@@ -25,6 +25,8 @@ const teamMap = computed(() => {
 		{} as Record<string, TeamMemberInfo>
 	);
 });
+
+const colorGroup = ["rgba(252,132,80,0.66)", "rgba(123,239,255,0.81)", "rgba(255,255,255,0.8)"];
 
 const championImageUrlMap = computed(() => {
 	return teams.value.reduce(
@@ -78,19 +80,41 @@ const option = computed(() => {
 					}) || [],
 				axisLabel: {
 					interval: 0,
-					color: "rgba(255,255,255,0.8)",
-					formatter: function (value, index) {
-						if (teams.value[index].championId) {
-							return `{${teams.value[index].championId!}|}\n{value|${value}}`;
+					color: function (value, index) {
+						const cIndex = teamUpInfo.value.findIndex((group) =>
+							group.find((puuid) => puuid === teams.value[index!]?.puuid)
+						);
+						if (cIndex !== -1) {
+							return colorGroup[cIndex];
 						} else {
-							return `{value|${value}}`;
+							return colorGroup[2];
 						}
+					},
+					formatter: function (value, index) {
+						const member = teams.value[index];
+						let str;
+						if (member.championId) {
+							str = `{${member.championId!}|}\n{value|${value}}`;
+						} else {
+							str = `{value|${value}}`;
+						}
+						if (member.summonerInfo.privacy === "PRIVATE") {
+							str += `\n{private|生涯隐藏}}`;
+						}
+						return str;
 					},
 					rich: {
 						...championImageUrlMap.value,
 						value: {
 							lineHeight: 30,
 							align: "center"
+						},
+						private: {
+							lineHeight: 30,
+							align: "center",
+							borderWidth: 2,
+							borderColor: "rgba(245,112,45,0.73)",
+							borderRadius: 2
 						}
 					}
 				},
@@ -144,28 +168,38 @@ function handleClick(event: any) {
 </script>
 
 <template>
-	<v-chart class="w-full h-full" :option="option" @click="handleClick" />
-	<n-modal
-		v-model:show="showDetail"
-		preset="card"
-		class="team-member-history-modal"
-		:title="showSummonerName"
-		style="
-			margin-top: 10px;
-			width: 95%;
-			height: 85vh;
-			display: flex;
-			flex-flow: column;
-			background: rgb(22 27 43 / 95%);
-			backdrop-filter: blur(4px);
-			border: 1px solid rgb(122 122 122 / 58%);
-			border-radius: 8px;
-			overflow: hidden;
-		">
-		<div class="flex flex-1 flex-col h-0" style="font-size: 12px">
-			<HistoryList :match-history-list="historyListData"></HistoryList>
+	<div class="flex flex-1 flex-col w-full h-full">
+		<div class="flex flex-row items-center gap-5 justify-center" v-if="teamUpInfo.length > 0">
+			<template v-for="(color, i) in colorGroup" :key="i">
+				<div v-if="i + 1 <= teamUpInfo.length" class="flex flex-row items-center gap-1">
+					<div :style="{ backgroundColor: color, width: '10px', height: '10px' }"></div>
+					<span>组队{{ i + 1 }}</span>
+				</div>
+			</template>
 		</div>
-	</n-modal>
+		<v-chart class="flex-1" :option="option" @click="handleClick" />
+		<n-modal
+			v-model:show="showDetail"
+			preset="card"
+			class="team-member-history-modal"
+			:title="showSummonerName"
+			style="
+				margin-top: 10px;
+				width: 95%;
+				height: 85vh;
+				display: flex;
+				flex-flow: column;
+				background: rgb(22 27 43 / 95%);
+				backdrop-filter: blur(4px);
+				border: 1px solid rgb(122 122 122 / 58%);
+				border-radius: 8px;
+				overflow: hidden;
+			">
+			<div class="flex flex-1 flex-col h-0" style="font-size: 12px">
+				<HistoryList :match-history-list="historyListData"></HistoryList>
+			</div>
+		</n-modal>
+	</div>
 </template>
 
 <style scoped></style>
