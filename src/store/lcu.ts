@@ -9,6 +9,8 @@ import { CustomRune } from "@@/types/type";
 import { champDict } from "@@/const/lolDataConfig";
 import { convertOPGGRuneFormat } from "@@/lcu/opgg";
 import useAppStore from "@/store/app";
+import router from "@/router";
+import { Handle } from "@@/const/const";
 
 export enum ConnectStatusEnum {
 	connecting,
@@ -121,20 +123,26 @@ const useLCUStore = defineStore("lcu", () => {
 		//如果对面5黑，并且都是隐藏生涯，就判断是胜率队
 		if (
 			currentGameMode.value === "aram" &&
-			theirTeamUpInfo.value.length === 5 &&
+			theirTeamUpInfo.value?.[0].length === 5 &&
 			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE").length === 5
 		) {
-			new window.Notification("胜率队检测", { body: "对方为胜率队" });
+			new window.Notification("胜率队检测", { body: "对方为胜率队" }).onclick = async () => {
+				await window.ipcRenderer.invoke(Handle.showMainWindow);
+				await router.push({ name: "inGame" });
+			};
 			theirTeamIsSuck.value = true;
 		} else if (theirTeamUpInfo.value.length != 0) {
 			let i = 1;
-			const msg = theirTeamUpInfo.value
-				.map(
-					(t) =>
-						`组队${i++}: ${t.map((puuid) => theirTeam.value.find((tm) => tm.puuid === puuid)?.summonerName).join("\t")}`
-				)
-				.join("\n");
-			new window.Notification("对面存在开黑组队", { body: msg });
+			// const msg = theirTeamUpInfo.value
+			// 	.map(
+			// 		(t) =>
+			// 			`组队${i++}: ${t.map((puuid) => theirTeam.value.find((tm) => tm.puuid === puuid)?.summonerName).join("\t")}`
+			// 	)
+			// 	.join("\n");
+			new window.Notification("对面存在开黑组队", { body: "跳转对局分析查看" }).onclick = async () => {
+				await window.ipcRenderer.invoke(Handle.showMainWindow);
+				await router.push({ name: "inGame" });
+			};
 		}
 	}
 

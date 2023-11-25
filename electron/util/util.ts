@@ -10,7 +10,7 @@ export function showMainWindow(route?: string | { name: string }) {
 		if (route) {
 			win?.webContents.send("jumpRoute", route);
 		}
-		//win.restore();
+		win?.restore();
 		win?.show();
 	}
 }

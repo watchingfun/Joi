@@ -5,6 +5,7 @@ import { app, ipcMain } from "electron";
 import { Handle } from "../const/const";
 import path from "node:path";
 import { spawn } from "child_process";
+import { showMainWindow } from "../util/util";
 
 export function setupHandles() {
 	setupTray();
@@ -18,5 +19,8 @@ export function setupHandles() {
 			dir = path.join(app.getPath("userData"), "logs");
 		}
 		spawn("explorer.exe", [dir]);
+	});
+	ipcMain.handle(Handle.showMainWindow, (event) => {
+		showMainWindow();
 	});
 }

@@ -22,7 +22,8 @@ export const Handle = {
 	sendChatMsgToRoom: "lcu:sendChatMsgToRoom", //发送聊天消息到对局房间
 	playAgain: "lcu:playAgain", // 回到大厅
 	matchmaking: "lcu:matchmaking", //开始匹配 寻找对局
-	openLogDir: "openLogDir" //打开日志文件夹
+	openLogDir: "openLogDir", //打开日志文件夹
+	showMainWindow: "showMainWindow" //显示主界面
 };
 
 export const chatDividerLine = "-----------------------------------------";

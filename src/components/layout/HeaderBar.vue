@@ -16,7 +16,15 @@ const settingHandler = () => {
 	router.push({ name: "setting" });
 };
 const closeHandler = () => {
-	showModal.value = true;
+	if (unAsk.value) {
+		if (settingStore.settingModel.exitDirectly) {
+			window.ipcRenderer.invoke("titleBarControl:close");
+		} else {
+			window.ipcRenderer.invoke("titleBarControl:close", "hide");
+		}
+	} else {
+		showModal.value = true;
+	}
 };
 const settingStore = useSettingStore();
 

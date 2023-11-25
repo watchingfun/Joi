@@ -99,7 +99,7 @@ const option = computed(() => {
 							str = `{value|${value}}`;
 						}
 						if (member.summonerInfo.privacy === "PRIVATE") {
-							str += `\n{private|生涯隐藏}}`;
+							str += `\n{private|生涯隐藏}`;
 						}
 						return str;
 					},
@@ -110,11 +110,8 @@ const option = computed(() => {
 							align: "center"
 						},
 						private: {
-							lineHeight: 30,
 							align: "center",
-							borderWidth: 2,
-							borderColor: "rgba(245,112,45,0.73)",
-							borderRadius: 2
+							color: "rgba(245,112,45,0.73)"
 						}
 					}
 				},

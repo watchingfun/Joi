@@ -30,7 +30,6 @@ declare module 'vue' {
 		Nav: (typeof import("./src/components/layout/Nav.vue"))["default"];
 		NAvatar: (typeof import("naive-ui"))["NAvatar"];
 		NButton: (typeof import("naive-ui"))["NButton"];
-		NButtonGroup: (typeof import("naive-ui"))["NButtonGroup"];
 		NCard: (typeof import("naive-ui"))["NCard"];
 		NCarousel: (typeof import("naive-ui"))["NCarousel"];
 		NCarouselItem: (typeof import("naive-ui"))["NCarouselItem"];
@@ -66,7 +65,6 @@ declare module 'vue' {
 		NTabs: (typeof import("naive-ui"))["NTabs"];
 		NTag: (typeof import("naive-ui"))["NTag"];
 		NTooltip: (typeof import("naive-ui"))["NTooltip"];
-		on: (typeof import("naive-ui"))["NIcon"];
 		PerkImg: (typeof import("./src/components/img/perkImg.vue"))["default"];
 		Perks: (typeof import("./src/components/img/Perks.vue"))["default"];
 		PlayerGameInfo: (typeof import("./src/components/PlayerGameInfo.vue"))["default"];
