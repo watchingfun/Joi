@@ -23,7 +23,8 @@ export const Handle = {
 	playAgain: "lcu:playAgain", // 回到大厅
 	matchmaking: "lcu:matchmaking", //开始匹配 寻找对局
 	openLogDir: "openLogDir", //打开日志文件夹
-	showMainWindow: "showMainWindow" //显示主界面
+	showMainWindow: "showMainWindow", //显示主界面
+	log: "log" //记录日志
 };
 
 export const chatDividerLine = "-----------------------------------------";

@@ -1,5 +1,5 @@
 import path from "path";
-import { app, ipcMain, shell } from "electron";
+import electron, { app, ipcMain, shell } from "electron";
 import { BrowserWindow as AcrylicBrowserWindow } from "electron-acrylic-window";
 import { setupTitleBarHandler } from "./handle/handleTitleBar";
 import { startGuardTask } from "./lcu/connector";
@@ -19,6 +19,7 @@ export const isWin11 = child_process
 	.toString()
 	.trim()
 	.includes("Microsoft Windows 11");
+// export const isWin11 = false;
 
 ipcMain.on("checkIsWin11", (event, args) => {
 	event.returnValue = isWin11;
@@ -45,11 +46,11 @@ process
 process.env.DIST = path.join(getPath(), "../dist");
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, "../public");
 
-type AcrylicBrowserWindowType = typeof AcrylicBrowserWindow;
+type BrowserWindowAdapterType = typeof AcrylicBrowserWindow & typeof electron.BrowserWindow;
 const BrowserWindowAdapter = (
 	isWin11 ? require("electron-acrylic-window").BrowserWindow : require("electron").BrowserWindow
-) as AcrylicBrowserWindowType;
-let win: AcrylicBrowserWindow;
+) as BrowserWindowAdapterType;
+let win: AcrylicBrowserWindow & electron.BrowserWindow;
 
 if (!app.requestSingleInstanceLock()) {
 	app.quit();
@@ -120,7 +121,9 @@ ipcMain.on("open-url", (e, args) => {
 app.whenReady().then(() => {
 	void createWindow();
 	setupHandles();
-	installExtension(VUEJS3_DEVTOOLS)
-		.then((name) => logger.debug(`Added Extension:  ${name}`))
-		.catch((err) => logger.debug("An error occurred: ", err));
+	if (process.env.VITE_DEV_SERVER_URL) {
+		installExtension(VUEJS3_DEVTOOLS)
+			.then((name) => logger.debug(`Added Extension:  ${name}`))
+			.catch((err) => logger.debug("An error occurred: ", err));
+	}
 });

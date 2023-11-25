@@ -10,6 +10,7 @@ import "@morev/vue-transitions/styles";
 import useAppStore from "@/store/app";
 import "./common/configDayjs";
 import useSettingStore from "@/store/setting";
+import { Handle } from "@@/const/const";
 
 //确保naive ui样式不被tailwind preflight 覆盖
 const meta = document.createElement("meta");
@@ -30,10 +31,10 @@ app.config.errorHandler = (err, vm, info) => {
 	console.error("[errorCaptured]", err, vm, info);
 	if (err instanceof Error) {
 		appStore.message.error(err.message);
+		void window.ipcRenderer.invoke(Handle.log, { level: "error", message: err.message + "\nstack: " + err.stack });
 	}
 };
 window.onload = () => {
-	console.debug("window.onload");
 	//解决开发模式重载网页时状态不同步
 	useLCUStore().refreshConnectStatus();
 	//初始化设置

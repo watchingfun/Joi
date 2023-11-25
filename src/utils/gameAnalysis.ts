@@ -92,5 +92,5 @@ export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
 		})
 		.sort((a, b) => (a.score! > b.score! ? 1 : a.score === b.score ? 0 : -1))
 		.forEach((i) => msg.push(`${i.summonerName}:\t${i.score}`));
-	return msg.join("\n") + "\n" + chatDividerLine;
+	return msg.join("\n") + "\n" + chatDividerLine + "——WeGame";
 }

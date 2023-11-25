@@ -10,6 +10,7 @@ import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 import svgLoader from "vite-svg-loader";
+import removeConsole from "vite-plugin-remove-console";
 
 export default defineConfig(({ command }) => {
 	fs.rmSync("dist-electron", { recursive: true, force: true });
@@ -26,6 +27,7 @@ export default defineConfig(({ command }) => {
 		},
 		plugins: [
 			vue(),
+			removeConsole({ includes: ["log", "warn", "debug", "info"] }),
 			vueJsx(),
 			svgLoader(),
 			AutoImport({
