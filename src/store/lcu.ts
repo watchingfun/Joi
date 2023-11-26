@@ -124,7 +124,7 @@ const useLCUStore = defineStore("lcu", () => {
 		if (
 			currentGameMode.value === "aram" &&
 			theirTeamUpInfo.value?.[0].length === 5 &&
-			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE").length === 5
+			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE")?.length === 5
 		) {
 			new window.Notification("胜率队检测", { body: "对方为胜率队" }).onclick = async () => {
 				await window.ipcRenderer.invoke(Handle.showMainWindow);
