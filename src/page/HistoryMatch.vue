@@ -113,35 +113,37 @@ const fetchData = async ({
 }: { summonerName?: string; puuid?: string; refresh?: boolean } = {}) => {
 	console.log("fetchData", { summonerName, puuid });
 	summonerQueryLoading.value = true;
-	//判断是否已存在tab
-	const existIndex = summonerQueryList.value.findIndex(
-		(s) => s.summonerInfo.displayName === summonerName || s.summonerInfo.puuid === puuid
-	);
-	//不存在就查询
-	if (existIndex === -1) {
-		let summoner: SummonerInfo;
-		if (!puuid && !summonerName) {
-			summoner = await lcuStore.getCurrentSummoner();
-		} else if (summonerName) {
-			summoner = await lcuApi.getSummonerByName(summonerName!);
+	try {
+		//判断是否已存在tab
+		const existIndex = summonerQueryList.value.findIndex(
+			(s) => s.summonerInfo.displayName === summonerName || s.summonerInfo.puuid === puuid
+		);
+		//不存在就查询
+		if (existIndex === -1) {
+			let summoner: SummonerInfo;
+			if (!puuid && !summonerName) {
+				summoner = await lcuStore.getCurrentSummoner();
+			} else if (summonerName) {
+				summoner = await lcuApi.getSummonerByName(summonerName!);
+			} else {
+				summoner = await lcuApi.getSummonerByPuuid(puuid!);
+			}
+			summonerQueryList.value.push({ summonerInfo: summoner, matchHistoryQueryResult: [] });
+			tabIndex.value = summonerQueryList.value.length - 1;
+			pageObj.push({ page: 1, pageSize: pageSizeOptions[0] });
+			puuid = summoner.puuid;
 		} else {
-			summoner = await lcuApi.getSummonerByPuuid(puuid!);
+			tabIndex.value = existIndex;
+			puuid = currentTabSummoner.value?.puuid;
 		}
-		summonerQueryList.value.push({ summonerInfo: summoner, matchHistoryQueryResult: [] });
-		tabIndex.value = summonerQueryList.value.length - 1;
-		pageObj.push({ page: 1, pageSize: pageSizeOptions[0] });
-		puuid = summoner.puuid;
-	} else {
-		tabIndex.value = existIndex;
-		puuid = currentTabSummoner.value?.puuid;
-	}
-	const result = await lcuApi.queryMatchHistory(puuid, page.value, pageSize.value).finally(() => {
+		const result = await lcuApi.queryMatchHistory(puuid, page.value, pageSize.value);
+		if (refresh) {
+			summonerQueryList.value[tabIndex.value].matchHistoryQueryResult = [result];
+		} else {
+			summonerQueryList.value[tabIndex.value].matchHistoryQueryResult.push(result);
+		}
+	} finally {
 		summonerQueryLoading.value = false;
-	});
-	if (refresh) {
-		summonerQueryList.value[tabIndex.value].matchHistoryQueryResult = [result];
-	} else {
-		summonerQueryList.value[tabIndex.value].matchHistoryQueryResult.push(result);
 	}
 };
 

@@ -6,11 +6,28 @@ import { TransitionSlide } from "@morev/vue-transitions";
 import RuneConfig from "@/components/gameFlow/runeConfig.vue";
 import { storeToRefs } from "pinia";
 import GameAnalysis from "@/components/gameFlow/gameAnalysis.vue";
+import router from "@/router";
 
 const lcuStore = useLCUStore();
 const { champId } = storeToRefs(lcuStore);
 
 const tabVal = ref<"rune" | "analysis">("rune");
+const gameAnalysisRef = ref();
+
+watch(
+	() => router.currentRoute.value,
+	(n, o) => {
+		if (n.name === "inGame") {
+			const { showAnalysis } = n.params;
+			if (showAnalysis) {
+				tabVal.value = "analysis";
+				nextTick(() => {
+					gameAnalysisRef.value.tabVale.value = "theirTeam";
+				});
+			}
+		}
+	}
+);
 </script>
 
 <template>
@@ -35,7 +52,7 @@ const tabVal = ref<"rune" | "analysis">("rune");
 					<transition-slide class="flex flex-col flex-1" :offset="[-16, 0]" mode="out-in">
 						<keep-alive>
 							<rune-config v-if="tabVal === 'rune'"></rune-config>
-							<game-analysis v-else-if="tabVal === 'analysis'"></game-analysis>
+							<game-analysis v-else-if="tabVal === 'analysis'" ref="gameAnalysisRef"></game-analysis>
 						</keep-alive>
 					</transition-slide>
 				</div>

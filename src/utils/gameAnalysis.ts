@@ -2,16 +2,19 @@ import { GameDetail, MatchHistoryQueryResult, TeamMemberInfo } from "@@/types/lc
 import lcuApi from "@/api/lcuApi";
 import { chatDividerLine, Handle } from "@@/const/const";
 import { intersectionWith } from "lodash";
-import { retryWrapper } from "@/utils/util";
+import { randomTimout, retryWrapper } from "@/utils/util";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
 	return await Promise.all(
 		teams.map(async (t) => {
 			const gameDetails = (
-				await retryWrapper<MatchHistoryQueryResult>(
-					() => window.ipcRenderer.invoke(Handle.queryMatchHistory, t.puuid, 1, 8),
-					5
-				)()
+				await randomTimout<MatchHistoryQueryResult>(
+					retryWrapper<MatchHistoryQueryResult>(
+						() => window.ipcRenderer.invoke(Handle.queryMatchHistory, t.puuid, 1, 8),
+						5,
+						2000
+					)
+				)
 			).games.games;
 			return {
 				...t,

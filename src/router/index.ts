@@ -20,7 +20,7 @@ const routes = [
 				meta: { title: "主页" }
 			},
 			{
-				path: "inGame",
+				path: "inGame/:showAnalysis?",
 				name: "inGame",
 				component: InGame,
 				meta: { title: "对局" }

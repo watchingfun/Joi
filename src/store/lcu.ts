@@ -128,7 +128,7 @@ const useLCUStore = defineStore("lcu", () => {
 		) {
 			new window.Notification("胜率队检测", { body: "对方为胜率队" }).onclick = async () => {
 				await window.ipcRenderer.invoke(Handle.showMainWindow);
-				await router.push({ name: "inGame" });
+				await router.push({ name: "inGame", params: { showAnalysis: "true" } });
 			};
 			theirTeamIsSuck.value = true;
 		} else if (theirTeamUpInfo.value.length != 0) {
@@ -141,7 +141,7 @@ const useLCUStore = defineStore("lcu", () => {
 			// 	.join("\n");
 			new window.Notification("对面存在开黑组队", { body: "跳转对局分析查看" }).onclick = async () => {
 				await window.ipcRenderer.invoke(Handle.showMainWindow);
-				await router.push({ name: "inGame" });
+				await router.push({ name: "inGame", params: { showAnalysis: "true" } });
 			};
 		}
 	}

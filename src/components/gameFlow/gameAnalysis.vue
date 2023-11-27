@@ -7,11 +7,13 @@ const lcuStore = useLCUStore();
 
 const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag, myTeamUpInfo, theirTeamUpInfo, theirTeamIsSuck } =
 	storeToRefs(lcuStore);
+const tabVale = ref<"myTeam" | "theirTeam">("myTeam");
+defineExpose({ tabVale });
 </script>
 
 <template>
 	<div class="flex flex-1 relative">
-		<n-tabs animated>
+		<n-tabs animated v-model:value="tabVale">
 			<n-tab-pane tab="我方队伍" name="myTeam">
 				<n-spin :show="queryMyTeamFlag">
 					<team-analysis :teams="myTeam" :team-up-info="myTeamUpInfo" />

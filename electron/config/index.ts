@@ -19,6 +19,7 @@ class Setting {
 	}
 }
 
+//todo 替换成懒汉单例
 export const setting = new Setting(settingModelDefault);
 
 ipcMain.on("updateSetting", (event, ...args) => {

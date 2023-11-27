@@ -169,7 +169,7 @@ export const queryMatchHistory = async (puuid: string, page: number = 1, pageSiz
 		method: "GET",
 		url: `/lol-match-history/v1/products/lol/${puuid}/matches?begIndex=${begIndex}&endIndex=${endIndex}`
 	}).catch((e: any) => {
-		logger.error("QueryMatchHistory error", e.message, puuid, begIndex, endIndex);
+		logger.error("QueryMatchHistory", e.message, puuid, begIndex, endIndex);
 		throw e;
 	});
 };

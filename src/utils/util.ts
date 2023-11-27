@@ -1,3 +1,6 @@
+import { isPromise } from "@vue/shared";
+import { random } from "lodash";
+
 /**
  * 错误重试包装器
  *
@@ -29,4 +32,30 @@ export const retryWrapper = function <T>(
 	};
 
 	return retryCallback;
+};
+
+/**
+ * 随机延迟执行
+ * @param func
+ * @param min
+ * @param max
+ */
+export const randomTimout = function <T>(
+	func: ((...args: any[]) => Promise<T>) | ((...args: any[]) => T),
+	min: number = 500,
+	max: number = 2000
+) {
+	return new Promise<T>((resolve) => {
+		setTimeout(
+			async () => {
+				const result = func();
+				if (isPromise(result)) {
+					resolve(await result);
+				} else {
+					resolve(result);
+				}
+			},
+			random(min, max)
+		);
+	});
 };
