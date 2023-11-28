@@ -137,6 +137,7 @@ const gameModeBackground = (str: string) => {
 
 .row-item:hover {
 	background-color: #ffffff52;
+	transform: translateX(8px);
 }
 
 .date-info {

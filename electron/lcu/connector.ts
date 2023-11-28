@@ -53,6 +53,7 @@ export function startGuardTask() {
 				sendToWebContent(Handle.connected);
 				logger.info("guardTask", "connected to LeagueClient");
 			} catch (e) {
+				ws?.close();
 				ws = null;
 				logger.error("guardTask", e instanceof Error ? e.message : e);
 				sendToWebContent(Handle.disconnect);
@@ -79,6 +80,7 @@ export async function initLeagueWebSocket() {
 	ws = await createWebSocketConnectionRetry(credentials);
 	ws.onclose = () => {
 		sendToWebContent(Handle.disconnect);
+		ws.subscriptions.clear();
 		ws = null;
 	};
 	wsSubscribe(ws);

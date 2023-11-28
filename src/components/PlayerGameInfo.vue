@@ -106,14 +106,15 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 	align-items: center;
 	background-color: #ffffff0f;
 	transition:
-		all 0.3s ease-in-out,
+		all 0.2s ease-in-out,
 		background-position 0.2s ease-in-out,
 		background-color 0.2s ease-in-out;
 	user-select: none;
 }
 
 .row-item:hover {
-	background-color: #ffffff52;
+	background-color: rgb(255 255 255 / 8%);
+	transform: scale(1.02);
 }
 
 .date-info {
@@ -138,6 +139,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 	background-position: -300px 0;
 	background-repeat: no-repeat;
 	box-shadow: inset #3aff95a1 8px 0 2px -2px;
+	background-color: #4fa18a82;
 }
 
 .fail {
@@ -150,6 +152,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 	background-position: -300px 0;
 	background-repeat: no-repeat;
 	box-shadow: inset rgb(255 75 75 / 90%) 8px 0 2px -2px;
+	background-color: rgb(161 79 79 / 61%);
 }
 
 .win:hover {

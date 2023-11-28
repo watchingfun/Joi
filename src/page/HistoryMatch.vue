@@ -312,8 +312,8 @@ watch(
 		<div :style="{ flexShrink: 0, height: headerHeight }"></div>
 		<div class="flex flex-col flex-1 h-0 relative">
 			<transition-group
-				enter-active-class="absolute animate__animated animate__fadeInRight animate__fast"
-				leave-active-class="absolute animate__animated animate__zoomOut animate__fast">
+				enter-active-class="absolute animate__animated animate__fadeInRight animate__faster"
+				leave-active-class="absolute animate__animated animate__zoomOut animate__faster">
 				<template v-for="(record, index) in summonerQueryList" :key="record.summonerInfo.puuid">
 					<div v-show="tabIndex === index" class="absolute w-full h-full">
 						<n-spin :show="summonerQueryLoading" class="absolute w-full h-full" :rotate="false">

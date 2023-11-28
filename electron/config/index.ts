@@ -19,7 +19,7 @@ class Setting {
 	}
 }
 
-//todo 替换成懒汉单例
+//todo db 到这里都要重构成 lazy singleton
 export const setting = new Setting(settingModelDefault);
 
 ipcMain.on("updateSetting", (event, ...args) => {

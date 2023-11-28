@@ -33,6 +33,6 @@ defineOptions({
 }
 
 .highlight-row {
-	background: rgba(236, 146, 107, 0.59);
+	background-image: linear-gradient(90deg, #fbfbfb9e 0%, #ffffff45 50%);
 }
 </style>
