@@ -54,7 +54,6 @@ export function startGuardTask() {
 				logger.info("guardTask", "connected to LeagueClient");
 			} catch (e) {
 				ws?.close();
-				ws = null;
 				logger.error("guardTask", e instanceof Error ? e.message : e);
 				sendToWebContent(Handle.disconnect);
 			}
