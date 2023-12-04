@@ -7,8 +7,10 @@ import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
 import { ArrowClockwiseDashes20Filled } from "@vicons/fluent";
 import { Github } from "@vicons/fa";
 import { debounce, random } from "lodash";
+import useSettingStore from "@/store/setting";
 
 const appStore = useAppStore();
+const settingStore = useSettingStore();
 let timer: ReturnType<typeof setInterval> | null;
 const diffTime = ref();
 const visible = ref(false);
@@ -17,7 +19,7 @@ const message = useMessage();
 const killLCURenderHandler = () => {
 	visible.value = false;
 	if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
-		message.error("未连接到客户端");
+		message.error("未连接到英雄联盟客户端");
 		return;
 	}
 	lcuApi.lcuKillRender().then(() => message.success("kill请求已发送！"));
@@ -67,11 +69,12 @@ const footerStyle = computed(() => {
 		class="footer"
 		:class="[lcuStore.connectStatus === ConnectStatusEnum.connecting ? 'loaderBar' : '']"
 		:style="footerStyle">
-		<div class="info flex flex-row flex-nowrap items-center justify-between">
+		<div class="info flex flex-row flex-nowrap items-center justify-between h-full">
 			<div class="ml-2 flex flex-row items-center">
 				<div @click="clickGithub" title="Joi Repository" class="github-icon mr-2">
 					<Github></Github>
 				</div>
+				<div class="pr-1">v{{ appStore.appVersion }}</div>
 				<div>
 					已运行时间:
 					{{ diffTime }}
@@ -90,6 +93,10 @@ const footerStyle = computed(() => {
 					此操作通过杀掉LeagueClientUxRender.exe进程来让客户端重启界面进程，可以解决各种黑屏，显示不全等问题。 确认执行?
 				</p>
 			</n-popconfirm>
+			<div class="flex flex-row items-center">
+				<div>自动再来一局：</div>
+				<n-switch v-model:value="settingStore.settingModel.autoPlayAgain" size="small">自动再来一局</n-switch>
+			</div>
 			<div class="flex flex-row items-center">
 				<ConnectStatus class="mr-1" :connect-status="lcuStore.connectStatus"></ConnectStatus>
 			</div>

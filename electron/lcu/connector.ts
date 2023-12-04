@@ -16,7 +16,7 @@ const createWebSocketConnectionRetry = retryWrapper(createWebSocketConnection, 4
 
 export function getCredentials() {
 	if (!credentials) {
-		throw new Error("未连接上客户端，LCU api不可用！");
+		throw new Error("未连接上英雄联盟客户端，LCU api不可用！请先登录英雄联盟客户端。");
 	}
 	return credentials;
 }

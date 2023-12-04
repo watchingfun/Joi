@@ -7,7 +7,7 @@ import { GridComponent, TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import VChart from "vue-echarts";
 import { assignedPositionNameMap } from "@@/types/opgg_rank_type";
-import { ComputedRef } from "vue";
+import { Ref } from "vue";
 import HistoryList from "@/components/HistoryList.vue";
 import { champDict } from "@@/const/lolDataConfig";
 
@@ -48,8 +48,10 @@ const championImageUrlMap = computed(() => {
 	);
 });
 
-const option = computed(() => {
-	return {
+const option = ref({}) as Ref<EChartsOption>;
+
+const updateOption = () => {
+	option.value = {
 		tooltip: {
 			trigger: "axis",
 			axisPointer: {
@@ -80,6 +82,7 @@ const option = computed(() => {
 					}) || [],
 				axisLabel: {
 					interval: 0,
+					//todo 这里响应式有问题
 					color: function (value, index) {
 						const cIndex = teamUpInfo.value.findIndex((group) =>
 							group.find((puuid) => puuid === teams.value[index!]?.puuid)
@@ -150,8 +153,16 @@ const option = computed(() => {
 				}
 			}
 		]
-	};
-}) as ComputedRef<EChartsOption>;
+	} as EChartsOption;
+};
+
+watch(
+	[teams, teamUpInfo],
+	() => {
+		updateOption();
+	},
+	{ immediate: true, deep: true }
+);
 
 const showDetail = ref(false);
 const historyListData = ref<Array<GameDetail>>([]);

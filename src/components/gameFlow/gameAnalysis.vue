@@ -5,8 +5,17 @@ import TeamAnalysis from "@/components/gameFlow/teamAnalysis.vue";
 
 const lcuStore = useLCUStore();
 
-const { myTeam, queryMyTeamFlag, theirTeam, queryTheirTeamFlag, myTeamUpInfo, theirTeamUpInfo, theirTeamIsSuck } =
-	storeToRefs(lcuStore);
+const {
+	myTeam,
+	queryMyTeamFlag,
+	theirTeam,
+	queryTheirTeamFlag,
+	myTeamUpInfo,
+	theirTeamUpInfo,
+	theirTeamIsSuck,
+	myTeamAnalysisError,
+	theirTeamAnalysisError
+} = storeToRefs(lcuStore);
 const tabVale = ref<"myTeam" | "theirTeam">("myTeam");
 defineExpose({ tabVale });
 </script>
@@ -16,7 +25,10 @@ defineExpose({ tabVale });
 		<n-tabs animated v-model:value="tabVale">
 			<n-tab-pane tab="我方队伍" name="myTeam">
 				<n-spin :show="queryMyTeamFlag">
-					<team-analysis :teams="myTeam" :team-up-info="myTeamUpInfo" />
+					<div class="flex flex-col justify-center items-center w-full h-full">
+						<n-button v-if="myTeamAnalysisError" @click="lcuStore.analysisMyTeam">重试</n-button>
+						<team-analysis v-else :teams="myTeam" :team-up-info="myTeamUpInfo" />
+					</div>
 				</n-spin>
 			</n-tab-pane>
 			<n-tab-pane tab="对方队伍" name="theirTeam">
@@ -24,12 +36,17 @@ defineExpose({ tabVale });
 					等待进入对局
 				</div>
 				<n-spin :show="queryTheirTeamFlag" v-else>
-					<team-analysis :teams="theirTeam" :team-up-info="theirTeamUpInfo" />
+					<div class="flex flex-col justify-center items-center w-full h-full">
+						<n-button v-if="theirTeamAnalysisError" @click="lcuStore.analysisTheirTeam">重试</n-button>
+						<team-analysis :teams="theirTeam" :team-up-info="theirTeamUpInfo" :loading="queryTheirTeamFlag" />
+					</div>
 				</n-spin>
 			</n-tab-pane>
 		</n-tabs>
 		<div class="absolute right-0 pr-[24px]">
-			<n-button @click="lcuStore.sendTeamScoreToRoom">发送评分</n-button>
+			<n-space>
+				<n-button @click="lcuStore.sendTeamScoreToRoom">发送评分</n-button>
+			</n-space>
 		</div>
 	</div>
 </template>

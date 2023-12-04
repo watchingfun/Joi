@@ -1,28 +1,33 @@
 import { GameDetail, MatchHistoryQueryResult, TeamMemberInfo } from "@@/types/lcuType";
 import lcuApi from "@/api/lcuApi";
-import { chatDividerLine, Handle } from "@@/const/const";
+import { Handle } from "@@/const/const";
 import { intersectionWith } from "lodash";
-import { randomTimout, retryWrapper } from "@/utils/util";
+import { retryWrapper } from "@/utils/util";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
-	return await Promise.all(
-		teams.map(async (t) => {
+	const requestQueue = teams.map((t) => {
+		return async () => {
 			const gameDetails = (
-				await randomTimout<MatchHistoryQueryResult>(
-					retryWrapper<MatchHistoryQueryResult>(
-						() => window.ipcRenderer.invoke(Handle.queryMatchHistory, t.puuid, 1, 8),
-						5,
-						2000
-					)
-				)
+				await retryWrapper<MatchHistoryQueryResult>(
+					() => window.ipcRenderer.invoke(Handle.queryMatchHistory, t.puuid, 1, 20),
+					5,
+					1000
+				)()
 			).games.games;
 			return {
 				...t,
 				gameDetail: gameDetails,
 				score: computeScore(gameDetails)
 			} as TeamMemberInfo;
-		})
-	);
+		};
+	});
+	const results: TeamMemberInfo[] = [];
+	//改成顺序延迟执行，减少服务器压力
+	for (const req of requestQueue) {
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		results.push(await req());
+	}
+	return results;
 }
 
 //分析组队信息
@@ -88,12 +93,12 @@ export function computeScore(gameDetail?: GameDetail[]) {
 }
 
 export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
-	let msg = ["队伍评分：\n" + chatDividerLine];
+	let msg = ["队伍评分："];
 	teams
 		.map((t) => {
 			return { puuid: t.puuid, summonerName: t.summonerName, score: t.score };
 		})
 		.sort((a, b) => (a.score! > b.score! ? 1 : a.score === b.score ? 0 : -1))
-		.forEach((i) => msg.push(`${i.summonerName}:\t${i.score}`));
-	return msg.join("\n") + "\n" + chatDividerLine + "——WeGame";
+		.forEach((i, index) => msg.push(`${i.summonerName}:\t${i.score}`));
+	return msg; //msg.join("\n") + "\n" + chatDividerLine + "——WeGame";
 }

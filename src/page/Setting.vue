@@ -4,12 +4,13 @@ import useSettingStore from "@/store/setting";
 import { storeToRefs } from "pinia";
 import { checkUpdate } from "@/utils/updateCheck";
 import commonApi from "@/api/commonApi";
+import useAppStore from "@/store/app";
 
 const router = useRouter();
 
 const { settingModel } = storeToRefs(useSettingStore());
 
-const appVersion = __APP_VERSION__;
+const appVersion = useAppStore().appVersion;
 const fetching = ref(false);
 
 function goBack() {

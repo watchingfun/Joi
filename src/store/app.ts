@@ -15,6 +15,7 @@ const useAppStore = defineStore("app", () => {
 			configProviderProps: configProviderPropsRef
 		}
 	);
-	return { bootTime, message, notification, dialog, loadingBar };
+	const appVersion = __APP_VERSION__;
+	return { bootTime, message, notification, dialog, loadingBar, appVersion };
 });
 export default useAppStore;

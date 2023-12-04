@@ -23,7 +23,7 @@ const useSettingStore = defineStore("setting", () => {
 				console.log("settingModel updateSetting", value.value);
 				window.ipcRenderer.send("updateSetting", JSON.stringify(value.value));
 			},
-			{ deep: true, debounce: 500 }
+			{ deep: true, debounce: 300 }
 		);
 		return settingModel.value;
 	};

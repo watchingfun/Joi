@@ -54,7 +54,9 @@ const useLCUStore = defineStore("lcu", () => {
 	const currentPosition = ref<PositionName>();
 	const currentChatRoomId = ref<string>();
 	const myTeam = ref<TeamMemberInfo[]>([]);
+	const myTeamAnalysisError = ref(false);
 	const theirTeam = ref<TeamMemberInfo[]>([]);
+	const theirTeamAnalysisError = ref(false);
 
 	//我方队伍组队信息
 	const myTeamUpInfo = ref<Array<Array<string>>>([]);
@@ -68,29 +70,48 @@ const useLCUStore = defineStore("lcu", () => {
 
 	const settingStore = useSettingStore();
 
-	function sendTeamScoreToRoom() {
+	async function sendTeamScoreToRoom() {
 		const msg = generateAnalysisMsg(myTeam.value);
 		if (gameFlowPhase.value !== "ChampSelect") {
 			message.warning("只能在选英雄阶段发送");
 			return;
 		}
-		console.log("队伍分析", msg);
-		void lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, msg, "groupchat");
+		console.log("队伍分析", msg.join("\n"));
+		for (const s of msg) {
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			await lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, s, "groupchat");
+		}
+		//window.ipcRenderer.invoke(Handle.setSendMsg, msg.join("\n"))
 	}
 
 	async function analysisMyTeam() {
 		queryMyTeamFlag.value = true;
-		myTeam.value = await analysisTeam(myTeam.value).finally(() => (queryMyTeamFlag.value = false));
+		myTeam.value = await analysisTeam(myTeam.value)
+			.catch((e) => {
+				console.error("分析友方队伍出错");
+				myTeamAnalysisError.value = true;
+				throw new Error("分析友方队伍出错，请稍后再试");
+			})
+			.finally(() => (queryMyTeamFlag.value = false));
+		myTeamAnalysisError.value = false;
 		if (settingStore.settingModel.autoSendMyTeamAnalysis) {
-			sendTeamScoreToRoom();
+			await sendTeamScoreToRoom();
 		}
 		myTeamUpInfo.value = await analysisTeamUpInfo(myTeam.value);
 	}
 
 	async function analysisTheirTeam() {
 		queryTheirTeamFlag.value = true;
-		theirTeam.value = await analysisTeam(theirTeam.value).finally(() => (queryTheirTeamFlag.value = false));
+		theirTeam.value = await analysisTeam(theirTeam.value)
+			.catch((e) => {
+				console.error("分析敌方队伍出错");
+				theirTeamAnalysisError.value = true;
+				throw new Error("分析敌方队伍出错，请稍后再试");
+			})
+			.finally(() => (queryTheirTeamFlag.value = false));
+		theirTeamAnalysisError.value = false;
 		const msg = generateAnalysisMsg(theirTeam.value);
+		//window.ipcRenderer.invoke(Handle.setSendMsg, msg.join("\n"));
 		console.log("对方队伍分析", msg);
 	}
 
@@ -123,7 +144,7 @@ const useLCUStore = defineStore("lcu", () => {
 		//如果对面5黑，并且都是隐藏生涯，就判断是胜率队
 		if (
 			currentGameMode.value === "aram" &&
-			theirTeamUpInfo.value?.[0].length === 5 &&
+			theirTeamUpInfo.value?.[0]?.length === 5 &&
 			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE")?.length === 5
 		) {
 			new window.Notification("胜率队检测", { body: "对方为胜率队" }).onclick = async () => {
@@ -132,13 +153,18 @@ const useLCUStore = defineStore("lcu", () => {
 			};
 			theirTeamIsSuck.value = true;
 		} else if (theirTeamUpInfo.value.length != 0) {
-			let i = 1;
-			// const msg = theirTeamUpInfo.value
-			// 	.map(
-			// 		(t) =>
-			// 			`组队${i++}: ${t.map((puuid) => theirTeam.value.find((tm) => tm.puuid === puuid)?.summonerName).join("\t")}`
-			// 	)
-			// 	.join("\n");
+			if (import.meta.env.DEV) {
+				let i = 1;
+				const msg = theirTeamUpInfo.value
+					.map(
+						(t) =>
+							`组队${i++}: ${t
+								.map((puuid) => theirTeam.value.find((tm) => tm.puuid === puuid)?.summonerName)
+								.join("\t")}`
+					)
+					.join("\n");
+				console.log("对面组队信息", msg);
+			}
 			new window.Notification("对面存在开黑组队", { body: "跳转对局分析查看" }).onclick = async () => {
 				await window.ipcRenderer.invoke(Handle.showMainWindow);
 				await router.push({ name: "inGame", params: { showAnalysis: "true" } });
@@ -261,6 +287,8 @@ const useLCUStore = defineStore("lcu", () => {
 		search,
 		analysisMyTeam,
 		analysisTheirTeam,
+		myTeamAnalysisError,
+		theirTeamAnalysisError,
 		sendTeamScoreToRoom,
 		loadingRune,
 		applyRune,
