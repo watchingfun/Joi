@@ -698,8 +698,8 @@ export interface TeamMemberInfo {
 	assignedPosition?: AssignedPosition;
 	championId?: number;
 	puuid: string;
-	summonerName: string;
-	summonerInfo: SummonerInfo;
+	summonerName?: string;
+	summonerInfo?: SummonerInfo;
 	gameDetail?: GameDetail[];
 	score?: number;
 }

@@ -78,10 +78,9 @@ const useLCUStore = defineStore("lcu", () => {
 		}
 		console.log("队伍分析", msg.join("\n"));
 		for (const s of msg) {
-			await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 1));
 			await lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, s, "groupchat");
 		}
-		//window.ipcRenderer.invoke(Handle.setSendMsg, msg.join("\n"))
 	}
 
 	async function analysisMyTeam() {
@@ -110,9 +109,6 @@ const useLCUStore = defineStore("lcu", () => {
 			})
 			.finally(() => (queryTheirTeamFlag.value = false));
 		theirTeamAnalysisError.value = false;
-		const msg = generateAnalysisMsg(theirTeam.value);
-		//window.ipcRenderer.invoke(Handle.setSendMsg, msg.join("\n"));
-		console.log("对方队伍分析", msg);
 	}
 
 	function updateChampId(id: number) {
@@ -139,13 +135,15 @@ const useLCUStore = defineStore("lcu", () => {
 		updateMyTeamInfo(teams[myTeamMemberIndex]);
 		await updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
 		await analysisTheirTeam();
+    await window.ipcRenderer.invoke(Handle.setFriendScoreMsg, generateAnalysisMsg(myTeam.value));
+		await window.ipcRenderer.invoke(Handle.setTheirScoreMsg, generateAnalysisMsg(theirTeam.value));
 		theirTeamIsSuck.value = false;
 		theirTeamUpInfo.value = await analysisTeamUpInfo(theirTeam.value);
 		//如果对面5黑，并且都是隐藏生涯，就判断是胜率队
 		if (
 			currentGameMode.value === "aram" &&
 			theirTeamUpInfo.value?.[0]?.length === 5 &&
-			theirTeam.value.filter((m) => m.summonerInfo.privacy === "PRIVATE")?.length === 5
+			theirTeam.value.filter((m) => m.summonerInfo?.privacy === "PRIVATE")?.length === 5
 		) {
 			new window.Notification("胜率队检测", { body: "对方为胜率队" }).onclick = async () => {
 				await window.ipcRenderer.invoke(Handle.showMainWindow);

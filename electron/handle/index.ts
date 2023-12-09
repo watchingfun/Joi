@@ -7,11 +7,13 @@ import path from "node:path";
 import { spawn } from "child_process";
 import { showMainWindow } from "../util/util";
 import logger from "../lib/logger";
+import { setupHandleHotkey } from "./handleHotkey";
 
 export function setupHandles() {
 	setupTray();
 	setupHandleRunes();
 	setupHandleLCU();
+	setupHandleHotkey();
 	ipcMain.handle(Handle.openLogDir, () => {
 		let dir: string;
 		if (!app.isPackaged) {

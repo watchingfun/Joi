@@ -1,8 +1,7 @@
 import { GameDetail, MatchHistoryQueryResult, TeamMemberInfo } from "@@/types/lcuType";
-import lcuApi from "@/api/lcuApi";
 import { Handle } from "@@/const/const";
-import { intersectionWith } from "lodash";
 import { retryWrapper } from "@/utils/util";
+import { champDict } from "@@/const/lolDataConfig";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
 	const requestQueue = teams.map((t) => {
@@ -32,24 +31,23 @@ export async function analysisTeam(teams: TeamMemberInfo[]) {
 
 //分析组队信息
 export async function analysisTeamUpInfo(teams: TeamMemberInfo[]) {
-	const teamUpGroups: Array<Array<string>> = [];
+	const gameIdMap = new Map<number, TeamMemberInfo[]>();
 	for (const member of teams) {
 		if (!member.gameDetail?.[0].gameId) {
 			continue;
 		}
-		if (teamUpGroups.find((teamUps) => teamUps.includes(member.puuid))) {
-			continue;
-		}
-		const previousGameDetail = await lcuApi.queryGameDetails(member.gameDetail![0].gameId!);
-		const plays = previousGameDetail.participantIdentities.map((i) => i.player);
-		//取上一把的友方队伍
-		const friendlyPlays = plays?.findIndex((p) => p.puuid === member.puuid) > 4 ? plays?.slice(5) : plays?.slice(0, 5);
-		const teamUp = intersectionWith(teams, friendlyPlays, (t, p) => t.puuid === p.puuid).map((t) => t.puuid);
-		if (teamUp.length > 1) {
-			teamUpGroups.push(teamUp);
+		const previousGameId = member.gameDetail[0].gameId;
+		if (gameIdMap.has(previousGameId)) {
+			gameIdMap.get(previousGameId)!.push(member);
+		} else {
+			gameIdMap.set(previousGameId, [member]);
 		}
 	}
-	return teamUpGroups;
+	return Array.from(gameIdMap.values())
+		.filter((v) => v.length > 1)
+		.map((v) => {
+			return v.map((t) => t.puuid);
+		});
 }
 
 export function computeScore(gameDetail?: GameDetail[]) {
@@ -93,12 +91,9 @@ export function computeScore(gameDetail?: GameDetail[]) {
 }
 
 export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
-	let msg = ["队伍评分："];
+  let msg: string[] = [];
 	teams
-		.map((t) => {
-			return { puuid: t.puuid, summonerName: t.summonerName, score: t.score };
-		})
 		.sort((a, b) => (a.score! > b.score! ? 1 : a.score === b.score ? 0 : -1))
-		.forEach((i, index) => msg.push(`${i.summonerName}:\t${i.score}`));
+		.forEach((i, index) => msg.push(`${champDict[i.championId + ""]?.label || i.summonerName}:\t ${i.score}`));
 	return msg; //msg.join("\n") + "\n" + chatDividerLine + "——WeGame";
 }

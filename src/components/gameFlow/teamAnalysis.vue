@@ -101,7 +101,7 @@ const updateOption = () => {
 						} else {
 							str = `{value|${value}}`;
 						}
-						if (member.summonerInfo.privacy === "PRIVATE") {
+						if (member.summonerInfo?.privacy === "PRIVATE") {
 							str += `\n{private|生涯隐藏}`;
 						}
 						return str;

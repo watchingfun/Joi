@@ -24,7 +24,10 @@ export const Handle = {
 	matchmaking: "lcu:matchmaking", //开始匹配 寻找对局
 	openLogDir: "openLogDir", //打开日志文件夹
 	showMainWindow: "showMainWindow", //显示主界面
-	log: "log" //记录日志
+	log: "log", //记录日志
+	setFriendScoreMsg: "robot:setFriendScoreMsg",
+	setTheirScoreMsg: "robot:setTheirScoreMsg",
+	registerSendKey: "robot:registerSendKey"
 };
 
 export const chatDividerLine = "-----------------------------------------";

@@ -20,6 +20,7 @@ export async function processGameSessionData(data: ChampSelectPhaseSession, game
 	//发送当前对局我方成员
 	if (!myTeam) {
 		myTeam = [];
+		//todo 重写，让前台来获取这些数据，方便写重试
 		myTeam = await Promise.all(
 			data.myTeam.map(async (t) => {
 				const summonerInfo = await getSummonerByPuuid(t.puuid);

@@ -1,7 +1,7 @@
 const path = require("path");
 const child = require("child_process");
 
-function execute(cmd, callback, cwd = process.cwd()) {
+function execute(cmd, callback = (contents) => console.log(contents), cwd = process.cwd()) {
 	let items = cmd;
 	let exe = items.shift();
 	let processor = child.spawn(exe, items, { cwd });
@@ -28,7 +28,7 @@ function execute(cmd, callback, cwd = process.cwd()) {
 	}
 	processor.on("exit", (code) => {
 		if (code === 0) {
-			console.log("Rebuild better-sqlite3 success.");
+			console.log("Rebuild success.");
 		}
 		process.exit(code);
 	});
@@ -44,13 +44,30 @@ const better_sqlite3_root = path.posix.join(
 	"node_modules/better-sqlite3"
 );
 
+const keysender = require.resolve("keysender");
+const keysender_root = path.posix.join(
+	keysender.slice(0, robotjs.lastIndexOf("node_modules")),
+	"node_modules/keysender"
+);
+
 const cmd = [
-	"win32" ? "npm.cmd" : "npm",
+	"npm.cmd",
 	"run",
 	"build-release",
 	`--target=${process.versions.electron}`,
 	// https://github.com/electron/electron/blob/v26.1.0/docs/tutorial/using-native-node-modules.md#manually-building-for-electron
 	"--dist-url=https://electronjs.org/headers"
 ];
+const cmd2 = [
+	"npm.cmd",
+	"run",
+	"install",
+	"--runtime=electron",
+	`--target=${process.versions.electron}`,
+	// https://github.com/electron/electron/blob/v26.1.0/docs/tutorial/using-native-node-modules.md#manually-building-for-electron
+	"--dist-url=https://electronjs.org/headers",
+	`--abi=${process.version}`
+];
 
-execute(cmd, (contents) => console.log(contents), better_sqlite3_root);
+execute(cmd, undefined, better_sqlite3_root);
+execute(cmd2, undefined, keysender_root);
