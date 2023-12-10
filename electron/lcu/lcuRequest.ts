@@ -19,6 +19,7 @@ import { GameMode, PositionName } from "../types/opgg_rank_type";
 import { PerkRune } from "../types/rune";
 import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";
+import { RankSummary } from "../types/rankType";
 
 const httpRequest = async <T>(option: HttpRequestOptions<any>) => {
 	const response = await createHttp1Request(option, getCredentials());
@@ -263,4 +264,12 @@ export const checkSelfIsLobbyLeader = async () => {
 	const lobbyMembers = await getLobbyMembers();
 	const selfPuuid = (await getCurrentSummoner()).puuid;
 	return lobbyMembers.find((m) => (m.puuid = selfPuuid)).isLeader;
+};
+
+//获取段位信息
+export const getRankSummary = async (puuid: string) => {
+  return await httpRequest<RankSummary>({
+    method: "GET",
+    url: `/lol-ranked/v1/ranked-stats/${puuid}`
+  });
 };
