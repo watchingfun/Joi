@@ -1,5 +1,4 @@
-import { app, ipcMain } from "electron";
-import { BrowserWindow } from "electron-acrylic-window";
+import { app, BrowserWindow, ipcMain } from "electron";
 
 export function setupTitleBarHandler(win: BrowserWindow) {
 	ipcMain.handle("titleBarControl:minimize", (event, args) => {

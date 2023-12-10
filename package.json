@@ -1,6 +1,6 @@
 {
   "name": "joi",
-  "version": "0.5.9",
+  "version": "0.5.10",
   "main": "dist-electron/main.js",
   "repository": {
     "type": "git",
@@ -61,6 +61,7 @@
     "@vueuse/components": "^10.5.0",
     "@vueuse/core": "^10.5.0",
     "animate.css": "^4.1.1",
+    "cheerio": "^1.0.0-rc.12",
     "dayjs": "^1.11.10",
     "echarts": "^5.4.3",
     "electron-acrylic-window": "^0.5.11",

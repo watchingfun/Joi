@@ -46,7 +46,7 @@ const better_sqlite3_root = path.posix.join(
 
 const keysender = require.resolve("keysender");
 const keysender_root = path.posix.join(
-	keysender.slice(0, robotjs.lastIndexOf("node_modules")),
+	keysender.slice(0, keysender.lastIndexOf("node_modules")),
 	"node_modules/keysender"
 );
 

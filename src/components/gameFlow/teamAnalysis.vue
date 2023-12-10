@@ -16,16 +16,6 @@ const { teams, teamUpInfo } = toRefs(props);
 
 use([TooltipComponent, GridComponent, BarChart, CanvasRenderer]);
 
-const teamMap = computed(() => {
-	return teams.value.reduce(
-		(p, c) => {
-			p[c.summonerName] = c;
-			return p;
-		},
-		{} as Record<string, TeamMemberInfo>
-	);
-});
-
 const colorGroup = ["rgba(252,132,80,0.66)", "rgba(123,239,255,0.81)", "rgba(255,255,255,0.8)"];
 
 const championImageUrlMap = computed(() => {
@@ -170,7 +160,7 @@ const showSummonerName = ref("");
 
 function handleClick(event: any) {
 	showDetail.value = true;
-	showSummonerName.value = teams.value[event.dataIndex].summonerName;
+	showSummonerName.value = teams.value[event.dataIndex].summonerName!;
 	historyListData.value = teams.value[event.dataIndex].gameDetail || [];
 }
 </script>

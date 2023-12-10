@@ -50,6 +50,9 @@ export default defineConfig(({ command }) => {
 							minify: isBuild,
 							commonjsOptions: {
 								ignoreDynamicRequires: true
+							},
+							rollupOptions: {
+								external: ["keysender", "uiohook-napi"]
 							}
 						},
 						plugins: [
