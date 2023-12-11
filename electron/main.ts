@@ -10,6 +10,8 @@ import { initDb } from "./db";
 import child_process from "child_process";
 import { setupHandles } from "./handle";
 
+//解决有些电脑无法启动程序
+app.commandLine.appendSwitch("--in-process-gpu");
 const VUEJS3_DEVTOOLS = "nhdogjmejiglipccpnnnanhbledajbpd";
 
 process.env["ELECTRON_DISABLE_SECURITY_WARNINGS"] = "true";
