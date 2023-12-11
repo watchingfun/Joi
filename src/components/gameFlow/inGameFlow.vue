@@ -7,9 +7,10 @@ import RuneConfig from "@/components/gameFlow/runeConfig.vue";
 import { storeToRefs } from "pinia";
 import GameAnalysis from "@/components/gameFlow/gameAnalysis.vue";
 import router from "@/router";
+import AramBuff from "@/components/gameFlow/aramBuff.vue";
 
 const lcuStore = useLCUStore();
-const { champId } = storeToRefs(lcuStore);
+const { champId, currentGameMode } = storeToRefs(lcuStore);
 
 const tabVal = ref<"rune" | "analysis">("rune");
 const gameAnalysisRef = ref();
@@ -45,6 +46,7 @@ watch(
 				<n-tabs type="segment" v-model:value="tabVal" style="width: 50%" animated>
 					<n-tab name="rune"> 符文</n-tab>
 					<n-tab name="analysis"> 对局分析</n-tab>
+					<n-tab name="aramBuff" v-if="currentGameMode === 'aram'">大乱斗BUFF</n-tab>
 				</n-tabs>
 			</div>
 			<n-card style="margin-bottom: 16px" class="flex flex-1">
@@ -53,6 +55,7 @@ watch(
 						<keep-alive>
 							<rune-config v-if="tabVal === 'rune'"></rune-config>
 							<game-analysis v-else-if="tabVal === 'analysis'" ref="gameAnalysisRef"></game-analysis>
+							<aram-buff v-else-if="tabVal === 'aramBuff' && currentGameMode === 'aram'" :champId="champId"></aram-buff>
 						</keep-alive>
 					</transition-slide>
 				</div>

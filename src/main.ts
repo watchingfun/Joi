@@ -34,13 +34,15 @@ app.config.errorHandler = (err, vm, info) => {
 		void window.ipcRenderer.invoke(Handle.log, { level: "error", message: err.message + "\nstack: " + err.stack });
 	}
 };
-window.onload = () => {
-	//解决开发模式重载网页时状态不同步
-	useLCUStore().refreshConnectStatus();
-	//初始化设置
-	useSettingStore()
-		.initSettingModel()
-		.finally(() => {
-			postMessage({ payload: "removeLoading" }, "*");
-		});
+window.onload = async () => {
+	try {
+		//解决开发模式重载网页时状态不同步
+		useLCUStore().refreshConnectStatus();
+		//初始化设置
+		await useSettingStore().initSettingModel();
+		//初始化大乱斗英雄buff数据
+		await useLCUStore().initAramChampBuffMap();
+	} finally {
+		postMessage({ payload: "removeLoading" }, "*");
+	}
 };

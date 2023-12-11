@@ -26,7 +26,12 @@ ipcMain.on("updateSetting", (event, ...args) => {
 	console.log("updateSetting", args[0]);
 	return setting.updateSetting(JSON.parse(args[0] as string) as SettingModel);
 });
+
+//前台页面加载完成后加载数据库设置到内存
 ipcMain.handle("getSetting", () => {
-	setting.setSetting(settingDB.getSetting());
+  const dbSetting = settingDB.getSetting<SettingModel>();
+	if (dbSetting) {
+		setting.setSetting({ ...settingModelDefault, ...dbSetting });
+	}
 	return setting.model;
 });

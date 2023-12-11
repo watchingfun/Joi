@@ -42,6 +42,11 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
 	},
 	Dialog: {
 		color: "rgba(52,52,52,0.75)"
+	},
+	Descriptions: {
+		tdColor: "rgba(38, 38, 42, 0.1)",
+		thColor: "rgba(38, 38, 42, 0.6)",
+		borderColor: "rgba(255,255,255,0.1)"
 	}
 	// ...
 };

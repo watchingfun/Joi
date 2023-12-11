@@ -1,11 +1,10 @@
 import Database from "better-sqlite3";
 import { DBConfig } from "./index";
-import { SettingModel, settingModelDefault } from "../types/type";
-import { cloneDeep } from "lodash";
+import { settingModelDefault } from "../types/type";
 import { getDB } from "./better-sqlite3";
 
 export interface SettingDB extends DBConfig {
-	getSetting: () => SettingModel;
+	getSetting: <T>(key?: string) => T;
 	updateSetting: (key: string, val: any) => void;
 }
 
@@ -28,12 +27,14 @@ const useDB = (db: Database.Database): SettingDB => ({
 		insert.run({ key: "app", value: JSON.stringify(settingModelDefault) });
 	},
 
-	getSetting() {
-		let setting = cloneDeep(settingModelDefault);
-		const stmt = db.prepare("SELECT key, value FROM app_setting");
-		const config = stmt.get() as any;
-		let dbRecord = JSON.parse(config?.value || "{}");
-		return { ...setting, ...dbRecord } as SettingModel;
+	getSetting<T>(key: string = "app") {
+		const stmt = db.prepare("SELECT key, value FROM app_setting where key = :key");
+		const config = stmt.get({ key: key }) as any;
+		if (config?.value) {
+			return JSON.parse(config.value) as T;
+		} else {
+			return undefined;
+		}
 	},
 
 	updateSetting(key: string, val: Object) {

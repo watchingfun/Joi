@@ -8,6 +8,7 @@ import { spawn } from "child_process";
 import { showMainWindow } from "../util/util";
 import logger from "../lib/logger";
 import { setupHandleHotkey } from "./handleHotkey";
+import { getAramBuffData } from "../lcu/aramBuff";
 
 export function setupHandles() {
 	setupTray();
@@ -28,5 +29,8 @@ export function setupHandles() {
 	});
 	ipcMain.handle(Handle.log, (event, { level, message }: { level: string; message: string }) => {
 		logger.log(level, "renderer error occurred: " + message);
+	});
+	ipcMain.handle(Handle.getAramBuffData, (event) => {
+		return getAramBuffData();
 	});
 }

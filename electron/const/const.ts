@@ -1,3 +1,5 @@
+import { getAramBuffData } from "@@/lcu/aramBuff";
+
 export const Handle = {
 	connected: "lcu:connected", //客户端连接完成时发送信号
 	connecting: "lcu:connecting", //客户端连接中时发送信号
@@ -27,7 +29,8 @@ export const Handle = {
 	log: "log", //记录日志
 	setFriendScoreMsg: "robot:setFriendScoreMsg",
 	setTheirScoreMsg: "robot:setTheirScoreMsg",
-	registerSendKey: "robot:registerSendKey"
+	registerSendKey: "robot:registerSendKey",
+	getAramBuffData: "getAramBuffData"
 };
 
 export const chatDividerLine = "-----------------------------------------";

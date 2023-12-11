@@ -5,12 +5,13 @@ import { SummonerInfo, TeamMember, TeamMemberInfo } from "@@/types/lcuType";
 import useSettingStore from "@/store/setting";
 import { GameMode, PositionName, Rune } from "@@/types/opgg_rank_type";
 import { analysisTeam, analysisTeamUpInfo, generateAnalysisMsg } from "@/utils/gameAnalysis";
-import { CustomRune } from "@@/types/type";
+import { AramChampData, CustomRune } from "@@/types/type";
 import { champDict } from "@@/const/lolDataConfig";
 import { convertOPGGRuneFormat } from "@@/lcu/opgg";
 import useAppStore from "@/store/app";
 import router from "@/router";
 import { Handle } from "@@/const/const";
+import commonApi from "@/api/commonApi";
 
 export enum ConnectStatusEnum {
 	connecting,
@@ -69,6 +70,23 @@ const useLCUStore = defineStore("lcu", () => {
 	const queryTheirTeamFlag = ref(false);
 
 	const settingStore = useSettingStore();
+
+  const aramChampBuffMap = ref<Record<string, AramChampData>>();
+
+	async function initAramChampBuffMap() {
+		const aramChampBuff = await commonApi.getAramBuffData();
+		if (!aramChampBuff) {
+			message.error("获取aram buff数据失败");
+			return;
+		}
+		aramChampBuffMap.value = aramChampBuff.reduce(
+			(p, c) => {
+				p[c.id] = c;
+				return p;
+			},
+			{} as Record<string, AramChampData>
+		);
+	}
 
 	async function sendTeamScoreToRoom() {
 		const msg = generateAnalysisMsg(myTeam.value);
@@ -291,7 +309,9 @@ const useLCUStore = defineStore("lcu", () => {
 		loadingRune,
 		applyRune,
 		customRunes,
-		opggRunes
+		opggRunes,
+		initAramChampBuffMap,
+		aramChampBuffMap
 	};
 });
 

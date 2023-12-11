@@ -58,3 +58,16 @@ export interface RunesDBObj {
 	id: number;
 	value: CustomRune;
 }
+
+export type AramChampData = {
+	id: string;
+	英雄: string;
+	胜率: string;
+	造伤: string;
+	承伤: string;
+	治疗: string;
+	护盾: string;
+	CD: string;
+	韧性: string;
+	其他: string;
+};
