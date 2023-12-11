@@ -2,11 +2,16 @@
 import { AramChampData } from "@@/types/type";
 import useLCUStore from "@/store/lcu";
 import { AccessibilityCheckmark20Regular } from "@vicons/fluent";
+import { ComputedRef } from "vue";
 
 const props = defineProps<{ champId: number }>();
 const lcuStore = useLCUStore();
 
-const champBuffData: AramChampData = computed(() => lcuStore.aramChampBuffMap[props.champId]);
+const champBuffData = computed(() => lcuStore.aramChampBuffMap?.[props.champId]) as ComputedRef<
+	AramChampData & {
+		[key: string]: string;
+	}
+>;
 </script>
 
 <template>

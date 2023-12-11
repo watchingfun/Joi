@@ -3,12 +3,13 @@ import DailyRotateFile from "winston-daily-rotate-file";
 import { app } from "electron";
 import util from "util";
 import path from "path";
+import { TransformableInfo } from "logform";
 
 const isDev = !!process.env.VITE_DEV_SERVER_URL;
 
 // https://github.com/winstonjs/winston/issues/1427
 const combineMessageAndSplat = () => ({
-	transform(info) {
+	transform(info: TransformableInfo) {
 		const { [Symbol.for("splat")]: args = [], message } = info;
 		info.message = util.format(message, ...args);
 		return info;

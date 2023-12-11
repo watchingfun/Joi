@@ -1,7 +1,7 @@
 import { app } from "electron";
 import path from "node:path";
 import fs from "node:fs";
-import Database from "better-sqlite3";
+import Database, { Statement } from "better-sqlite3";
 import logger from "../lib/logger";
 //@ts-ignore
 const bind_path = import.meta.env.VITE_BETTER_SQLITE3_BINDING;
@@ -11,10 +11,10 @@ let db: Database.Database | undefined;
 process.on("exit", () => db?.close());
 
 export function getDB() {
-    if (db) {
-			return db;
-		}
-		return getSqlite3();
+  if (db) {
+		return db;
+	}
+	return getSqlite3();
 }
 
 function getSqlite3(filename = path.join(app.getPath("userData"), "better-sqlite3.sqlite3")): Database.Database {
@@ -31,16 +31,16 @@ function getSqlite3(filename = path.join(app.getPath("userData"), "better-sqlite
 	return db;
 }
 
-function* toRows(stmt) {
+function* toRows(stmt: Statement) {
 	yield stmt.columns().map((column) => column.name);
 	yield* stmt.raw().iterate();
 }
 
-function writeToCSV(filename, stmt) {
+function writeToCSV(filename: string, stmt: Statement) {
 	return new Promise((resolve, reject) => {
 		const stream = fs.createWriteStream(filename);
 		for (const row of toRows(stmt)) {
-			stream.write(row.join(",") + "\n");
+			stream.write((row as string[]).join(",") + "\n");
 		}
 		stream.on("error", reject);
 		stream.end(resolve);

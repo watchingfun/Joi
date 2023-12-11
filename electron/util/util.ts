@@ -85,7 +85,7 @@ export function makeRequest<T>(options: RequestOptions | string | URL) {
 		const req = http.request(options, (res) => {
 			// 检查响应头中的 Content-Type
 			const contentType = res.headers["content-type"];
-			const charsetMatch = contentType.match(/charset=([a-zA-Z0-9-]+)/);
+      const charsetMatch = contentType?.match(/charset=([a-zA-Z0-9-]+)/);
 
 			// 默认编码为 UTF-8
 			let encoding = "utf-8";

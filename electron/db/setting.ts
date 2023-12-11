@@ -4,7 +4,7 @@ import { settingModelDefault } from "../types/type";
 import { getDB } from "./better-sqlite3";
 
 export interface SettingDB extends DBConfig {
-	getSetting: <T>(key?: string) => T;
+	getSetting: <T>(key?: string) => T | undefined;
 	updateSetting: (key: string, val: any) => void;
 }
 
