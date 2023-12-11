@@ -26,7 +26,8 @@
     "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
     "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
     "!**/{appveyor.yml,.travis.yml,circle.yml}",
-    "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+    "!node_modules/{@morev/vue-transitions,@vueuse/components,@vueuse/core,animate.css,dayjs,echarts,epic-spinners,lodash,overlayscrollbars-vue,pinia,vue-echarts,vue-router}"
   ],
   win: {
     icon: "public/icon.ico",
