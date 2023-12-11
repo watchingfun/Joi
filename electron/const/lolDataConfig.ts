@@ -994,6 +994,12 @@ export const champDict: champDict = {
 		alias: "Milio",
 		title: "米利欧"
 	},
+	"910": {
+		champId: "910",
+		label: "异画师",
+		alias: "Hwei",
+		title: "彗"
+	},
 	"950": {
 		champId: "950",
 		label: "百裂冥犬",
