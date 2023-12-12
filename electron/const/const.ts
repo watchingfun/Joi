@@ -29,6 +29,8 @@ export const Handle = {
 	log: "log", //记录日志
 	setFriendScoreMsg: "robot:setFriendScoreMsg",
 	setTheirScoreMsg: "robot:setTheirScoreMsg",
+	enableHotkeySendScore: "robot:enableHotkeySendScore",
+	initHotkey: "robot:initHotkey",
 	registerSendKey: "robot:registerSendKey",
 	getAramBuffData: "getAramBuffData"
 };

@@ -9,7 +9,7 @@ const { stats } = toRefs(props);
 </script>
 
 <template>
-	<n-tooltip :style="{ maxWidth: '400px' }" :keep-alive-on-hover="false">
+	<n-tooltip :style="{ maxWidth: '400px' }" :keep-alive-on-hover="false" :disabled="!stats.perk0">
 		<template #trigger>
 			<div>
 				<rune-img :rune-id="stats.perk0" style="width: 1.5em; height: 1.5em"></rune-img>

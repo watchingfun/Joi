@@ -174,8 +174,8 @@ onMounted(() => {
 	fetchData();
 });
 
-function copy(name: string) {
-	navigator.clipboard.writeText(name).then(() => message.success(`昵称[${name}]已复制`));
+function copy(val: string, name: string) {
+	navigator.clipboard.writeText(val).then(() => message.success(`${name}[${val}]已复制`));
 }
 
 function closeTab(index: number) {
@@ -249,13 +249,29 @@ watch(
 						>{{ currentTabSummoner?.privacy === "PUBLIC" ? "生涯公开" : "生涯隐藏" }}
 					</n-tag>
 					<profile-img round class="m-2" :profile-icon-id="currentTabSummoner.profileIconId"></profile-img>
-					<n-button
-						text
-						class="truncate cursor-pointer"
-						:title="currentTabSummoner.displayName"
-						@click="() => copy(currentTabSummoner?.displayName as string)">
-						{{ currentTabSummoner?.displayName }}
-					</n-button>
+					<n-dropdown
+						trigger="click"
+						:options="[
+							{
+								label: '复制昵称',
+								key: 'copyName'
+							},
+							{
+								label: '复制puuid',
+								key: 'copyPuuid'
+							}
+						]"
+						@select="
+							(key: string) => {
+								key === 'copyName'
+									? copy(currentTabSummoner?.displayName, '昵称')
+									: copy(currentTabSummoner?.puuid, 'puuid');
+							}
+						">
+						<n-button text class="truncate cursor-pointer" :title="currentTabSummoner.displayName">
+							{{ currentTabSummoner?.displayName }}
+						</n-button>
+					</n-dropdown>
 				</div>
 				<div class="flex flex-row items-center gap-[5px]">
 					<n-button strong secondary size="small" :disabled="page === 1 || summonerQueryLoading" @click="prePage">

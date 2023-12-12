@@ -42,6 +42,7 @@ window.onload = async () => {
 		await useSettingStore().initSettingModel();
 		//初始化大乱斗英雄buff数据
 		await useLCUStore().initAramChampBuffMap();
+    await window.ipcRenderer.invoke(Handle.initHotkey);
 	} finally {
 		postMessage({ payload: "removeLoading" }, "*");
 	}
