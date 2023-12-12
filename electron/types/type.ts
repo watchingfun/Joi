@@ -10,7 +10,8 @@ export const settingModelDefault = {
 	autoConfigRune: false, //自动配置符文
 	autoConfigRuneOPGGPriority: false, //自动配置符文优先使用opgg
 	autoSendMyTeamAnalysis: false, // 自动发送我方队伍分析数据到聊天室
-	autoPlayAgain: false //游戏结束后自动回到大厅 然后搜索对局
+	autoPlayAgain: false, //游戏结束后自动回到大厅 然后搜索对局
+	enableHotkeySendScore: false //启用热键发送游戏内评分
 };
 
 export interface CustomRune {

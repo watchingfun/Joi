@@ -5,6 +5,7 @@ import { storeToRefs } from "pinia";
 import { checkUpdate } from "@/utils/updateCheck";
 import commonApi from "@/api/commonApi";
 import useAppStore from "@/store/app";
+import { Handle } from "@@/const/const";
 
 const router = useRouter();
 
@@ -14,7 +15,7 @@ const appVersion = useAppStore().appVersion;
 const fetching = ref(false);
 
 function goBack() {
-	router.go(-1);
+	router.back();
 }
 
 function handleCheckUpdate() {
@@ -24,6 +25,10 @@ function handleCheckUpdate() {
 
 function handleOpenLogDir() {
 	commonApi.openLogDir();
+}
+
+function handleChangeHotkeyListener(val: boolean) {
+	window.ipcRenderer.invoke(Handle.enableHotkeySendScore, val);
 }
 </script>
 
@@ -79,6 +84,14 @@ function handleOpenLogDir() {
 						<h2 class="text-sm pt-2 font-bold">游戏结束后自动再来一局：</h2>
 						<div class="py-[10px]">
 							<n-switch v-model:value="settingModel.autoPlayAgain"></n-switch>
+						</div>
+
+						<h2 class="text-sm pt-2 font-bold">注册全局热键在游戏里发送评分信息：</h2>
+						<h3 class="text-sm pt-2">insert 键发送队友评分 delete 键发送敌方评分，发送评分时不要操作鼠标和键盘</h3>
+						<div class="py-[10px]">
+							<n-switch
+								v-model:value="settingModel.enableHotkeySendScore"
+								@change="handleChangeHotkeyListener"></n-switch>
 						</div>
 					</div>
 				</div>
