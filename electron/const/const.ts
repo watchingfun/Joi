@@ -32,7 +32,8 @@ export const Handle = {
 	enableHotkeySendScore: "robot:enableHotkeySendScore",
 	initHotkey: "robot:initHotkey",
 	registerSendKey: "robot:registerSendKey",
-	getAramBuffData: "getAramBuffData"
+	getAramBuffData: "getAramBuffData",
+	selectFile: "selectFile"
 };
 
 export const chatDividerLine = "-----------------------------------------";

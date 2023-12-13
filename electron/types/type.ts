@@ -11,7 +11,9 @@ export const settingModelDefault = {
 	autoConfigRuneOPGGPriority: false, //自动配置符文优先使用opgg
 	autoSendMyTeamAnalysis: false, // 自动发送我方队伍分析数据到聊天室
 	autoPlayAgain: false, //游戏结束后自动回到大厅 然后搜索对局
-	enableHotkeySendScore: false //启用热键发送游戏内评分
+	enableHotkeySendScore: false, //启用热键发送游戏内评分
+	autoStartLOLClient: false, //自动启动lol客户端
+	lolClientPath: ""
 };
 
 export interface CustomRune {
