@@ -22,7 +22,7 @@ const killLCURenderHandler = () => {
 		message.error("未连接到英雄联盟客户端");
 		return;
 	}
-	lcuApi.lcuKillRender().then(() => message.success("kill请求已发送！"));
+	lcuApi.lcuKillRender().then(() => message.success("请求已发送！"));
 };
 
 const gotoGithub = debounce(
