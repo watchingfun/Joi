@@ -2,8 +2,18 @@
 import useLCUStore from "@/store/lcu";
 import { storeToRefs } from "pinia";
 import TeamAnalysis from "@/components/gameFlow/teamAnalysis.vue";
+import { PropType } from "vue";
 
 const lcuStore = useLCUStore();
+
+const props = defineProps({
+	tabValue: {
+		type: String as PropType<"myTeam" | "theirTeam">,
+		default: "myTeam"
+	}
+});
+
+const emit = defineEmits(["update:tabValue"]);
 
 const {
 	myTeam,
@@ -16,13 +26,20 @@ const {
 	myTeamAnalysisError,
 	theirTeamAnalysisError
 } = storeToRefs(lcuStore);
-const tabVale = ref<"myTeam" | "theirTeam">("myTeam");
-defineExpose({ tabVale });
+
+const tabValue = computed({
+	get() {
+		return props.tabValue;
+	},
+	set(val) {
+		emit("update:tabValue", val);
+	}
+});
 </script>
 
 <template>
 	<div class="flex flex-1 relative">
-		<n-tabs animated v-model:value="tabVale">
+		<n-tabs animated v-model:value="tabValue">
 			<n-tab-pane tab="我方队伍" name="myTeam">
 				<n-spin :show="queryMyTeamFlag">
 					<div class="flex flex-col justify-center items-center w-full h-full">
