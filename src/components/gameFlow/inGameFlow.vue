@@ -14,6 +14,7 @@ const { champId, currentGameMode } = storeToRefs(lcuStore);
 
 const tabVal = ref<"rune" | "analysis">("rune");
 const gameAnalysisRef = ref();
+const gameAnalysisTabValue = ref<"myTeam" | "theirTeam">("myTeam");
 
 watch(
 	() => router.currentRoute.value,
@@ -23,7 +24,7 @@ watch(
 			if (showAnalysis) {
 				tabVal.value = "analysis";
 				nextTick(() => {
-					gameAnalysisRef.value.tabVale.value = "theirTeam";
+					gameAnalysisTabValue.value = "theirTeam";
 				});
 			}
 		}
@@ -54,7 +55,10 @@ watch(
 					<transition-slide class="flex flex-col flex-1" :offset="[-16, 0]" mode="out-in">
 						<keep-alive>
 							<rune-config v-if="tabVal === 'rune'"></rune-config>
-							<game-analysis v-else-if="tabVal === 'analysis'" ref="gameAnalysisRef"></game-analysis>
+							<game-analysis
+								v-else-if="tabVal === 'analysis'"
+								ref="gameAnalysisRef"
+								v-model:tabValue="gameAnalysisTabValue"></game-analysis>
 							<aram-buff v-else-if="tabVal === 'aramBuff' && currentGameMode === 'aram'" :champId="champId"></aram-buff>
 						</keep-alive>
 					</transition-slide>

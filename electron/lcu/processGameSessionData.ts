@@ -1,7 +1,7 @@
 import { ChampSelectPhaseSession, TeamMemberInfo } from "../types/lcuType";
 import { getCurrentAction, parseGameSessionData } from "./utils";
 import { GameMode } from "../types/opgg_rank_type";
-import { sendToWebContent, showMainWindow } from "../util/util";
+import { sendToWebContent } from "../util/util";
 import { Handle } from "../const/const";
 import logger from "../lib/logger";
 import { getCurrentChampId, getSummonerByPuuid } from "./lcuRequest";
@@ -55,7 +55,7 @@ export async function processGameSessionData(data: ChampSelectPhaseSession, game
 	//发送给前台自动设置符文
 	if (currentChampId && currentChampId !== champId) {
 		champId = currentChampId;
-		showMainWindow({ name: "inGame" });
+		//showMainWindow({ name: "inGame" });
 		sendToWebContent(Handle.champSelect, currentChampId);
 	}
 }

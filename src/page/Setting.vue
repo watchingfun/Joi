@@ -34,7 +34,7 @@ function handleChangeHotkeyListener(val: boolean) {
 function setLOLClientPath() {
 	commonApi.selectFile().then((path) => {
 		if (path) {
-			settingModel.lolClientPath = path;
+			settingModel.value.lolClientPath = path;
 		}
 	});
 }

@@ -1,9 +1,9 @@
 import * as lcuRequestModule from "../lcu/lcuRequest";
+import { restartUX } from "../lcu/lcuRequest";
 import { ipcMain } from "electron";
 import logger from "../lib/logger";
-import { getLeagueWebSocket } from "../lcu/connector";
+import { getLeagueWebSocket, getLeagueWebSocketUnThrowException } from "../lcu/connector";
 import { Handle } from "../const/const";
-import { executeCommand } from "../util/util";
 import { setting } from "../config";
 import child_process from "child_process";
 
@@ -27,22 +27,12 @@ export function setupHandleLCU() {
 		}
 	});
 
-	//处理killRender进程请求
+	//处理restartUX进程请求
 	ipcMain.handle(Handle.killRender, (event, args) => {
-		return new Promise((resolve, reject) => {
-			executeCommand("taskkill /F /IM LeagueClientUxRender.exe")
-				.then(() => {
-					logger.info(`成功杀死进程 LeagueClientUxRender.exe`);
-					resolve(null);
-				})
-				.catch((e) => {
-					logger.error(`无法杀死进程 LeagueClientUxRender.exe: ${e.message}`);
-					reject(e.message);
-				});
-		});
+		return restartUX();
 	});
 
-	if (setting.model.autoStartLOLClient && setting.model.lolClientPath) {
+	if (setting.model.autoStartLOLClient && setting.model.lolClientPath && getLeagueWebSocketUnThrowException()) {
 		child_process.exec('"' + setting.model.lolClientPath + '"', (error, stdout, stderr) => {
 			if (error) {
 				logger.error("启动lol客户端失败", error);

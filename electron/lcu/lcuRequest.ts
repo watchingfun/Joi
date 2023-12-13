@@ -268,8 +268,16 @@ export const checkSelfIsLobbyLeader = async () => {
 
 //获取段位信息
 export const getRankSummary = async (puuid: string) => {
-  return await httpRequest<RankSummary>({
-    method: "GET",
-    url: `/lol-ranked/v1/ranked-stats/${puuid}`
+	return await httpRequest<RankSummary>({
+		method: "GET",
+		url: `/lol-ranked/v1/ranked-stats/${puuid}`
+	});
+};
+
+//重启界面
+export const restartUX = async () => {
+  return await httpRequest<void>({
+    method: "POST",
+    url: "/riotclient/kill-and-restart-ux"
   });
 };
