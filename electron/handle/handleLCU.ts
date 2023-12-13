@@ -2,10 +2,11 @@ import * as lcuRequestModule from "../lcu/lcuRequest";
 import { restartUX } from "../lcu/lcuRequest";
 import { ipcMain } from "electron";
 import logger from "../lib/logger";
-import { getLeagueWebSocket, getLeagueWebSocketUnThrowException } from "../lcu/connector";
+import { getLeagueWebSocket } from "../lcu/connector";
 import { Handle } from "../const/const";
 import { setting } from "../config";
 import child_process from "child_process";
+import { checkProcessExistByName } from "../util/processChecker";
 
 export function setupHandleLCU() {
 	// 遍历并注册handle导入的函数
@@ -32,11 +33,15 @@ export function setupHandleLCU() {
 		return restartUX();
 	});
 
-	if (setting.model.autoStartLOLClient && setting.model.lolClientPath && getLeagueWebSocketUnThrowException()) {
-		child_process.exec('"' + setting.model.lolClientPath + '"', (error, stdout, stderr) => {
-			if (error) {
-				logger.error("启动lol客户端失败", error);
-				return;
+	if (setting.model.autoStartLOLClient && setting.model.lolClientPath) {
+		checkProcessExistByName("LeagueClient.exe").then((res) => {
+			if (!res) {
+				child_process.exec('"' + setting.model.lolClientPath + '"', (error, stdout, stderr) => {
+					if (error) {
+						logger.error("启动lol客户端失败", error);
+						return;
+					}
+				});
 			}
 		});
 	}

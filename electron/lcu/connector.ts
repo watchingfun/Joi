@@ -29,10 +29,6 @@ export function getLeagueWebSocket() {
 	return ws;
 }
 
-export function getLeagueWebSocketUnThrowException() {
-	return ws;
-}
-
 //监听客户端是否运行, 运行就进行连接
 export function startGuardTask() {
 	if (processChecker) {
