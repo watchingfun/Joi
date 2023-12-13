@@ -30,6 +30,14 @@ function handleOpenLogDir() {
 function handleChangeHotkeyListener(val: boolean) {
 	window.ipcRenderer.invoke(Handle.enableHotkeySendScore, val);
 }
+
+function setLOLClientPath() {
+	commonApi.selectFile().then((path) => {
+		if (path) {
+			settingModel.lolClientPath = path;
+		}
+	});
+}
 </script>
 
 <template>
@@ -91,7 +99,14 @@ function handleChangeHotkeyListener(val: boolean) {
 						<div class="py-[10px]">
 							<n-switch
 								v-model:value="settingModel.enableHotkeySendScore"
-								@change="handleChangeHotkeyListener"></n-switch>
+								@update:value="handleChangeHotkeyListener"></n-switch>
+						</div>
+
+						<h2 class="text-sm pt-2 font-bold">启动软件后自动启动英雄联盟客户端：</h2>
+						<div class="py-[10px] flex flex-row gap-3 items-center">
+							<n-switch v-model:value="settingModel.autoStartLOLClient"></n-switch>
+							<n-button @click="setLOLClientPath">选择路径</n-button>
+							<span class="text-sm">{{ settingModel.lolClientPath }}</span>
 						</div>
 					</div>
 				</div>

@@ -17,6 +17,13 @@ class Setting {
 		this.model = setting;
 		settingDB.updateSetting("app", setting);
 	}
+
+	loadSetting() {
+		const dbSetting = settingDB.getSetting<SettingModel>();
+		if (dbSetting) {
+			this.model = { ...this.model, ...dbSetting };
+		}
+	}
 }
 
 //todo db 到这里都要重构成 lazy singleton
@@ -27,11 +34,7 @@ ipcMain.on("updateSetting", (event, ...args) => {
 	return setting.updateSetting(JSON.parse(args[0] as string) as SettingModel);
 });
 
-//前台页面加载完成后加载数据库设置到内存
+//前台页面加载完成后获取设置
 ipcMain.handle("getSetting", () => {
-  const dbSetting = settingDB.getSetting<SettingModel>();
-	if (dbSetting) {
-		setting.setSetting({ ...settingModelDefault, ...dbSetting });
-	}
 	return setting.model;
 });

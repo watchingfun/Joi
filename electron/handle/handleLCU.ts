@@ -4,6 +4,8 @@ import logger from "../lib/logger";
 import { getLeagueWebSocket } from "../lcu/connector";
 import { Handle } from "../const/const";
 import { executeCommand } from "../util/util";
+import { setting } from "../config";
+import child_process from "child_process";
 
 export function setupHandleLCU() {
 	// 遍历并注册handle导入的函数
@@ -39,4 +41,13 @@ export function setupHandleLCU() {
 				});
 		});
 	});
+
+	if (setting.model.autoStartLOLClient && setting.model.lolClientPath) {
+		child_process.exec('"' + setting.model.lolClientPath + '"', (error, stdout, stderr) => {
+			if (error) {
+				logger.error("启动lol客户端失败", error);
+				return;
+			}
+		});
+	}
 }

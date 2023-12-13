@@ -9,6 +9,7 @@ import { getPath } from "./util/util";
 import { initDb } from "./db";
 import child_process from "child_process";
 import { setupHandles } from "./handle";
+import { setting } from "./config";
 
 //解决有些电脑无法启动程序
 app.commandLine.appendSwitch("--in-process-gpu");
@@ -121,6 +122,7 @@ ipcMain.on("open-url", (e, args) => {
 });
 
 app.whenReady().then(() => {
+  setting.loadSetting();
 	void createWindow();
 	setupHandles();
 	if (process.env.VITE_DEV_SERVER_URL) {

@@ -6,6 +6,7 @@ import LCUEventHandlers from "./processEvent";
 import { Handle } from "../const/const";
 import { getCurrentSummoner } from "./lcuRequest";
 import logger from "../lib/logger";
+import { setting } from "../config";
 
 let credentials: Credentials | null;
 let ws: LeagueWebSocket | null;
@@ -75,6 +76,13 @@ export async function initLeagueWebSocket() {
 		return;
 	}
 	credentials = await getAuthInfo();
+  if (!setting.model.lolClientPath) {
+		setting.model.lolClientPath = credentials.commandLine?.replace(
+			"LeagueClient/LeagueClientUx.exe",
+			"TCLS/client.exe"
+		);
+		setting.updateSetting(setting.model);
+	}
 	//使用重试包装的版本，客户端刚启动的时候可能没法直接连上，因为lcu客户端可能还未初始化ws
 	ws = await createWebSocketConnectionRetry(credentials);
 	ws.onclose = () => {

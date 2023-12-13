@@ -21,6 +21,7 @@ interface Credentials {
 	 * it is `undefined` then unsafe authentication will be used.
 	 */
 	certificate?: string;
+	commandLine?: string;
 }
 interface AuthenticationOptions {
     /**
