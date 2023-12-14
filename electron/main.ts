@@ -93,7 +93,6 @@ export async function createWindow() {
 	// 当窗口准备完毕
 	win.webContents.once("did-finish-load", async () => {
 		logger.debug("webContents did-finish-load");
-		initDb();
 		startGuardTask();
 	});
 
@@ -122,6 +121,7 @@ ipcMain.on("open-url", (e, args) => {
 });
 
 app.whenReady().then(() => {
+  initDb();
   setting.loadSetting();
 	void createWindow();
 	setupHandles();
