@@ -40,12 +40,13 @@ export async function getAuthInfo(): Promise<Credentials> {
 			const portRegex = /--app-port=([0-9]+)(?= *"| --)/;
 			const passwordRegex = /--remoting-auth-token=(.+?)(?= *"| --)/;
 			const pidRegex = /--app-pid=([0-9]+)(?= *"| --)/;
-      const commandLineRegex = /CommandLine="(.+?)(?= *")/;
+			const commandLineRegex = /CommandLine=(.+?)(?= *")/;
 			const stdout = rawStdout.replace(/\n|\r/g, "");
 			const [, port] = stdout.match(portRegex) as RegExpMatchArray;
 			const [, password] = stdout.match(passwordRegex) as RegExpMatchArray;
 			const [, pid] = stdout.match(pidRegex) as RegExpMatchArray;
-      const [, commandLine] = stdout.match(commandLineRegex) as RegExpMatchArray;
+      let [, commandLine] = stdout.match(commandLineRegex) as RegExpMatchArray;
+			commandLine = commandLine.replace('"', "");
 			logger.info("lcu port: %s password: %s", port, password);
 			return {
 				port: Number(port),
