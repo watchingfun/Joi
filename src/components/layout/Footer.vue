@@ -34,7 +34,7 @@ const playAgain = () => {
 	lcuApi.playAgain().then(() => message.success("请求已发送！"));
 };
 
-const; gotoGithub = debounce(
+const gotoGithub = debounce(
 	() => setTimeout(() => window.ipcRenderer.send("open-url", "https://github.com/watchingfun/Joi"), 1000),
 	1000
 );
