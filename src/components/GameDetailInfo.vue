@@ -21,7 +21,7 @@ defineOptions({
 					:class="[
 						props.puuid === detail!.participantIdentities[i].player.puuid ? 'highlight-row' : ''
 					]"></PlayerGameInfo>
-				<n-divider v-if="i === 4"></n-divider>
+				<n-divider v-if="detail?.queueId === 1700 ? [1, 3, 5].includes(i) : i === 4"></n-divider>
 			</template>
 		</div>
 	</div>

@@ -240,6 +240,8 @@ const useLCUStore = defineStore("lcu", () => {
 		champId,
 		(n, o) => {
 			if (n) {
+        void router.push({ name: "inGame" });
+				opggRunes.value = [];
 				void fetchRune(n);
 			}
 		},

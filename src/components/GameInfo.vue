@@ -46,6 +46,9 @@ const colorMap = new Map([
 ]);
 
 const gameModeBackground = (str: string) => {
+	if (!str) {
+		return "rgba(255, 0, 122, 0.5)";
+	}
 	return {
 		backgroundColor:
 			colorMap.get(str) || `rgb(${hashCode(String(hashCode(str))) % 255} ${hashCode(str) % 100}  255} / 0.5)`
@@ -64,7 +67,7 @@ const gameModeBackground = (str: string) => {
 			</div>
 			<div class="info">
 				<div class="game-mode" :style="gameModeBackground(queue[record.queueId])">
-					{{ queue[record.queueId] }}
+					{{ queue[record.queueId] || record.queueId }}
 				</div>
 				<div class="creation-date min-text">开始时间: {{ formatTime(record.gameCreationDate) }}</div>
 				<div class="duration-time min-text">比赛时长: {{ Math.round(record.gameDuration / 60) }} 分钟</div>
@@ -77,13 +80,29 @@ const gameModeBackground = (str: string) => {
 				{{ record.participants[0].stats.win ? "胜利" : "失败" }}
 			</div>
 			<div class="item-group">
-				<div class="spell">
-					<spell-img :spell-id="record.participants[0].spell1Id"></spell-img>
-					<spell-img :spell-id="record.participants[0].spell2Id"></spell-img>
-				</div>
-				<div class="rune pl-[2px]">
-					<perks :stats="record.participants[0].stats" />
-				</div>
+				<template v-if="[1700].includes(record.queueId)">
+					<div
+						style="
+							width: 3rem;
+							height: 3rem;
+							background: rgba(217, 217, 217, 0.16);
+							border-radius: 0.5rem;
+							color: rgba(255, 255, 255, 0.53);
+						"
+						class="flex flex-row justify-center items-center">
+						空
+					</div>
+				</template>
+				<template v-else>
+					<div class="spell">
+						<spell-img :spell-id="record.participants[0].spell1Id"></spell-img>
+						<spell-img :spell-id="record.participants[0].spell2Id"></spell-img>
+					</div>
+					<div class="rune pl-[2px]">
+						<perks :stats="record.participants[0].stats" />
+					</div>
+				</template>
+
 				<div class="item-group">
 					<template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">
 						<itemImg

@@ -81,7 +81,7 @@ export async function createWindow() {
 		vibrancy: {
 			theme: "dark",
 			effect: "acrylic",
-			//useCustomWindowRefreshMethod: true,
+			useCustomWindowRefreshMethod: true,
 			disableOnBlur: true
 		},
 		show: false

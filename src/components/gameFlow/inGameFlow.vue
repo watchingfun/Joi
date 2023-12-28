@@ -28,7 +28,8 @@ watch(
 				});
 			}
 		}
-	}
+	},
+	{ deep: true }
 );
 </script>
 

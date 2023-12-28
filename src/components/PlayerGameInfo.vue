@@ -54,13 +54,15 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 			</div>
 
 			<div class="item-group">
-				<div class="spell">
-					<spell-img :spell-id="info?.spell1Id"></spell-img>
-					<spell-img :spell-id="info?.spell2Id"></spell-img>
-				</div>
-				<div class="rune">
-					<perks :stats="info?.stats"></perks>
-				</div>
+				<template v-if="info?.stats.perk0">
+					<div class="spell">
+						<spell-img :spell-id="info?.spell1Id"></spell-img>
+						<spell-img :spell-id="info?.spell2Id"></spell-img>
+					</div>
+					<div class="rune">
+						<perks :stats="info?.stats"></perks>
+					</div>
+				</template>
 				<div class="item-group">
 					<template v-for="index in [0, 1, 2, 3, 4, 5, 6]" :key="index">
 						<item-img
