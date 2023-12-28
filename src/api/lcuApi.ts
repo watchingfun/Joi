@@ -26,6 +26,7 @@ async function captureError<T>(func: Function | Promise<T>, ...args: any[]) {
 
 export default {
 	lcuKillRender: () => captureError<void>(window.ipcRenderer.invoke(Handle.killRender)),
+	playAgain: () => captureError<void>(window.ipcRenderer.invoke(Handle.playAgain)),
 	getCurrentSummoner: () => captureError<SummonerInfo>(window.ipcRenderer.invoke(Handle.getCurrentSummoner)),
 	queryMatchHistory: (puuid: string, page: number = 1, pageSize: number = 8) =>
 		captureError<MatchHistoryQueryResult>(window.ipcRenderer.invoke(Handle.queryMatchHistory, puuid, page, pageSize)),

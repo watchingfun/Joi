@@ -4,7 +4,7 @@ import useAppStore from "@/store/app";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import lcuApi from "@/api/lcuApi";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
-import { ArrowClockwiseDashes20Filled } from "@vicons/fluent";
+import { ArrowClockwiseDashes20Filled, SkipForwardTab24Regular, Toolbox20Regular } from "@vicons/fluent";
 import { Github } from "@vicons/fa";
 import { debounce, random } from "lodash";
 import useSettingStore from "@/store/setting";
@@ -25,7 +25,16 @@ const killLCURenderHandler = () => {
 	lcuApi.lcuKillRender().then(() => message.success("请求已发送！"));
 };
 
-const gotoGithub = debounce(
+const playAgain = () => {
+	visible.value = false;
+	if (lcuStore.connectStatus !== ConnectStatusEnum.connected) {
+		message.error("未连接到英雄联盟客户端");
+		return;
+	}
+	lcuApi.playAgain().then(() => message.success("请求已发送！"));
+};
+
+const; gotoGithub = debounce(
 	() => setTimeout(() => window.ipcRenderer.send("open-url", "https://github.com/watchingfun/Joi"), 1000),
 	1000
 );
@@ -80,19 +89,38 @@ const footerStyle = computed(() => {
 					{{ diffTime }}
 				</div>
 			</div>
-			<n-popconfirm @positive-click="killLCURenderHandler" width="340">
+
+			<n-popover trigger="click" v-model:show="visible">
 				<template #trigger>
 					<div class="flex flex-row items-center cursor-pointer" style="gap: 2px">
-						<div style="font-size: 12px; width: 1em; height: 1em; margin-top: 1px">
-							<ArrowClockwiseDashes20Filled></ArrowClockwiseDashes20Filled>
-						</div>
-						重启客户端界面
+						<n-icon>
+							<Toolbox20Regular></Toolbox20Regular>
+						</n-icon>
+						<span class="shrink-0">工具箱</span>
 					</div>
 				</template>
-				<p>
-					此操作通过杀掉LeagueClientUxRender.exe进程来让客户端重启界面进程，可以解决各种黑屏，显示不全等问题。 确认执行?
-				</p>
-			</n-popconfirm>
+				<div class="flex flex-col gap-2">
+					<n-button-group vertical>
+						<n-button @click="killLCURenderHandler">
+							<template #icon>
+								<n-icon>
+									<ArrowClockwiseDashes20Filled></ArrowClockwiseDashes20Filled>
+								</n-icon>
+							</template>
+							重启客户端界面
+						</n-button>
+						<n-button @click="playAgain">
+							<template #icon>
+								<n-icon>
+									<SkipForwardTab24Regular></SkipForwardTab24Regular>
+								</n-icon>
+							</template>
+							&emsp;跳过结算界面
+						</n-button>
+					</n-button-group>
+				</div>
+			</n-popover>
+
 			<div class="flex flex-row items-center">
 				<div>自动再来一局：</div>
 				<n-switch v-model:value="settingStore.settingModel.autoPlayAgain" size="small">自动再来一局</n-switch>
