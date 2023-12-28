@@ -55,7 +55,8 @@ declare module 'vue' {
 		NoneFlow: (typeof import("./src/components/gameFlow/noneFlow.vue"))["default"];
 		NPageHeader: (typeof import("naive-ui"))["NPageHeader"];
 		NPagination: (typeof import("naive-ui"))["NPagination"];
-		NPopconfirm: (typeof import("naive-ui"naive-ui"on"NPopover"N;Popover: (typeof import("naive-ui"))["NPopover"];
+		NPopconfirm: (typeof import("naive-ui"))["NPopconfirm"];
+		NPopover: (typeof import("naive-ui"))["NPopover"];
 		NRadio: (typeof import("naive-ui"))["NRadio"];
 		NRadioGroup: (typeof import("naive-ui"))["NRadioGroup"];
 		NScrollbar: (typeof import("naive-ui"))["NScrollbar"];
