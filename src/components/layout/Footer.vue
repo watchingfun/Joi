@@ -4,7 +4,12 @@ import useAppStore from "@/store/app";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import lcuApi from "@/api/lcuApi";
 import useLCUStore, { ConnectStatusEnum } from "@/store/lcu";
-import { ArrowClockwiseDashes20Filled, SkipForwardTab24Regular, Toolbox20Regular } from "@vicons/fluent";
+import {
+	ArrowClockwiseDashes20Filled,
+	Games20Regular,
+	SkipForwardTab24Regular,
+	Toolbox20Regular
+} from "@vicons/fluent";
 import { Github } from "@vicons/fa";
 import { debounce, random } from "lodash";
 import useSettingStore from "@/store/setting";
@@ -32,6 +37,10 @@ const playAgain = () => {
 		return;
 	}
 	lcuApi.playAgain().then(() => message.success("请求已发送！"));
+};
+
+const startLoLClient = () => {
+	lcuApi.startLoLClient().finally(() => message.success("请求已发送！"));
 };
 
 const gotoGithub = debounce(
@@ -116,6 +125,14 @@ const footerStyle = computed(() => {
 								</n-icon>
 							</template>
 							&emsp;跳过结算界面
+						</n-button>
+						<n-button @click="startLoLClient">
+							<template #icon>
+								<n-icon>
+									<Games20Regular></Games20Regular>
+								</n-icon>
+							</template>
+							&emsp;启动英雄联盟
 						</n-button>
 					</n-button-group>
 				</div>

@@ -15,6 +15,7 @@ export const Handle = {
 	queryGameDetails: "lcu:queryGameDetails", //通过游戏对局id查询对局详情
 	queryMatchHistory: "lcu:queryMatchHistory", //查询最近游玩记录
 	killRender: "lcu:killRender", //杀掉客户端界面 让其重启界面
+	startLoLClient: "startLoLClient", //启动lol客户端
 	queryConnectStatus: "lcu:queryConnectStatus", //查询连接状态
 	getSummonerByName: "lcu:getSummonerByName", //查询召唤师 通过名字
 	getSummonerByPuuid: "lcu:getSummonerByPuuid", //查询召唤师 通过puuid
