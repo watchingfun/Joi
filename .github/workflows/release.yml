@@ -26,8 +26,6 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-
-      - name: Npm Install     
       - run: npm install
           
       - name: Build the native modules
