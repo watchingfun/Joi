@@ -1,6 +1,7 @@
 name: release
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
@@ -14,17 +15,45 @@ jobs:
     env:
       # msbuild_path: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe
       msvs_version: 2022
+      ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+      
     steps:
       - uses: actions/checkout@v4
         with:
           show-progress: false
-          
+      # - uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.9'
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
-          check-latest: true
+          node-version: 18
           cache: npm
+          
+      - name: Cache Electron
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.cache/electron
+          key: ${{ runner.os }}-electron-cache-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+          restore-keys: |
+            ${{ runner.os }}-electron-cache-
+
+      - name: Cache Electron-Builder
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/.cache/electron-builder
+          key: ${{ runner.os }}-electron-builder-cache-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
+          restore-keys: |
+            ${{ runner.os }}-electron-builder-cache-
+            
+      # npm ci 的支持缓存版本，减少在本就性能不佳的 windows runner 上的编译时间
+      - id: get-patches-commit-short
+        shell: bash
+        run: echo "commit=$(git log --pretty=tformat:"%h" -n1 patches/)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+      - uses: AnnAngela/cached_node-modules@v1
+        with:
+          customVariable: :patches@${{ steps.get-patches-commit-short.outputs.commit }}
           
       - name: Build the native modules
         run: npm run rebuild
@@ -42,5 +71,7 @@ jobs:
           
       - uses: ncipollo/release-action@v1
         with:
+          tag: v${{ steps.appVersion.outputs.appVersion }}
+          allowUpdates: true
           artifacts: "release/${{ steps.appVersion.outputs.appVersion }}/Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
