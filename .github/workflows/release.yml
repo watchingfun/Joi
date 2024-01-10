@@ -1,0 +1,46 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      # msbuild_path: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe
+      msvs_version: 2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          show-progress: false
+          
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+          
+      - name: Build the native modules
+        run: npm run rebuild
+        
+      - name: Build the app
+        run: npm run build
+        
+      - name: Get the version
+        id: appVersion
+        shell: bash
+        run: echo "appVersion=$(jq -r .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+        
+      - name: Show the result
+        run: Get-ChildItem -Path release/ -Recurse -Force
+          
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "release/${{ steps.appVersion.outputs.appVersion }}/Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe"
+          token: ${{ secrets.GITHUB_TOKEN }}
