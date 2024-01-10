@@ -1,6 +1,7 @@
 name: release
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*.*.*"
@@ -43,4 +44,4 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "release/${{ steps.appVersion.outputs.appVersion }}/Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GHP_TOKEN }}
