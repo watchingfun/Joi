@@ -10,9 +10,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - run: echo ${{ secrets.GH_TOKEN }} > token.txt
+      - name: Get the version
+        id: appVersion
+        shell: bash
+        run: echo "appVersion=$(jq -r .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - uses: ncipollo/release-action@v1
         with:
-          tag: test
-          artifacts: "token.txt"
+          tag: v${{ steps.appVersion.outputs.appVersion }}
+          body: ${{ steps.appVersion.outputs.appVersion }}
           token: ${{ secrets.GH_TOKEN }}
