@@ -13,5 +13,6 @@ jobs:
       - run: echo ${{ secrets.GH_TOKEN }} > token.txt
       - uses: ncipollo/release-action@v1
         with:
+          tag: test
           artifacts: "token.txt"
           token: ${{ secrets.GH_TOKEN }}
