@@ -15,8 +15,8 @@ jobs:
     env:
       # msbuild_path: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe
       msvs_version: 2022
-      ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
-      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+      ELECTRON_CACHE: ${{ github.workspace }}/node_modules/.cache/electron
+      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/node_modules/.cache/electron-builder
       
     steps:
       - uses: actions/checkout@v4
@@ -30,24 +30,14 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          
-      - name: Cache Electron
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/.cache/electron
-          key: ${{ runner.os }}-electron-cache-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
-          restore-keys: |
-            ${{ runner.os }}-electron-cache-
 
-      - name: Cache Electron-Builder
-        uses: actions/cache@v3
+      # npm ci 的支持缓存版本，减少在本就性能不佳的 windows runner 上的编译时间
+      - id: get-patches-commit-short
+        shell: bash
+        run: echo "commit=$(git log -1 --format="%H" -- patches)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+      - uses: AnnAngela/cached_node-modules@v1
         with:
-          path: ${{ github.workspace }}/.cache/electron-builder
-          key: ${{ runner.os }}-electron-builder-cache-${{ hashFiles(format('{0}{1}', github.workspace, '/package-lock.json')) }}
-          restore-keys: |
-            ${{ runner.os }}-electron-builder-cache-
-            
-      - run: npm install
+          customVariable: :patches@{{ steps.get-patches-commit-short.outputs.commit }}
           
       - name: Build the native modules
         run: npm run rebuild
