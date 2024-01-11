@@ -65,5 +65,6 @@ jobs:
           
       - uses: ncipollo/release-action@v1
         with:
+          tag: v${{ steps.appVersion.outputs.appVersion }}
           artifacts: "release/${{ steps.appVersion.outputs.appVersion }}/Joi-Windows-${{ steps.appVersion.outputs.appVersion }}-Setup.exe"
           token: ${{ secrets.GH_TOKEN }}
