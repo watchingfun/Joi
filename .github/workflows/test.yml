@@ -10,8 +10,8 @@ jobs:
     permissions:
       contents: write
     steps:
-      - run: echo ${{ secrets.GH_TOKEN }} > release/token.txt
+      - run: echo ${{ secrets.GH_TOKEN }} > token.txt
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "release/token.txt"
+          artifacts: "token.txt"
           token: ${{ secrets.GH_TOKEN }}
