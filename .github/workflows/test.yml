@@ -1,0 +1,13 @@
+name: test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: test
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - run: echo ${{ secrets.GH_TOKEN }} 
