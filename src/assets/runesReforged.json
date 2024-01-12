@@ -190,10 +190,10 @@
           {
             "id": 8313,
             "key": "PerfectTiming",
-            "icon": "perk-images/Styles/Inspiration/PerfectTiming/PerfectTiming.png",
-            "name": "完美时机",
-            "shortDesc": "获得一个免费的始动的秒表。在对局开始14分钟后，它会有一个一次性使用的<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Stasis'>凝滞</lol-uikit-tooltipped-keyword>效果。<br><br>每次<lol-uikit-tooltipped-keyword key='LinkTooltip_Description_Takedown'>参与击杀</lol-uikit-tooltipped-keyword>后都会使这个时间点提前120秒。",
-            "longDesc": "开始游戏时带着一个始动的秒表，可在对局开始14分钟后变成一个秒表。你每次参与击杀后，都会使这个时间点提前120秒。<br><br>秒表有一个一次性使用的凝滞效果（凝滞持续2.5秒）。"
+            "icon": "perk-images/Styles/Inspiration/PerfectTiming/AlchemistCabinet.png",
+            "name": "三重补药",
+            "shortDesc": "在达到3级时，获得一瓶【贪财合剂】。<br>在达到6级时，获得一瓶【原力合剂】。<br>在达到9级时，获得一瓶【技能合剂】。 ",
+            "longDesc": "在达到3级时，获得一瓶【贪财合剂】。<br>在达到6级时，获得一瓶【原力合剂】。<br>在达到9级时，获得一瓶【技能合剂】。 "
           }
         ]
       },

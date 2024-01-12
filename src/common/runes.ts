@@ -1,4 +1,4 @@
-//https://ddragon.leagueoflegends.com/cdn/13.21.1/data/zh_CN/runesReforged.json
+//https://ddragon.leagueoflegends.com/cdn/14.1.1/data/zh_CN/runesReforged.json
 import runesConfig from "@/assets/runesReforged.json";
 import { flatMap } from "lodash";
 
