@@ -46,11 +46,13 @@ jobs:
             ${{ runner.os }}-electron-builder-cache-
 
       # npm ci 的支持缓存版本，减少在本就性能不佳的 windows runner 上的编译时间
-      - uses: AnnAngela/cached_node-modules@v1
+      - uses: AnnAngela/cached_node-modules@v2
+        id: cached_node-modules
         with:
           customVariable: :patches@${{ hashFiles('patches/**') }}
 
       - name: Build the native modules
+        if: steps.cached_node-modules.outputs.cache-hit != 'true'
         run: npm run rebuild
 
       - name: Build the app
