@@ -21,6 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # 为了获取标签
+          fetch-depth: 0
+          fetch-tags: true
           show-progress: false
 
       - name: Use Node.js
@@ -61,7 +64,7 @@ jobs:
       - name: Get the version
         id: appVersion
         shell: bash
-        run: echo "appVersion=$(jq -r .version package.json)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+        run: echo "appVersion=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
       - name: Show the result
         run: Get-ChildItem -Path release/ -Recurse -Force
