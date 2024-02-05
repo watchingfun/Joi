@@ -1,4 +1,5 @@
 import { GameMode, PositionName, RoleType } from "./opgg_rank_type";
+import { GameDetail } from "@@/types/lcuType";
 
 export type SettingModel = Extract<typeof settingModelDefault, { [prop: string]: any }>;
 
@@ -60,6 +61,26 @@ export interface RunesPageQuery extends PageQuery {
 export interface RunesDBObj {
 	id: number;
 	value: CustomRune;
+}
+
+export interface PlayerNote {
+  id: string;
+  summonerName: string;
+  createTime: string;
+  updateTime: string;
+  value: PlayerNoteValue;
+}
+
+export interface PlayerNoteValue {
+  tag: string[];
+  remake: string;
+  gameRecord: GameDetail[];
+}
+
+export interface PlayerNotePageQuery extends PageQuery {
+  id?: string;
+  tag?: string[] | string;
+  summonerName?: string;
 }
 
 export type AramChampData = {

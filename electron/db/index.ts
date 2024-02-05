@@ -2,6 +2,7 @@ import settingDB from "./setting";
 import tableVersionDB from "./tableVersion";
 import logger from "../lib/logger";
 import runesDB from "./runes";
+import playerNotesDB from "@@/db/playerNotes";
 
 export interface DBConfig {
 	initTableIfNotExists: Function;
@@ -23,7 +24,7 @@ export const initDb = () => {
 	logger.info("数据库开始初始化");
 	tableVersionDB.initTableIfNotExists();
 	//每个表都手动记录版本号，为以后表结构变更更新提供信息
-	const DBConfigs = [settingDB, tableVersionDB, runesDB];
+	const DBConfigs = [settingDB, tableVersionDB, runesDB, playerNotesDB];
 	DBConfigs.forEach((item: DBConfig) => {
 		const result = tableVersionDB.initTableVersionRecord(item.tableName, 1);
 		if (result.changes) {
