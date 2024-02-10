@@ -29,45 +29,45 @@
 </template>
 <script setup lang="ts">
 import useNavStore from "@/store/nav";
-import { onMounted, ref, Ref } from "vue";
-import { useMouse, useParentElement, watchThrottled } from "@vueuse/core";
+import {onMounted, ref, Ref} from "vue";
+import {useMouse, useParentElement, watchThrottled} from "@vueuse/core";
 import router from "@/router";
 import useLCUStore from "@/store/lcu";
-import { storeToRefs } from "pinia";
-import { TabsInst } from "naive-ui";
+import {storeToRefs} from "pinia";
+import {TabsInst} from "naive-ui";
 
 const parentEl = useParentElement();
 const navStore = useNavStore();
 
 const handleSelect = (key: string) => {
-	router.push({ name: key });
+  router.push({name: key});
 };
 
 //todo 鼠标移除后暂停监听
-const { x, y } = useMouse({ target: parentEl, type: "page" });
+const {x, y} = useMouse({target: parentEl, type: "page"});
 
 watchThrottled(
-	[x, y],
-	([preX, preY], [currX, currY]) => {
-		shiny.value?.style.setProperty("--x", currX + "");
-		shiny.value?.style.setProperty("--y", currY + "");
-	},
-	{ throttle: 200 }
+  [x, y],
+  ([preX, preY], [currX, currY]) => {
+    shiny.value?.style.setProperty("--x", currX + "");
+    shiny.value?.style.setProperty("--y", currY + "");
+  },
+  {throttle: 200}
 );
 
 const shiny = ref(null) as Ref<HTMLElement | null>;
 
 onMounted(() => {
-	shiny.value = document.querySelector(".shiny");
+  shiny.value = document.querySelector(".shiny");
 });
 
 const tabsInstRef = ref<TabsInst | null>(null);
 
 watch(
-	() => navStore.activeKey,
-	() => {
-		nextTick(() => tabsInstRef.value?.syncBarPosition());
-	}
+  () => navStore.activeKey,
+  () => {
+    nextTick(() => tabsInstRef.value?.syncBarPosition());
+  }
 );
 
 const lcuStore = useLCUStore();
@@ -75,11 +75,20 @@ const lcuStore = useLCUStore();
 const searchVal = storeToRefs(lcuStore).search;
 
 function search() {
-	router.push({
-		name: "historyMatch",
-		params: { summonerName: searchVal.value },
-		query: { time: new Date().getTime() }
-	});
+  if (/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/.test(searchVal.value)){
+    router.push({
+      name: "historyMatch",
+      params: {puuid: searchVal.value},
+      query: {time: new Date().getTime()}
+    });
+  } else {
+    router.push({
+      name: "historyMatch",
+      params: {summonerName: searchVal.value},
+      query: {time: new Date().getTime()}
+    });
+  }
+
 }
 </script>
 <style scoped>
