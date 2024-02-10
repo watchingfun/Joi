@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import { DBConfig } from "./index";
 import { PageObj, PlayerNote, PlayerNotePageQuery } from "../types/type";
 import { getDB } from "./better-sqlite3";
+import { writeToCSV } from "../db/util";
 
 const defaultPageQuery = {
 	start: 0,
@@ -15,75 +16,144 @@ const emptyPageObj: PageObj<PlayerNote> = {
 
 export interface PlayerNotesDB extends DBConfig {
 	queryPageNotes: (pageQuery?: PlayerNotePageQuery) => PageObj<PlayerNote>;
-	updateNote: (id: string, val: PlayerNote) => void;
+	insertPlayerTagRelation: (puuid: string, tags?: string[]) => void;
+	updatePlayerTagRelation: (puuid: string, tags?: string[]) => void;
+	updateNote: (val: PlayerNote) => void;
 	addNote: (value: PlayerNote) => void;
 	deleteNote: (id: string) => void;
 	getNote: (id: string) => PlayerNote;
+	getAllTag: () => string[];
+	exportToCSV: (filename: string) => void;
 }
 
 const useDB = (db: Database.Database): PlayerNotesDB => ({
 	tableName: "player_notes",
 	tableVersion: 1,
 	initTableIfNotExists() {
-		db.exec(`CREATE TABLE IF NOT EXISTS player_notes
+		db.exec(`create table IF NOT EXISTS player_notes
 (
     id           text not null
         constraint player_notes_pk
             primary key,
     summonerName text,
-    createTime   text,
-    updateTime   text,
-    value        text,
-    tags         text generated always as (json_extract(value, '$.tags')) virtual
+    createTime   TIMESTAMP default CURRENT_TIMESTAMP,
+    updateTime   TIMESTAMP,
+    gameIds      text,
+    tags         text,
+    remark       text
 );
 
-create index player_notes_dg_tmp_tags_index
-    on player_notes (tags);
+create index IF NOT EXISTS  player_notes_createTime_index
+    on player_notes (createTime desc);
 
-create index player_notes_summonerName_index
-    on player_notes (summonerName);
+create table IF NOT EXISTS player_tags_relation
+(
+    puuid text not null,
+    tag   text not null,
+    constraint player_tags_relation_pk
+        primary key (puuid, tag)
+);
+
+create index IF NOT EXISTS player_tags_relation_tag_index
+    on player_tags_relation (tag);
 
 `);
 	},
 
 	initData() {},
 
-  queryPageNotes(pageQuery: PlayerNotePageQuery = defaultPageQuery) {
-		let baseSql = " FROM runes";
+	queryPageNotes(pageQuery: PlayerNotePageQuery = defaultPageQuery) {
+		let baseSql = " from player_notes note join player_tags_relation relation on note.id = relation.puuid ";
 		let conditions: string[] = [];
+
+		if (pageQuery.id) {
+			conditions.push("note.id = :id");
+		}
+		if (pageQuery.summonerName) {
+			conditions.push("note.summonerName like ('%' || :summonerName || '%')");
+		}
+		if (pageQuery.tag instanceof Array && pageQuery.tag.length > 0) {
+			conditions.push("relation.tag in (:tag)");
+		}
 
 		if (conditions.length > 0) {
 			baseSql = baseSql + " where " + conditions.join(" and ");
 		}
 
-		const count_stmt = db.prepare("SELECT count(*) as count " + baseSql);
+		const count_stmt = db.prepare("SELECT count(distinct note.id) as count " + baseSql);
 		const countResult = (count_stmt.get(pageQuery) as any).count;
 		if (countResult === 0) {
 			return emptyPageObj;
 		}
-		const stmt = db.prepare("SELECT id, value " + baseSql + " order by id desc limit :start,:size");
+		const stmt = db.prepare("SELECT distinct note.* " + baseSql + " order by note.createTime desc limit :start,:size");
 		pageQuery.start = pageQuery.start * pageQuery.size;
-		const list = stmt.all(pageQuery).map((i: any) => ({ id: i.id, value: JSON.parse(i.value) }));
+		const list = stmt.all(pageQuery) as PlayerNote[];
 
 		return { total: countResult, data: list } as PageObj<PlayerNote>;
 	},
 
-  updateNote(id: string, val: PlayerNote) {
-		const update = db.prepare("update runes set value = :value where id = :id");
-		update.run({ id, value: JSON.stringify(val) });
+	updatePlayerTagRelation(puuid: string, tags?: string[]) {
+		const deleteStmt = db.prepare("delete from player_tags_relation where puuid = :puuid");
+		deleteStmt.run({ puuid });
+		this.insertPlayerTagRelation(puuid, tags);
 	},
 
-  addNote(val: PlayerNote) {
-		const insert = db.prepare("insert into runes (value) values (:value)");
-		insert.run({ value: JSON.stringify(val) });
+	insertPlayerTagRelation(puuid: string, tags?: string[]) {
+		const insertStmt = db.prepare("insert into player_tags_relation (puuid, tag) values (:puuid, :tag)");
+		tags?.forEach((tag) => {
+			insertStmt.run({ puuid, tag });
+		});
 	},
-  deleteNote(id: string) {
-		const delStmt = db.prepare("delete from runes where id = :id");
-		delStmt.run({ id: id });
+
+	updateNote(val: PlayerNote) {
+		const update = db.prepare(
+			"update player_notes set tags = :tags ,updateTime = current_timestamp, summonerName = :summonerName, gameIds = :gameIds, remark = :remark where id = :id"
+		);
+		const updateInfo = update.run({
+			id: val.id,
+			tags: JSON.stringify(val.tags),
+			summonerName: val.summonerName,
+			gameIds: JSON.stringify(val.gameIds),
+			remark: val.remark
+		});
+		if (updateInfo.changes === 0) {
+			return;
+		}
+		this.updatePlayerTagRelation(val.id, val.tags);
 	},
-  getNote(id: string) {
-		const select = db.prepare("select value from runes where id = :id");
-		return JSON.parse((select.get({ id: id }) as any).value) as PlayerNote;
+
+	addNote(val: PlayerNote) {
+		const insert = db.prepare(
+			"insert into player_notes (id, summonerName, gameIds, tags, remark) values (:id, :summonerName, :gameIds, :tags, :remark)"
+		);
+		insert.run({
+			id: val.id,
+			tags: JSON.stringify(val.tags),
+			summonerName: val.summonerName,
+			gameIds: JSON.stringify(val.gameIds),
+			remark: val.remark
+		});
+		this.insertPlayerTagRelation(val.id, val.tags);
+	},
+
+	deleteNote(puuid: string) {
+		const delStmt = db.prepare("delete from player_notes where id = :id");
+		delStmt.run({ id: puuid });
+	},
+
+	getNote(puuid: string) {
+		const select = db.prepare("select * from player_notes where id = :id");
+		return JSON.parse(select.get({ id: puuid }) as any) as PlayerNote;
+	},
+
+	getAllTag() {
+		const selectStmt = db.prepare("select tag from player_tags_relation group by tag");
+		return (selectStmt.all() as { tag: string }[]).map((i) => i.tag);
+	},
+
+	exportToCSV(filename: string) {
+		const stmt = db.prepare("SELECT * FROM player_notes");
+		return writeToCSV(filename, stmt);
 	}
 });
 

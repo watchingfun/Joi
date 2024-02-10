@@ -7,6 +7,7 @@ import useNavStore from "@/store/nav";
 import { flatMap } from "lodash";
 import Profile from "@/page/Profile.vue";
 import Rune from "@/page/Rune.vue";
+import PlayerNotes from "@/page/PlayerNotes.vue";
 
 const routes = [
 	{
@@ -30,6 +31,12 @@ const routes = [
 				name: "historyMatch",
 				component: HistoryMatch,
 				meta: { title: "历史战绩" }
+			},
+			{
+				path: "playerNotes",
+				name: "playerNotes",
+				component: PlayerNotes,
+				meta: { title: "玩家笔记" }
 			},
 			{ path: "setting", name: "setting", component: Setting },
 			{

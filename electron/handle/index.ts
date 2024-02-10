@@ -10,12 +10,14 @@ import logger from "../lib/logger";
 import { setupHandleHotkey } from "./handleHotkey";
 import { getAramBuffData } from "../lcu/aramBuff";
 import FileFilter = Electron.FileFilter;
+import {setupHandlePlayerNotes} from "./handlePlayerNotes";
 
 export function setupHandles() {
 	setupTray();
 	setupHandleRunes();
 	setupHandleLCU();
 	setupHandleHotkey();
+  setupHandlePlayerNotes();
 	ipcMain.handle(Handle.openLogDir, () => {
 		let dir: string;
 		if (!app.isPackaged) {

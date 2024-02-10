@@ -64,23 +64,24 @@ export interface RunesDBObj {
 }
 
 export interface PlayerNote {
-  id: string;
-  summonerName: string;
-  createTime: string;
-  updateTime: string;
-  value: PlayerNoteValue;
+	id: string;
+	summonerName: string;
+	createTime: string;
+	updateTime: string | undefined;
+	tags: string[];
+	gameIds: string[];
+	remark: string;
 }
 
-export interface PlayerNoteValue {
-  tag: string[];
-  remake: string;
-  gameRecord: GameDetail[];
+export interface PlayerTagsRelation {
+	puuid: string;
+	tag: string;
 }
 
 export interface PlayerNotePageQuery extends PageQuery {
-  id?: string;
-  tag?: string[] | string;
-  summonerName?: string;
+	id?: string;
+	tag?: string[] | string;
+	summonerName?: string;
 }
 
 export type AramChampData = {

@@ -47,6 +47,11 @@ export const darkThemeOverrides: GlobalThemeOverrides = {
 		tdColor: "rgba(38, 38, 42, 0.1)",
 		thColor: "rgba(38, 38, 42, 0.6)",
 		borderColor: "rgba(255,255,255,0.1)"
-	}
+	},
+  DataTable:{
+    tdColor: "rgba(38, 38, 42, 0.1)",
+    thColor: "rgba(38,38,42,0.3)",
+    borderColor: "rgba(255,255,255,0.1)"
+  }
 	// ...
 };

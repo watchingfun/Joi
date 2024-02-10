@@ -2,7 +2,7 @@ import settingDB from "./setting";
 import tableVersionDB from "./tableVersion";
 import logger from "../lib/logger";
 import runesDB from "./runes";
-import playerNotesDB from "@@/db/playerNotes";
+import playerNotesDB from "./playerNotes";
 
 export interface DBConfig {
 	initTableIfNotExists: Function;
