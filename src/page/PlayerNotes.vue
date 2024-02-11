@@ -2,14 +2,59 @@
 import { DropdownOption, NButton, NTag } from "naive-ui";
 import { PlayerNote } from "@@/types/type";
 import PlayerTagSelect from "@/components/PlayerTagSelect.vue";
+import playerNotesApi from "@/api/playerNotesApi";
+import { useElementSize } from "@vueuse/core";
+import lcuApi from "@/api/lcuApi";
+import router from "@/router";
 
+const checkedRowKeysRef = ref<Array<string>>([]);
+const dialog = useDialog();
 const columns = [
+	{
+		type: "selection",
+		options: [
+			{
+				label: "删除选中",
+				onSelect: (data: any) => {
+					let size = checkedRowKeysRef.value.length;
+					if (size) {
+						dialog.warning({
+							title: "警告",
+							content: `你确定删除选择的${size}条数据？`,
+							positiveText: "确定",
+							negativeText: "取消",
+							onPositiveClick: () => {
+								playerNotesApi.deletePlayerNote(toRaw(checkedRowKeysRef.value)).then((res) => {
+									query();
+								});
+							}
+						});
+					}
+				}
+			}
+		]
+	},
 	{
 		title: "昵称",
 		key: "summonerName",
 		width: 100,
 		ellipsis: {
 			tooltip: true
+		},
+		render: (row: PlayerNote) => {
+			if (row.summonerName) {
+				return row.summonerName;
+			} else {
+				return (
+					<n-button
+						onclick={(e: Event) => {
+							e.stopPropagation();
+							updateSummonerName(row);
+						}}>
+						获取昵称
+					</n-button>
+				);
+			}
 		}
 	},
 	{
@@ -36,7 +81,7 @@ const columns = [
 			tooltip: true
 		},
 		render(row: PlayerNote) {
-			return row.tags.map((tagKey) => {
+			return row.tags?.map((tagKey) => {
 				return (
 					<NTag type="warning" style={{ marginRight: "6px" }} bordered={false}>
 						{tagKey}
@@ -55,36 +100,15 @@ const columns = [
 	}
 ];
 
-const data: PlayerNote[] = [
-	{
-		summonerName: "test1",
-		createTime: "2024-02-10 13:24:00",
-		updateTime: undefined,
-		id: "1",
-		gameIds: [],
-		tags: ["测试", "演员", "菜狗", "骂人", "故意送人头"],
-		remark: "测试备注"
-	},
-	{
-		summonerName: "test2",
-		createTime: "2024-02-10 13:24:00",
-		updateTime: undefined,
-		id: "1",
-		gameIds: [],
-		tags: ["测试", "演员", "故意送人头"],
-		remark: "测试备注"
-	},
-	{
-		summonerName: "test3",
-		createTime: "2024-02-10 13:24:00",
-		updateTime: undefined,
-		id: "1",
-		gameIds: [],
-		tags: ["测试", "演员"],
-		remark: "测试备注11111111111111111111111111111111111111111111111111"
-	}
-];
-const total = 3;
+const updateSummonerName = async (playerNote: PlayerNote) => {
+	playerNote.summonerName = (await lcuApi.getSummonerByPuuid(playerNote.id)).displayName;
+	await playerNotesApi.updatePlayerNote(toRaw(playerNote));
+};
+
+const loading = ref(false);
+const data = ref<PlayerNote[]>([]);
+const dataTotal = ref(0);
+
 const paginationReactive = reactive({
 	page: 1,
 	pageSize: 50,
@@ -113,8 +137,22 @@ const yRef = ref(0);
 const showDropdownRef = ref(false);
 
 function handleSelect(key: string) {
-	console.log(key, currentContextRow);
 	showDropdownRef.value = false;
+	switch (key) {
+		case "edit":
+			break;
+		case "delete":
+      dialog.warning({
+        title: "警告",
+        content: `你确定删除选择的数据？`,
+        positiveText: "确定",
+        negativeText: "取消",
+        onPositiveClick: () => {
+          playerNotesApi.deletePlayerNote([currentContextRow!.id]).then((res) => query());
+        }
+      });
+			break;
+	}
 }
 
 function onClickoutside() {
@@ -125,6 +163,7 @@ let currentContextRow: PlayerNote | undefined;
 
 const rowProps = (row: PlayerNote) => {
 	return {
+    style: 'cursor: pointer;',
 		onContextmenu: (e: MouseEvent) => {
 			currentContextRow = row;
 			e.preventDefault();
@@ -134,8 +173,56 @@ const rowProps = (row: PlayerNote) => {
 				xRef.value = e.clientX;
 				yRef.value = e.clientY;
 			});
-		}
+		},
+    onClick: (e: PointerEvent) => {
+      if((e.target as HTMLElement)?.classList?.value.includes('n-checkbox-box')){
+        return;
+      }
+      console.log(e.target)
+      router.push({name: "historyMatch", params: {puuid: row.id}})
+    }
 	};
+};
+const queryObj = reactive({ summonerName: "", tag: [] } as { summonerName: string; tag: string[] });
+
+function query() {
+	loading.value = true;
+	const pageObj = toRaw(unref(paginationReactive));
+	playerNotesApi
+		.queryPlayerNotes({ ...toRaw(unref(queryObj)), start: pageObj.page, size: pageObj.pageSize })
+		.then((res) => {
+			console.log(res);
+			dataTotal.value = res.total;
+			data.value = res.data;
+		})
+		.finally(() => (loading.value = false));
+}
+
+onMounted(() => {
+	query();
+});
+
+const tableContainer = ref(null);
+const { width, height } = useElementSize(tableContainer);
+const importLoading = ref(false);
+const message = useMessage();
+const importNotes = async () => {
+	importLoading.value = true;
+	try {
+		const importNum = await playerNotesApi.importNotes();
+		message.info("导入条数:" + importNum);
+		query();
+	} finally {
+		importLoading.value = false;
+	}
+};
+const exportNotes = async () => {
+	importLoading.value = true;
+	try {
+		await playerNotesApi.exportNotes();
+	} finally {
+		importLoading.value = false;
+	}
 };
 </script>
 
@@ -143,36 +230,51 @@ const rowProps = (row: PlayerNote) => {
 	<div class="flex flex-col flex-1">
 		<div class="m-1.5 flex flex-row justify-between">
 			<n-button-group>
-				<n-button>新增</n-button>
-				<n-button>导入</n-button>
-				<n-button>导出</n-button>
+				<n-button @click="importNotes" :loading="importLoading">导入</n-button>
+				<n-button @click="exportNotes" :loading="importLoading">导出</n-button>
 			</n-button-group>
 
 			<n-space>
-				<n-input placeholder="请输入玩家昵称"></n-input>
-				<player-tag-select  clearable style="width: 300px" :max-tag-count="2"></player-tag-select>
-        <n-button>搜索</n-button>
+				<n-input placeholder="请输入玩家昵称" v-model:value="queryObj.summonerName"></n-input>
+				<player-tag-select v-model="queryObj.tag" clearable style="width: 300px" :max-tag-count="2"></player-tag-select>
+				<n-button @click="query">搜索</n-button>
 			</n-space>
 		</div>
-		<div class="flex-1">
-			<n-data-table :bordered="false" :columns="columns" :data="data" :row-props="rowProps" />
-			<n-dropdown
-				placement="bottom-start"
-				trigger="manual"
-				:x="xRef"
-				:y="yRef"
-				:options="dropdownOptions"
-				:show="showDropdownRef"
-				:on-clickoutside="onClickoutside"
-				@select="handleSelect" />
+		<div class="flex-1 shrink" ref="tableContainer">
+			<div class="h-0">
+				<n-data-table
+					size="small"
+					:row-key="(row: PlayerNote)=>row.id"
+					v-model:checked-row-keys="checkedRowKeysRef"
+					:loading="loading"
+					:bordered="false"
+					:columns="columns"
+					:data="data"
+					:row-props="rowProps"
+					flex-height
+					:style="{ height: `${height}px` }" />
+				<n-dropdown
+					placement="bottom-start"
+					trigger="manual"
+					:x="xRef"
+					:y="yRef"
+					:options="dropdownOptions"
+					:show="showDropdownRef"
+					:on-clickoutside="onClickoutside"
+					@select="handleSelect" />
+			</div>
 		</div>
 		<div class="flex-shrink-0 flex flex-row justify-end p-2">
 			<n-pagination
+				@update-page="query"
+				@update:page-size="query"
 				v-model:page="paginationReactive.page"
 				v-model:page-size="paginationReactive.pageSize"
-				:page-count="total"
+				:item-count="dataTotal"
 				show-size-picker
-				:page-sizes="paginationReactive.pageSizes" />
+				:page-sizes="paginationReactive.pageSizes">
+				<template #prefix="{ itemCount }"> 共 {{ itemCount }} 条</template>
+			</n-pagination>
 		</div>
 	</div>
 </template>

@@ -1,4 +1,4 @@
-import { PlayerNote, PlayerNotePageQuery } from "@@/types/type";
+import {PageObj, PlayerNote, PlayerNotePageQuery} from "@@/types/type";
 
 export default {
 	getAllTag: () => {
@@ -11,12 +11,18 @@ export default {
 		return window.ipcRenderer.invoke("queryPlayerNotesByPuuids", puuids) as Promise<PlayerNote | undefined[]>;
 	},
 	queryPlayerNotes: (query: PlayerNotePageQuery) => {
-		return window.ipcRenderer.invoke("queryPlayerNotes", query);
+		return window.ipcRenderer.invoke("queryPlayerNotes", query) as Promise<PageObj<PlayerNote>>;
 	},
 	updatePlayerNote: (value: PlayerNote) => {
 		return window.ipcRenderer.invoke("updatePlayerNote", value);
 	},
-	deletePlayerNote: (id: string) => {
-		return window.ipcRenderer.invoke("deletePlayerNote", id);
-	}
+	deletePlayerNote: (ids: string[]) => {
+		return window.ipcRenderer.invoke("deletePlayerNotes", ids);
+	},
+  importNotes: ()=>{
+    return window.ipcRenderer.invoke("importNotes") as Promise<number>;
+  },
+  exportNotes: ()=>{
+    return window.ipcRenderer.invoke("exportNotes") as Promise<any>;
+  }
 };
