@@ -16,11 +16,16 @@ const emit = defineEmits<{
 <template>
 	<div>
 		<template v-for="(record, index) in matchHistoryList" :key="record.gameId">
-			<LazyDeferred class="h-[6em]" once :root="$attrs.scrollContainer as Object">
-				<GameInfo
-					:record="record"
-					@click="() => emit('jumpDetail', record.gameId, record.participantIdentities[0].player)"></GameInfo>
-			</LazyDeferred>
+<!--			<LazyDeferred class="h-[6em]" once :root="$attrs.scrollContainer as Object">-->
+<!--				<GameInfo-->
+<!--					:record="record"-->
+<!--					@click="() => emit('jumpDetail', record.gameId, record.participantIdentities[0].player)"></GameInfo>-->
+<!--			</LazyDeferred>-->
+      <div class="h-[6em]">
+        <GameInfo
+          :record="record"
+          @click="() => emit('jumpDetail', record.gameId, record.participantIdentities[0].player)"></GameInfo>
+      </div>
 			<div class="divider" v-if="index + 1 !== matchHistoryList?.length" />
 		</template>
 	</div>
