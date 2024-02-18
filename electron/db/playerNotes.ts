@@ -20,15 +20,14 @@ const emptyPageObj: PageObj<PlayerNote> = {
 export interface PlayerNotesDB extends DBConfig {
 	queryPageNotes: (pageQuery?: PlayerNotePageQuery) => PageObj<PlayerNote>;
 	insertPlayerTagRelation: (puuid: string, tags?: string[]) => void;
+	deletePlayerTagRelation: (puuid: string) => void;
 	updatePlayerTagRelation: (puuid: string, tags?: string[]) => void;
 	updateNote: (val: PlayerNote) => void;
 	addNote: (value: PlayerNote) => number;
 	deleteNote: (id: string) => void;
 	getNote: (id: string) => PlayerNote;
 	getAllTag: () => string[];
-
 	exportNotes(filename: string): Promise<any>;
-
 	importNotes(): Promise<number>;
 }
 
@@ -103,9 +102,13 @@ create index IF NOT EXISTS player_tags_relation_tag_index
 		return { total: countResult, data: list } as PageObj<PlayerNote>;
 	},
 
-	updatePlayerTagRelation(puuid: string, tags?: string[]) {
+	deletePlayerTagRelation(puuid: string) {
 		const deleteStmt = db.prepare("delete from player_tags_relation where puuid = :puuid");
 		deleteStmt.run({ puuid });
+	},
+
+	updatePlayerTagRelation(puuid: string, tags?: string[]) {
+		this.deletePlayerTagRelation(puuid);
 		this.insertPlayerTagRelation(puuid, tags);
 	},
 
@@ -139,9 +142,9 @@ create index IF NOT EXISTS player_tags_relation_tag_index
 		);
 		const info = insert.run({
 			id: val.id,
-      tags: val.tags ? JSON.stringify(val.tags) : null,
-      summonerName: val.summonerName,
-      gameIds: val.gameIds ? JSON.stringify(val.gameIds) : null,
+			tags: val.tags ? JSON.stringify(val.tags) : null,
+			summonerName: val.summonerName,
+			gameIds: val.gameIds ? JSON.stringify(val.gameIds) : null,
 			remark: val.remark,
 			createTime: val.createTime ? val.createTime : dayjs().format("YYYY-MM-DD HH:mm:ss"),
 			updateTime: val.updateTime
@@ -156,6 +159,7 @@ create index IF NOT EXISTS player_tags_relation_tag_index
 	deleteNote(puuid: string) {
 		const delStmt = db.prepare("delete from player_notes where id = :id");
 		delStmt.run({ id: puuid });
+    this.deletePlayerTagRelation(puuid);
 	},
 
 	getNote(puuid: string) {

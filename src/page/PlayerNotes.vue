@@ -178,7 +178,6 @@ const rowProps = (row: PlayerNote) => {
       if((e.target as HTMLElement)?.classList?.value.includes('n-checkbox-box')){
         return;
       }
-      console.log(e.target)
       router.push({name: "historyMatch", params: {puuid: row.id}})
     }
 	};
@@ -191,7 +190,6 @@ function query() {
 	playerNotesApi
 		.queryPlayerNotes({ ...toRaw(unref(queryObj)), start: pageObj.page, size: pageObj.pageSize })
 		.then((res) => {
-			console.log(res);
 			dataTotal.value = res.total;
 			data.value = res.data;
 		})
