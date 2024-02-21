@@ -70,7 +70,7 @@ export interface PlayerNote {
 	updateTime: string | undefined;
 	tags: string[];
 	gameIds: string[];
-	remark: string;
+	remark?: string;
 }
 
 export interface PlayerTagsRelation {

@@ -11,10 +11,13 @@ import router from "@/router";
 import lcuApi from "@/api/lcuApi";
 import { AngleLeft, AngleRight } from "@vicons/fa";
 import EpicLoading from "@/components/EpicLoading.vue";
+import { PlayerNote } from "@@/types/type";
+import playerNotesApi from "@/api/playerNotesApi";
 
 interface SummonerGameHistoryResult {
 	summonerInfo: SummonerInfo;
 	matchHistoryQueryResult: Array<MatchHistoryQueryResult>;
+	playerNote: PlayerNote | undefined;
 }
 
 const lcuStore = useLCUStore();
@@ -61,6 +64,25 @@ const pageSize = computed({
 const message = useMessage();
 const headerHeight = ref("50px");
 const headerRef = ref(null);
+
+const playerDropDownOptions = computed(() => {
+	return [
+		{
+			label: "复制昵称",
+			key: "copyName"
+		},
+		{
+			label: "复制puuid",
+			key: "copyPuuid"
+		},
+		summonerQueryList.value[tabIndex.value]?.playerNote
+			? { label: "修改玩家笔记", key: "addPlayNote" }
+			: {
+					label: "添加到玩家笔记",
+					key: "addPlayNote"
+			  }
+	];
+});
 
 const tabIndex = ref(0);
 const summonerQueryList = ref<Array<SummonerGameHistoryResult>>([]);
@@ -128,7 +150,11 @@ const fetchData = async ({
 			} else {
 				summoner = await lcuApi.getSummonerByPuuid(puuid!);
 			}
-			summonerQueryList.value.push({ summonerInfo: summoner, matchHistoryQueryResult: [] });
+			summonerQueryList.value.push({
+				summonerInfo: summoner,
+				matchHistoryQueryResult: [],
+				playerNote: await playerNotesApi.queryPlayerNote(summoner.puuid)
+			});
 			tabIndex.value = summonerQueryList.value.length - 1;
 			pageObj.push({ page: 1, pageSize: pageSizeOptions[0] });
 			puuid = summoner.puuid;
@@ -210,6 +236,20 @@ watch(
 		}
 	}
 );
+
+const handleNameOptionsSelect = (key: string) => {
+	switch (key) {
+		case "copyName":
+			copy(currentTabSummoner.value?.displayName, "昵称");
+			break;
+		case "copyPuuid":
+			copy(currentTabSummoner.value?.puuid, "puuid");
+			break;
+		case "addPlayNote":
+			router.push({ name: "playerNotes", params: { puuid: currentTabSummoner.value?.puuid } });
+			break;
+	}
+};
 </script>
 
 <template>
@@ -245,29 +285,23 @@ watch(
 				@select="handleDropdownSelect" />
 			<div class="flex flex-row flex-nowrap items-center gap-[10px] min-h-[50px]">
 				<div class="flex flex-row items-center" v-if="currentTabSummoner?.displayName">
+					<div v-if="summonerQueryList[tabIndex]?.playerNote?.tags">
+						<n-ellipsis style="max-width: 200px">
+							<n-tag
+								:bordered="false"
+								type="warning"
+								v-for="tag in summonerQueryList[tabIndex]?.playerNote?.tags"
+								class="mr-1"
+								>{{ tag }}</n-tag
+							>
+						</n-ellipsis>
+					</div>
+
 					<n-tag :bordered="false" :type="currentTabSummoner?.privacy === 'PUBLIC' ? 'info' : 'warning'"
 						>{{ currentTabSummoner?.privacy === "PUBLIC" ? "生涯公开" : "生涯隐藏" }}
 					</n-tag>
-					<profile-img round class="m-2" :profile-icon-id="currentTabSummoner.profileIconId"></profile-img>
-					<n-dropdown
-						trigger="click"
-						:options="[
-							{
-								label: '复制昵称',
-								key: 'copyName'
-							},
-							{
-								label: '复制puuid',
-								key: 'copyPuuid'
-							}
-						]"
-						@select="
-							(key: string) => {
-								key === 'copyName'
-									? copy(currentTabSummoner?.displayName, '昵称')
-									: copy(currentTabSummoner?.puuid, 'puuid');
-							}
-						">
+					<profile-img round class="m-2 shrink-0" :profile-icon-id="currentTabSummoner.profileIconId"></profile-img>
+					<n-dropdown trigger="click" :options="playerDropDownOptions" @select="handleNameOptionsSelect">
 						<n-button text class="truncate cursor-pointer" :title="currentTabSummoner.displayName">
 							{{ currentTabSummoner?.displayName }}
 						</n-button>

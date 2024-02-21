@@ -25,9 +25,11 @@ export interface PlayerNotesDB extends DBConfig {
 	updateNote: (val: PlayerNote) => void;
 	addNote: (value: PlayerNote) => number;
 	deleteNote: (id: string) => void;
-	getNote: (id: string) => PlayerNote;
+	getNote: (id: string) => PlayerNote | undefined;
 	getAllTag: () => string[];
+
 	exportNotes(filename: string): Promise<any>;
+
 	importNotes(): Promise<number>;
 }
 
@@ -41,7 +43,7 @@ const useDB = (db: Database.Database): PlayerNotesDB => ({
         constraint player_notes_pk
             primary key,
     summonerName text,
-    createTime   TIMESTAMP default CURRENT_TIMESTAMP,
+    createTime   TIMESTAMP default (datetime('now', 'localtime')),
     updateTime   TIMESTAMP,
     gameIds      text,
     tags         text,
@@ -95,7 +97,10 @@ create index IF NOT EXISTS player_tags_relation_tag_index
 		pageQuery.start = (pageQuery.start - 1) * pageQuery.size;
 		const list = stmt.all(pageQuery) as PlayerNote[];
 		try {
-			list.forEach((item) => (item.tags = JSON.parse(item.tags as unknown as string)));
+			list.forEach((item) => {
+				item.tags = item.tags ? JSON.parse(item.tags as unknown as string) : [];
+				item.gameIds = item.gameIds ? JSON.parse(item.gameIds as unknown as string) : [];
+			});
 		} catch (e) {
 			logger.error(e);
 		}
@@ -121,7 +126,7 @@ create index IF NOT EXISTS player_tags_relation_tag_index
 
 	updateNote(val: PlayerNote) {
 		const update = db.prepare(
-			"update player_notes set tags = :tags ,updateTime = current_timestamp, summonerName = :summonerName, gameIds = :gameIds, remark = :remark where id = :id"
+			"update player_notes set tags = :tags ,updateTime = (datetime('now', 'localtime')), summonerName = :summonerName, gameIds = :gameIds, remark = :remark where id = :id"
 		);
 		const updateInfo = update.run({
 			id: val.id,
@@ -159,12 +164,19 @@ create index IF NOT EXISTS player_tags_relation_tag_index
 	deleteNote(puuid: string) {
 		const delStmt = db.prepare("delete from player_notes where id = :id");
 		delStmt.run({ id: puuid });
-    this.deletePlayerTagRelation(puuid);
+		this.deletePlayerTagRelation(puuid);
 	},
 
 	getNote(puuid: string) {
 		const select = db.prepare("select * from player_notes where id = :id");
-		return JSON.parse(select.get({ id: puuid }) as any) as PlayerNote;
+		const item = select.get({ id: puuid }) as PlayerNote;
+		if (item) {
+			item.tags = item.tags ? JSON.parse(item.tags as unknown as string) : [];
+			item.gameIds = item.gameIds ? JSON.parse(item.gameIds as unknown as string) : [];
+			return item;
+		} else {
+			return item;
+		}
 	},
 
 	getAllTag() {

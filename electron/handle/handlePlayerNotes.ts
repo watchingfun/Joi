@@ -18,6 +18,11 @@ export function setupHandlePlayerNotes() {
 		});
 	});
 
+  ipcMain.handle("queryPlayerNote", (event, id: string) => {
+    logger.debug("queryPlayerNote", id);
+    return playerNotesDB.getNote(id);
+  })
+
 	ipcMain.handle("addPlayerNote", (event, value: PlayerNote) => {
 		logger.debug("addPlayerNote", value);
 		return playerNotesDB.addNote(value);

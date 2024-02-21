@@ -6,6 +6,7 @@ import playerNotesApi from "@/api/playerNotesApi";
 import { useElementSize } from "@vueuse/core";
 import lcuApi from "@/api/lcuApi";
 import router from "@/router";
+import PlayerNoteEdit from "@/components/PlayerNoteEdit.vue";
 
 const checkedRowKeysRef = ref<Array<string>>([]);
 const dialog = useDialog();
@@ -140,17 +141,20 @@ function handleSelect(key: string) {
 	showDropdownRef.value = false;
 	switch (key) {
 		case "edit":
+			editNote.value = currentContextRow;
+			addMode.value = false;
+			editShow.value = true;
 			break;
 		case "delete":
-      dialog.warning({
-        title: "警告",
-        content: `你确定删除选择的数据？`,
-        positiveText: "确定",
-        negativeText: "取消",
-        onPositiveClick: () => {
-          playerNotesApi.deletePlayerNote([currentContextRow!.id]).then((res) => query());
-        }
-      });
+			dialog.warning({
+				title: "警告",
+				content: `你确定删除选择的数据？`,
+				positiveText: "确定",
+				negativeText: "取消",
+				onPositiveClick: () => {
+					playerNotesApi.deletePlayerNote([currentContextRow!.id]).then((res) => query());
+				}
+			});
 			break;
 	}
 }
@@ -163,7 +167,7 @@ let currentContextRow: PlayerNote | undefined;
 
 const rowProps = (row: PlayerNote) => {
 	return {
-    style: 'cursor: pointer;',
+		style: "cursor: pointer;",
 		onContextmenu: (e: MouseEvent) => {
 			currentContextRow = row;
 			e.preventDefault();
@@ -174,12 +178,12 @@ const rowProps = (row: PlayerNote) => {
 				yRef.value = e.clientY;
 			});
 		},
-    onClick: (e: PointerEvent) => {
-      if((e.target as HTMLElement)?.classList?.value.includes('n-checkbox-box')){
-        return;
-      }
-      router.push({name: "historyMatch", params: {puuid: row.id}})
-    }
+		onClick: (e: PointerEvent) => {
+			if ((e.target as HTMLElement)?.classList?.value.includes("n-checkbox-box")) {
+				return;
+			}
+			router.push({ name: "historyMatch", params: { puuid: row.id } });
+		}
 	};
 };
 const queryObj = reactive({ summonerName: "", tag: [] } as { summonerName: string; tag: string[] });
@@ -222,6 +226,42 @@ const exportNotes = async () => {
 		importLoading.value = false;
 	}
 };
+
+const editShow = ref(false);
+const editNote = ref<PlayerNote>();
+
+const addMode = ref(false);
+
+watch(
+	() => router.currentRoute.value,
+	async (n, o) => {
+		if (n.name === "playerNotes") {
+			const puuid = n.params.puuid as string;
+			if (puuid) {
+				const dbValue = await playerNotesApi.queryPlayerNote(puuid);
+				const summonerInfo = await lcuApi.getSummonerByPuuid(puuid);
+				if (summonerInfo) {
+					if (dbValue) {
+						addMode.value = false;
+						editNote.value = { ...dbValue, summonerName: summonerInfo.displayName };
+					} else {
+						addMode.value = true;
+						editNote.value = {
+							summonerName: summonerInfo.displayName,
+							id: puuid,
+							createTime: "",
+							updateTime: "",
+							tags: [],
+							gameIds: []
+						};
+					}
+					editShow.value = true;
+				}
+			}
+		}
+	},
+	{ deep: true }
+);
 </script>
 
 <template>
@@ -233,7 +273,7 @@ const exportNotes = async () => {
 			</n-button-group>
 
 			<n-space>
-				<n-input placeholder="请输入玩家昵称" v-model:value="queryObj.summonerName"></n-input>
+				<n-input placeholder="请输入玩家昵称" v-model:value="queryObj.summonerName" clearable></n-input>
 				<player-tag-select v-model="queryObj.tag" clearable style="width: 300px" :max-tag-count="2"></player-tag-select>
 				<n-button @click="query">搜索</n-button>
 			</n-space>
@@ -274,6 +314,7 @@ const exportNotes = async () => {
 				<template #prefix="{ itemCount }"> 共 {{ itemCount }} 条</template>
 			</n-pagination>
 		</div>
+		<player-note-edit v-model:show="editShow" :note="editNote" @submited="query" :addMode="addMode" />
 	</div>
 </template>
 

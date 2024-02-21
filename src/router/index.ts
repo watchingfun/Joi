@@ -33,7 +33,7 @@ const routes = [
 				meta: { title: "历史战绩" }
 			},
 			{
-				path: "playerNotes",
+				path: "playerNotes/:puuid?",
 				name: "playerNotes",
 				component: PlayerNotes,
 				meta: { title: "玩家笔记" }
