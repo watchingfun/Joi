@@ -62,6 +62,7 @@ const updateOption = () => {
 		xAxis: [
 			{
 				type: "category",
+				triggerEvent: true,
 				data:
 					teams.value.map((t) => {
 						if (t.assignedPosition && t.assignedPosition !== "none") {
@@ -175,7 +176,7 @@ function handleClick(event: any) {
 				</div>
 			</template>
 		</div>
-		<v-chart class="flex-1" :option="option" @click="handleClick" />
+		<v-chart class="flex-1" :option="option" @click="handleClick"/>
 		<n-modal
 			v-model:show="showDetail"
 			preset="card"
@@ -197,6 +198,9 @@ function handleClick(event: any) {
 				<HistoryList :match-history-list="historyListData"></HistoryList>
 			</div>
 		</n-modal>
+    <n-popover :show="true" :x="xRef" :y="yRef" trigger="manual">
+      <n-tag>test</n-tag>
+    </n-popover>
 	</div>
 </template>
 

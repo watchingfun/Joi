@@ -43,3 +43,12 @@ body {
     user-select: none;
     overflow: hidden;
 }
+
+.v-lazy-component.v-lazy-component--loading {
+  filter: blur(20px);
+}
+
+.v-lazy-component.v-lazy-component--loaded {
+  filter: blur(0);
+  transition: filter 0.2s;
+}

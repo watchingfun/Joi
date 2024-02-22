@@ -43,7 +43,9 @@ const scrollContainer = ref();
 		<n-spin :show="loading" class="flex flex-1 flex-col h-0" :rotate="false">
 			<div class="flex flex-1 flex-col h-0" ref="scrollContainer">
 				<n-scrollbar class="flex flex-1 flex-col h-0" v-if="matchHistoryList.length">
-					<GameInfoList :matchHistoryList="matchHistoryList" @jumpDetail="jumpDetail"></GameInfoList>
+          <LazyComponent>
+            <GameInfoList :matchHistoryList="matchHistoryList" @jumpDetail="jumpDetail"></GameInfoList>
+          </LazyComponent>
 				</n-scrollbar>
 				<div class="flex-1 flex flex-col items-center justify-start h-full pt-[60px]" v-else>
 					<p style="font-size: 100px">😴</p>

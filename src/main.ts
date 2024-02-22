@@ -11,6 +11,8 @@ import useAppStore from "@/store/app";
 import "./common/configDayjs";
 import useSettingStore from "@/store/setting";
 import { Handle } from "@@/const/const";
+//@ts-ignore
+import LazyComponent from 'v-lazy-component'
 
 //确保naive ui样式不被tailwind preflight 覆盖
 const meta = document.createElement("meta");
@@ -21,6 +23,7 @@ const app = createApp(App);
 const pinia = createPinia();
 app.use(router);
 app.use(pinia);
+app.use(LazyComponent)
 setupListener();
 const appStore = useAppStore();
 app.mount("#app");

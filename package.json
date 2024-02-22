@@ -74,6 +74,7 @@
     "pinia": "^2.1.6",
     "sudo-prompt": "^9.2.1",
     "uiohook-napi": "^1.5.2",
+    "v-lazy-component": "^3.0.9",
     "vue-echarts": "^6.6.1",
     "vue-router": "^4.2.5",
     "winston": "^3.11.0",
