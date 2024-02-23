@@ -1,6 +1,6 @@
 {
   "name": "joi",
-  "version": "0.5.14",
+  "version": "0.5.14.1",
   "main": "dist-electron/main.js",
   "repository": {
     "type": "git",

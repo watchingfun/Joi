@@ -15,7 +15,8 @@ export const fetchLatestReleases = async () => {
 export const checkUpdate = async () => {
 	try {
 		const latest = await fetchLatestReleases();
-		if (compareVersion(__APP_VERSION__, latest.tag_name) === -1) {
+		const latestVersion = latest.tag_name.startsWith("v") ? latest.tag_name.slice(1) : latest.tag_name;
+		if (compareVersion(__APP_VERSION__, latestVersion) === -1) {
 			window.ipcRenderer.send("open-url", "https://github.com/watchingfun/Joi/releases/latest");
 			return false;
 		} else {
