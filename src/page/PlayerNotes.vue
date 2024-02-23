@@ -79,12 +79,14 @@ const columns = [
 		key: "tags",
 		width: 100,
 		ellipsis: {
-			tooltip: true
+			tooltip: {
+        width: 500
+      }
 		},
 		render(row: PlayerNote) {
 			return row.tags?.map((tagKey) => {
 				return (
-					<NTag type="warning" style={{ marginRight: "6px" }} bordered={false}>
+					<NTag type="warning" style={{ margin: '3px 6px 3px 0' }} bordered={false}>
 						{tagKey}
 					</NTag>
 				);

@@ -286,12 +286,12 @@ const handleNameOptionsSelect = (key: string) => {
 			<div class="flex flex-row flex-nowrap items-center gap-[10px] min-h-[50px]">
 				<div class="flex flex-row items-center" v-if="currentTabSummoner?.displayName">
 					<div v-if="summonerQueryList[tabIndex]?.playerNote?.tags">
-						<n-ellipsis style="max-width: 200px">
+						<n-ellipsis style="max-width: 200px" :tooltip="{width:400}">
 							<n-tag
 								:bordered="false"
 								type="warning"
 								v-for="tag in summonerQueryList[tabIndex]?.playerNote?.tags"
-								class="mr-1"
+								class="m-1"
 								>{{ tag }}</n-tag
 							>
 						</n-ellipsis>

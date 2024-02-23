@@ -1,4 +1,5 @@
 import { GameMode, PositionName } from "@@/types/opgg_rank_type";
+import { PlayerNote } from "@@/types/type";
 
 export interface RPC {
 	errorCode?: string;
@@ -702,4 +703,5 @@ export interface TeamMemberInfo {
 	summonerInfo?: SummonerInfo;
 	gameDetail?: GameDetail[];
 	score?: number;
+  note?: PlayerNote
 }

@@ -10,6 +10,7 @@ import { assignedPositionNameMap } from "@@/types/opgg_rank_type";
 import { Ref } from "vue";
 import HistoryList from "@/components/HistoryList.vue";
 import { champDict } from "@@/const/lolDataConfig";
+import router from "@/router";
 
 const props = defineProps<{ teams: TeamMemberInfo[]; teamUpInfo: Array<Array<string>> }>();
 const { teams, teamUpInfo } = toRefs(props);
@@ -92,6 +93,9 @@ const updateOption = () => {
 						} else {
 							str = `{value|${value}}`;
 						}
+						if (member.note) {
+							str += "{value| }{mark|}";
+						}
 						if (member.summonerInfo?.privacy === "PRIVATE") {
 							str += `\n{private|生涯隐藏}`;
 						}
@@ -99,13 +103,21 @@ const updateOption = () => {
 					},
 					rich: {
 						...championImageUrlMap.value,
+						mark: {
+							backgroundColor: {
+								image: "./img/mark.png"
+							}
+						},
 						value: {
 							lineHeight: 30,
 							align: "center"
 						},
 						private: {
 							align: "center",
-							color: "rgba(245,112,45,0.73)"
+							backgroundColor: "rgba(245,112,45,0.73)",
+							color: "#fff",
+							borderRadius: 15,
+							padding: 4
 						}
 					}
 				},
@@ -156,13 +168,21 @@ watch(
 );
 
 const showDetail = ref(false);
-const historyListData = ref<Array<GameDetail>>([]);
-const showSummonerName = ref("");
+const currentClickSummoner = ref<TeamMemberInfo>();
 
 function handleClick(event: any) {
 	showDetail.value = true;
-	showSummonerName.value = teams.value[event.dataIndex].summonerName!;
-	historyListData.value = teams.value[event.dataIndex].gameDetail || [];
+	currentClickSummoner.value = teams.value[event.dataIndex];
+}
+
+function jumpToHistory(puuid: string) {
+	router.push({
+		name: "historyMatch",
+		params: { puuid },
+		query: { time: new Date().getTime() }
+	}).then(() => {
+    showDetail.value = false;
+  });
 }
 </script>
 
@@ -176,12 +196,11 @@ function handleClick(event: any) {
 				</div>
 			</template>
 		</div>
-		<v-chart class="flex-1" :option="option" @click="handleClick"/>
+		<v-chart class="flex-1" :option="option" @click="handleClick" />
 		<n-modal
 			v-model:show="showDetail"
 			preset="card"
 			class="team-member-history-modal"
-			:title="showSummonerName"
 			style="
 				margin-top: 10px;
 				width: 95%;
@@ -194,13 +213,20 @@ function handleClick(event: any) {
 				border-radius: 8px;
 				overflow: hidden;
 			">
+			<template #header>
+				<h1 class="cursor-pointer" @click="() => jumpToHistory(currentClickSummoner?.puuid!)">
+					{{ currentClickSummoner?.summonerName }}
+				</h1>
+			</template>
+			<template #header-extra>
+				<n-performant-ellipsis style="width: 400px" v-if="currentClickSummoner?.note?.tags" :tooltip="{width: 'trigger'}">
+					<n-tag size="small" :bordered="false" type="warning" v-for="tag in currentClickSummoner!.note.tags" class="m-1">{{ tag }}</n-tag>
+				</n-performant-ellipsis>
+			</template>
 			<div class="flex flex-1 flex-col h-0" style="font-size: 12px">
-				<HistoryList :match-history-list="historyListData"></HistoryList>
+				<HistoryList :match-history-list="currentClickSummoner?.gameDetail || []"></HistoryList>
 			</div>
 		</n-modal>
-    <n-popover :show="true" :x="xRef" :y="yRef" trigger="manual">
-      <n-tag>test</n-tag>
-    </n-popover>
 	</div>
 </template>
 

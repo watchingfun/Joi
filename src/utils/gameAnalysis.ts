@@ -2,6 +2,7 @@ import { GameDetail, MatchHistoryQueryResult, TeamMemberInfo } from "@@/types/lc
 import { Handle } from "@@/const/const";
 import { retryWrapper } from "@/utils/util";
 import { champDict } from "@@/const/lolDataConfig";
+import playerNotesApi from "@/api/playerNotesApi";
 
 export async function analysisTeam(teams: TeamMemberInfo[]) {
 	const requestQueue = teams.map((t) => {
@@ -15,6 +16,7 @@ export async function analysisTeam(teams: TeamMemberInfo[]) {
 			).games.games;
 			return {
 				...t,
+        note: await playerNotesApi.queryPlayerNote(t.puuid), //查询玩家备注
 				gameDetail: gameDetails,
 				score: computeScore(gameDetails)
 			} as TeamMemberInfo;
