@@ -496,8 +496,8 @@
             "key": "Unflinching",
             "icon": "perk-images/Styles/Sorcery/Unflinching/Unflinching.png",
             "name": "坚定",
-            "shortDesc": "获得小幅度的韧性加成，会随着已损失生命值来提升。",
-            "longDesc": "获得5%韧性和5%减速抵抗。这些数值会基于已损失生命值而最多提升额外的20%韧性和20%减速抵抗。最大值会在30%生命值时达成。"
+            "shortDesc": "在被控制时获得护甲与魔抗。",
+            "longDesc": "在被控制时和之后的2秒里获得2 - 10(随等级增长)护甲和魔法抗性。"
           }
         ]
       }
