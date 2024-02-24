@@ -1,5 +1,5 @@
 <template>
-	<n-tooltip :style="{ maxWidth: '400px' }" trigger="hover" :keep-alive-on-hover="false" :disabled="!props.itemId">
+	<n-tooltip :style="{ maxWidth: '500px' }" trigger="hover" :keep-alive-on-hover="false" :disabled="!props.itemId">
 		<template #trigger>
 			<img v-bind="$attrs" :src="url" :class="[props.itemId === 0 ? 'none' : '']" alt="itemImage" />
 		</template>
