@@ -41,17 +41,17 @@ const scrollContainer = ref();
 <template>
 	<div class="flex flex-1 flex-col h-0">
 		<n-spin :show="loading" class="flex flex-1 flex-col h-0" :rotate="false">
-			<div class="flex flex-1 flex-col h-0" ref="scrollContainer">
-				<n-scrollbar class="flex flex-1 flex-col h-0" v-if="matchHistoryList.length">
-          <LazyComponent>
-            <GameInfoList :matchHistoryList="matchHistoryList" @jumpDetail="jumpDetail"></GameInfoList>
-          </LazyComponent>
-				</n-scrollbar>
-				<div class="flex-1 flex flex-col items-center justify-start h-full pt-[60px]" v-else>
-					<p style="font-size: 100px">😴</p>
-					<div style="font-size: 40px">暂无结果</div>
+			<LazyComponent class="flex flex-1 flex-col h-0">
+				<div class="flex flex-1 flex-col h-0" ref="scrollContainer">
+					<n-scrollbar class="flex flex-1 flex-col h-0" v-if="matchHistoryList.length">
+						<GameInfoList :matchHistoryList="matchHistoryList" @jumpDetail="jumpDetail"></GameInfoList>
+					</n-scrollbar>
+					<div class="flex-1 flex flex-col items-center justify-start h-full pt-[60px]" v-else>
+						<p style="font-size: 100px">😴</p>
+						<div style="font-size: 40px">暂无结果</div>
+					</div>
 				</div>
-			</div>
+			</LazyComponent>
 			<template #icon>
 				<epic-loading loading style="height: 0; flex: 1"></epic-loading>
 			</template>
