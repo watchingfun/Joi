@@ -16,7 +16,7 @@ export async function analysisTeam(teams: TeamMemberInfo[]) {
 			).games.games;
 			return {
 				...t,
-        note: await playerNotesApi.queryPlayerNote(t.puuid), //查询玩家备注
+				note: await playerNotesApi.queryPlayerNote(t.puuid), //查询玩家备注
 				gameDetail: gameDetails,
 				score: computeScore(gameDetails)
 			} as TeamMemberInfo;
@@ -33,16 +33,17 @@ export async function analysisTeam(teams: TeamMemberInfo[]) {
 
 //分析组队信息
 export async function analysisTeamUpInfo(teams: TeamMemberInfo[]) {
-	const gameIdMap = new Map<number, TeamMemberInfo[]>();
+	const gameIdMap = new Map<string, TeamMemberInfo[]>();
 	for (const member of teams) {
 		if (!member.gameDetail?.[0].gameId) {
 			continue;
 		}
-		const previousGameId = member.gameDetail[0].gameId;
-		if (gameIdMap.has(previousGameId)) {
-			gameIdMap.get(previousGameId)!.push(member);
+    //按上局游戏id和队伍id进行分组，分组数大于1说明这组玩家可能是组队
+		const key = member.gameDetail[0].gameId + "_" + member.gameDetail[0].participants[0].teamId;
+		if (gameIdMap.has(key)) {
+			gameIdMap.get(key)!.push(member);
 		} else {
-			gameIdMap.set(previousGameId, [member]);
+			gameIdMap.set(key, [member]);
 		}
 	}
 	return Array.from(gameIdMap.values())
@@ -93,7 +94,7 @@ export function computeScore(gameDetail?: GameDetail[]) {
 }
 
 export function generateAnalysisMsg(teams: TeamMemberInfo[]) {
-  let msg: string[] = [];
+	let msg: string[] = [];
 	teams
 		.sort((a, b) => (a.score! > b.score! ? 1 : a.score === b.score ? 0 : -1))
 		.forEach((i, index) => msg.push(`${champDict[i.championId + ""]?.label || i.summonerName}:\t ${i.score}`));
