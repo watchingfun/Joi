@@ -7,7 +7,8 @@ interface champDict {
 	};
 }
 
-//https://ddragon.leagueoflegends.com/cdn/13.21.1/data/zh_CN/champion.json
+//todo 重构计划： 从客户端获取英雄数据
+//https://ddragon.leagueoflegends.com/cdn/14.2.1/data/zh_CN/champion.json
 //Object.values(json.data).reduce((p,c)=>{p[c.key]={champId:c.key,label:c.name,alias:c.id,title:c.title};return p},{})
 export const champDict: champDict = {
 	"1": {
@@ -987,6 +988,12 @@ export const champDict: champDict = {
 		label: "纳祖芒荣耀",
 		alias: "KSante",
 		title: "奎桑提"
+	},
+	"901": {
+		champId: "901",
+		label: "炽炎雏龙",
+		alias: "Smolder",
+		title: "斯莫德"
 	},
 	"902": {
 		champId: "902",
