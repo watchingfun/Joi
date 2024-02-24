@@ -20,11 +20,11 @@ watch(
 	() => router.currentRoute.value,
 	(n, o) => {
 		if (n.name === "inGame") {
-			const { showAnalysis } = n.params;
+			const { showAnalysis, myTeam } = n.params;
 			if (showAnalysis) {
 				tabVal.value = "analysis";
 				nextTick(() => {
-					gameAnalysisTabValue.value = "theirTeam";
+					gameAnalysisTabValue.value = myTeam ? "myTeam" : "theirTeam";
 				});
 			}
 		}

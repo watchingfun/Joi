@@ -71,7 +71,7 @@ const useLCUStore = defineStore("lcu", () => {
 
 	const settingStore = useSettingStore();
 
-  const aramChampBuffMap = ref<Record<string, AramChampData>>();
+	const aramChampBuffMap = ref<Record<string, AramChampData>>();
 
 	async function initAramChampBuffMap() {
 		const aramChampBuff = await commonApi.getAramBuffData();
@@ -96,7 +96,7 @@ const useLCUStore = defineStore("lcu", () => {
 		}
 		console.log("队伍分析", msg.join("\n"));
 		for (const s of msg) {
-      await new Promise((resolve) => setTimeout(resolve, 1));
+			await new Promise((resolve) => setTimeout(resolve, 1));
 			await lcuApi.sendChatMsgToRoom(currentChatRoomId.value!, s, "groupchat");
 		}
 	}
@@ -111,6 +111,12 @@ const useLCUStore = defineStore("lcu", () => {
 			})
 			.finally(() => (queryMyTeamFlag.value = false));
 		myTeamAnalysisError.value = false;
+		if (myTeam.value?.find((t) => t.note)) {
+			new window.Notification("我方存在标记玩家", { body: "跳转对局分析查看" }).onclick = async () => {
+				await window.ipcRenderer.invoke(Handle.showMainWindow);
+				await router.push({ name: "inGame", params: { showAnalysis: "true", myTeam: "true" } });
+			};
+		}
 		if (settingStore.settingModel.autoSendMyTeamAnalysis) {
 			await sendTeamScoreToRoom();
 		}
@@ -126,6 +132,12 @@ const useLCUStore = defineStore("lcu", () => {
 				throw new Error("分析敌方队伍出错，请稍后再试");
 			})
 			.finally(() => (queryTheirTeamFlag.value = false));
+		if (theirTeam.value?.find((t) => t.note)) {
+			new window.Notification("敌方存在标记玩家", { body: "跳转对局分析查看" }).onclick = async () => {
+				await window.ipcRenderer.invoke(Handle.showMainWindow);
+				await router.push({ name: "inGame", params: { showAnalysis: "true" } });
+			};
+		}
 		theirTeamAnalysisError.value = false;
 	}
 
@@ -153,7 +165,7 @@ const useLCUStore = defineStore("lcu", () => {
 		updateMyTeamInfo(teams[myTeamMemberIndex]);
 		await updateTheirTeamInfo(teams[myTeamMemberIndex === 0 ? 1 : 0]);
 		await analysisTheirTeam();
-    await window.ipcRenderer.invoke(Handle.setFriendScoreMsg, generateAnalysisMsg(myTeam.value));
+		await window.ipcRenderer.invoke(Handle.setFriendScoreMsg, generateAnalysisMsg(myTeam.value));
 		await window.ipcRenderer.invoke(Handle.setTheirScoreMsg, generateAnalysisMsg(theirTeam.value));
 		theirTeamIsSuck.value = false;
 		theirTeamUpInfo.value = await analysisTeamUpInfo(theirTeam.value);
@@ -240,7 +252,7 @@ const useLCUStore = defineStore("lcu", () => {
 		champId,
 		(n, o) => {
 			if (n) {
-        void router.push({ name: "inGame" });
+				void router.push({ name: "inGame" });
 				opggRunes.value = [];
 				void fetchRune(n);
 			}
