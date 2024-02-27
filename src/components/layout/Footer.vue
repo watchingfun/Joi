@@ -140,8 +140,12 @@ const footerStyle = computed(() => {
 
 			<div class="flex flex-row items-center">
 				<div>自动再来一局：</div>
-				<n-switch v-model:value="settingStore.settingModel.autoPlayAgain" size="small">自动再来一局</n-switch>
+				<n-switch v-model:value="settingStore.settingModel.autoPlayAgain" size="small"></n-switch>
 			</div>
+      <div class="flex flex-row items-center">
+        <div>自动接收对局：</div>
+        <n-switch v-model:value="settingStore.settingModel.autoAccept" size="small"></n-switch>
+      </div>
 			<div class="flex flex-row items-center">
 				<ConnectStatus class="mr-1" :connect-status="lcuStore.connectStatus"></ConnectStatus>
 			</div>

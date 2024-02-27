@@ -236,6 +236,22 @@ export const getOPGGRunes = async (champId: number, gameMode: GameMode, position
 // 	return result.filter(isFulfilled<GameDetail>).map((p) => p.value);
 // };
 
+//接收对局
+export const acceptGame = async () => {
+  return await httpRequest<void>({
+    method: "POST",
+    url: `/lol-matchmaking/v1/ready-check/accept`
+  });
+};
+
+//查询对局接收状态
+export const getReadyCheckStatus = async () => {
+  return await httpRequest<{playerResponse: string}>({
+    method: "GET",
+    url: `/lol-matchmaking/v1/ready-check`
+  });
+};
+
 //再来一局（回到大厅）
 export const playAgain = async () => {
 	return await httpRequest<void>({

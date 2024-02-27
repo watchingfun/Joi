@@ -1,9 +1,11 @@
 import { createHttp1Request } from "../lib/league-connect";
 import { getCredentials } from "./connector";
 import {
+	acceptGame,
 	checkSelfIsLobbyLeader,
 	getCurrentQueue,
 	getGameInfo,
+	getReadyCheckStatus,
 	listenChampSelect,
 	matchmaking,
 	playAgain
@@ -27,14 +29,9 @@ export function handelAutoAcceptGame(eventKey: string) {
 	const setTime = setting.model.autoAcceptDelay;
 	setTimeout(async () => {
 		try {
-			await createHttp1Request(
-				{
-					method: "POST",
-					url: "/lol-matchmaking/v1/ready-check/accept",
-					body: null
-				},
-				getCredentials()
-			);
+			if ((await getReadyCheckStatus()).playerResponse !== "Declined") {
+				await acceptGame();
+			}
 		} catch (e) {
 			logger.error(e);
 		}
