@@ -13,6 +13,7 @@ import { AngleLeft, AngleRight } from "@vicons/fa";
 import EpicLoading from "@/components/EpicLoading.vue";
 import { PlayerNote } from "@@/types/type";
 import playerNotesApi from "@/api/playerNotesApi";
+import { getNameAndTagLine } from "@/utils/util";
 
 interface SummonerGameHistoryResult {
 	summonerInfo: SummonerInfo;
@@ -136,17 +137,23 @@ const fetchData = async ({
 	console.log("fetchData", { summonerName, puuid });
 	summonerQueryLoading.value = true;
 	try {
+		let summoner: SummonerInfo;
+		//如果只通过名称查询，就先通过名称判断是否有该召唤师
+		if (summonerName && !puuid) {
+			try {
+				summoner = await lcuApi.getSummonerByName(summonerName!);
+				puuid = summoner.puuid;
+			} catch (e) {
+				console.log(e);
+				return;
+			}
+		}
 		//判断是否已存在tab
-		const existIndex = summonerQueryList.value.findIndex(
-			(s) => s.summonerInfo.displayName === summonerName || s.summonerInfo.puuid === puuid
-		);
+		const existIndex = summonerQueryList.value.findIndex((s) => s.summonerInfo.puuid === puuid);
 		//不存在就查询
 		if (existIndex === -1) {
-			let summoner: SummonerInfo;
 			if (!puuid && !summonerName) {
 				summoner = await lcuStore.getCurrentSummoner();
-			} else if (summonerName) {
-				summoner = await lcuApi.getSummonerByName(summonerName!);
 			} else {
 				summoner = await lcuApi.getSummonerByPuuid(puuid!);
 			}
@@ -240,7 +247,7 @@ watch(
 const handleNameOptionsSelect = (key: string) => {
 	switch (key) {
 		case "copyName":
-			copy(currentTabSummoner.value?.displayName, "昵称");
+			copy(getNameAndTagLine(currentTabSummoner.value), "昵称");
 			break;
 		case "copyPuuid":
 			copy(currentTabSummoner.value?.puuid, "puuid");
@@ -286,14 +293,14 @@ const handleNameOptionsSelect = (key: string) => {
 			<div class="flex flex-row flex-nowrap items-center gap-[10px] min-h-[50px]">
 				<div class="flex flex-row items-center" v-if="currentTabSummoner?.displayName">
 					<div v-if="summonerQueryList[tabIndex]?.playerNote?.tags">
-						<n-ellipsis style="max-width: 200px" :tooltip="{width:400}">
+						<n-ellipsis style="max-width: 200px" :tooltip="{ width: 400 }">
 							<n-tag
 								:bordered="false"
 								type="warning"
 								v-for="tag in summonerQueryList[tabIndex]?.playerNote?.tags"
 								class="m-1"
-								>{{ tag }}</n-tag
-							>
+								>{{ tag }}
+							</n-tag>
 						</n-ellipsis>
 					</div>
 
@@ -302,7 +309,7 @@ const handleNameOptionsSelect = (key: string) => {
 					</n-tag>
 					<profile-img round class="m-2 shrink-0" :profile-icon-id="currentTabSummoner.profileIconId"></profile-img>
 					<n-dropdown trigger="click" :options="playerDropDownOptions" @select="handleNameOptionsSelect">
-						<n-button text class="truncate cursor-pointer" :title="currentTabSummoner.displayName">
+						<n-button text class="truncate cursor-pointer" :title="getNameAndTagLine(currentTabSummoner)">
 							{{ currentTabSummoner?.displayName }}
 						</n-button>
 					</n-dropdown>

@@ -21,12 +21,16 @@ import { memoize } from "lodash";
 import { LRUCache } from "lru-cache";
 import { RankSummary } from "../types/rankType";
 
-const httpRequest = async <T>(option: HttpRequestOptions<any>) => {
+const httpRequest = async <T>(option: HttpRequestOptions<any>, errMsg?: string) => {
 	const response = await createHttp1Request(option, getCredentials());
 	if (response.ok) {
 		return (response.text() ? (response.json() as T) : null) as T;
 	} else {
-		throw new Error((response.json() as RPC).message);
+		if (errMsg) {
+			throw new Error(errMsg);
+		} else {
+			throw new Error((response.json() as RPC).message);
+		}
 	}
 };
 
@@ -49,7 +53,7 @@ export async function getSummonerByName(nickname: string) {
 	);
 	if (response.ok) {
 		return response.json() as SummonerInfo;
-	} else if (response.status === 404) {
+	} else if (response.status === 404 || response.status === 422) {
 		throw new Error("找不到该召唤师: " + nickname);
 	} else {
 		throw new Error((response.json() as RPC).message);
@@ -238,18 +242,18 @@ export const getOPGGRunes = async (champId: number, gameMode: GameMode, position
 
 //接收对局
 export const acceptGame = async () => {
-  return await httpRequest<void>({
-    method: "POST",
-    url: `/lol-matchmaking/v1/ready-check/accept`
-  });
+	return await httpRequest<void>({
+		method: "POST",
+		url: `/lol-matchmaking/v1/ready-check/accept`
+	});
 };
 
 //查询对局接收状态
 export const getReadyCheckStatus = async () => {
-  return await httpRequest<{playerResponse: string}>({
-    method: "GET",
-    url: `/lol-matchmaking/v1/ready-check`
-  });
+	return await httpRequest<{ playerResponse: string }>({
+		method: "GET",
+		url: `/lol-matchmaking/v1/ready-check`
+	});
 };
 
 //再来一局（回到大厅）
@@ -292,8 +296,8 @@ export const getRankSummary = async (puuid: string) => {
 
 //重启界面
 export const restartUX = async () => {
-  return await httpRequest<void>({
-    method: "POST",
-    url: "/riotclient/kill-and-restart-ux"
-  });
+	return await httpRequest<void>({
+		method: "POST",
+		url: "/riotclient/kill-and-restart-ux"
+	});
 };

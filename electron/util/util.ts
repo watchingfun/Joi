@@ -4,6 +4,7 @@ import logger from "../lib/logger";
 import { RequestOptions } from "http";
 import { URL } from "node:url";
 import http from "node:http";
+import { exec } from "node:child_process";
 
 export function showMainWindow(route?: string | { name: string }) {
 	// 获取当前的窗口  目前程序只做一个窗口
@@ -35,15 +36,24 @@ export function getPath(unpackPath: boolean = false) {
 
 export function executeCommand(cmd: string): Promise<string> {
 	return new Promise((resolve, reject) => {
-		sudo.exec(cmd, { name: "joi" }, (err, stdout, stderr) => {
+		exec(cmd, (err, stdout, stderr) => {
 			if (err) {
 				reject(err);
-			} else if (stderr) {
-				reject(stderr);
-			} else {
-				resolve(stdout?.toString() || "");
 			}
+			if (stderr) {
+				reject(stderr);
+			}
+			resolve(stdout);
 		});
+		// sudo.exec(cmd, { name: "joi" }, (err, stdout, stderr) => {
+		// 	if (err) {
+		// 		reject(err);
+		// 	} else if (stderr) {
+		// 		reject(stderr);
+		// 	} else {
+		// 		resolve(stdout?.toString() || "");
+		// 	}
+		// });
 	});
 }
 
@@ -85,7 +95,7 @@ export function makeRequest<T>(options: RequestOptions | string | URL) {
 		const req = http.request(options, (res) => {
 			// 检查响应头中的 Content-Type
 			const contentType = res.headers["content-type"];
-      const charsetMatch = contentType?.match(/charset=([a-zA-Z0-9-]+)/);
+			const charsetMatch = contentType?.match(/charset=([a-zA-Z0-9-]+)/);
 
 			// 默认编码为 UTF-8
 			let encoding = "utf-8";
