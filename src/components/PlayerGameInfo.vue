@@ -6,6 +6,7 @@ import SpellImg from "@/components/img/spellImg.vue";
 import ItemImg from "@/components/img/itemImg.vue";
 import { DocumentCopy16Regular } from "@vicons/fluent";
 import Perks from "@/components/img/Perks.vue";
+import { getNameAndTagLine } from "@/utils/util";
 
 const props = defineProps<{
 	info: Participant;
@@ -15,7 +16,8 @@ const { info } = toRefs(props);
 
 const message = useMessage();
 
-function copyName(name: string) {
+function copyName(playInfo: Player) {
+	const name = getNameAndTagLine(playInfo);
 	navigator.clipboard.writeText(name).then(() => message.success(`昵称[${name}]已复制`));
 }
 
@@ -32,10 +34,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 					:level="info?.stats.champLevel"
 					:champion-id="info?.championId"></champion-img>
 			</div>
-			<div
-				class="relative inline-flex cursor-pointer"
-				style="width: 8em"
-				@click="() => copyName(playInfo.player.summonerName)">
+			<div class="relative inline-flex cursor-pointer" style="width: 8em" @click="() => copyName(playInfo.player)">
 				<div
 					style="width: 8em; font-size: 0.8em"
 					:title="playInfo.player.summonerName"

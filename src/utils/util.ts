@@ -1,5 +1,6 @@
 import { isPromise } from "@vue/shared";
 import { random } from "lodash";
+import { Player, SummonerInfo } from "@@/types/lcuType";
 
 /**
  * 错误重试包装器
@@ -58,4 +59,14 @@ export const randomTimout = function <T>(
 			random(min, max)
 		);
 	});
+};
+
+export const getNameAndTagLine = (summoner: SummonerInfo | Player) => {
+	let name;
+	if ("summonerName" in summoner) {
+		name = summoner.gameName || summoner.summonerName;
+	} else {
+		name = summoner.gameName || summoner.displayName;
+	}
+	return name + (summoner.tagLine ? " #" + summoner.tagLine : "");
 };
