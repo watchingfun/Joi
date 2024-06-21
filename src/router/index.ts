@@ -36,7 +36,8 @@ const routes = [
 				path: "playerNotes/:puuid?",
 				name: "playerNotes",
 				component: PlayerNotes,
-				meta: { title: "玩家笔记" }
+				meta: { title: "玩家笔记" },
+				props: true
 			},
 			{ path: "setting", name: "setting", component: Setting },
 			{

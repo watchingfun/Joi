@@ -26,7 +26,7 @@ export async function processGameSessionData(data: ChampSelectPhaseSession, game
 				const summonerInfo = await getSummonerByPuuid(t.puuid);
 				return {
 					puuid: t.puuid,
-					summonerName: summonerInfo.displayName,
+					summonerName: summonerInfo.gameName,
 					summonerInfo: summonerInfo
 				};
 			})

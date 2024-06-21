@@ -276,7 +276,7 @@ const handleNameOptionsSelect = (key: string) => {
 						:closable="i !== 0"
 						v-for="(record, i) in summonerQueryList"
 						:key="record.summonerInfo.puuid"
-						:tab="record.summonerInfo.displayName"
+						:tab="record.summonerInfo.gameName"
 						:name="i">
 					</n-tab>
 				</n-tabs>
@@ -291,7 +291,7 @@ const handleNameOptionsSelect = (key: string) => {
 				:on-clickoutside="onClickDropdownOutside"
 				@select="handleDropdownSelect" />
 			<div class="flex flex-row flex-nowrap items-center gap-[10px] min-h-[50px]">
-				<div class="flex flex-row items-center" v-if="currentTabSummoner?.displayName">
+				<div class="flex flex-row items-center" v-if="currentTabSummoner?.gameName">
 					<div v-if="summonerQueryList[tabIndex]?.playerNote?.tags">
 						<n-ellipsis style="max-width: 200px" :tooltip="{ width: 400 }">
 							<n-tag
@@ -310,7 +310,7 @@ const handleNameOptionsSelect = (key: string) => {
 					<profile-img round class="m-2 shrink-0" :profile-icon-id="currentTabSummoner.profileIconId"></profile-img>
 					<n-dropdown trigger="click" :options="playerDropDownOptions" @select="handleNameOptionsSelect">
 						<n-button text class="truncate cursor-pointer" :title="getNameAndTagLine(currentTabSummoner)">
-							{{ currentTabSummoner?.displayName }}
+							{{ currentTabSummoner?.gameName }}
 						</n-button>
 					</n-dropdown>
 				</div>

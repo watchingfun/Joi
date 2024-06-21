@@ -37,7 +37,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 			<div class="relative inline-flex cursor-pointer" style="width: 8em" @click="() => copyName(playInfo.player)">
 				<div
 					style="width: 8em; font-size: 0.8em"
-					:title="playInfo.player.summonerName"
+					:title="playInfo.player.gameName"
 					:class="[
 						'inline-block',
 						'truncate',
@@ -45,7 +45,7 @@ const emit = defineEmits<{ jumpSummoner: [player: Player] }>();
 						'summonerName',
 						info?.stats.win ? 'win-result' : 'fail-result'
 					]">
-					{{ playInfo.player.summonerName }}
+					{{ playInfo.player.gameName }}
 				</div>
 				<div class="mr-2 copy" style="position: absolute; top: 0; right: 0; font-size: 1em">
 					<DocumentCopy16Regular />

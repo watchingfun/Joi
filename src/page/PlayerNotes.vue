@@ -5,8 +5,11 @@ import PlayerTagSelect from "@/components/PlayerTagSelect.vue";
 import playerNotesApi from "@/api/playerNotesApi";
 import { useElementSize } from "@vueuse/core";
 import lcuApi from "@/api/lcuApi";
-import router from "@/router";
+
 import PlayerNoteEdit from "@/components/PlayerNoteEdit.vue";
+import { useRouter } from "vue-router";
+
+const props = defineProps<{ puuid?: string }>();
 
 const checkedRowKeysRef = ref<Array<string>>([]);
 const dialog = useDialog();
@@ -80,13 +83,13 @@ const columns = [
 		width: 100,
 		ellipsis: {
 			tooltip: {
-        width: 500
-      }
+				width: 500
+			}
 		},
 		render(row: PlayerNote) {
 			return row.tags?.map((tagKey) => {
 				return (
-					<NTag type="warning" style={{ margin: '3px 6px 3px 0' }} bordered={false}>
+					<NTag type="warning" style={{ margin: "3px 6px 3px 0" }} bordered={false}>
 						{tagKey}
 					</NTag>
 				);
@@ -104,7 +107,7 @@ const columns = [
 ];
 
 const updateSummonerName = async (playerNote: PlayerNote) => {
-	playerNote.summonerName = (await lcuApi.getSummonerByPuuid(playerNote.id)).displayName;
+	playerNote.summonerName = (await lcuApi.getSummonerByPuuid(playerNote.id)).gameName;
 	await playerNotesApi.updatePlayerNote(toRaw(playerNote));
 };
 
@@ -166,7 +169,7 @@ function onClickoutside() {
 }
 
 let currentContextRow: PlayerNote | undefined;
-
+const router = useRouter();
 const rowProps = (row: PlayerNote) => {
 	return {
 		style: "cursor: pointer;",
@@ -184,6 +187,7 @@ const rowProps = (row: PlayerNote) => {
 			if ((e.target as HTMLElement)?.classList?.value.includes("n-checkbox-box")) {
 				return;
 			}
+			updateSummonerName(row);
 			router.push({ name: "historyMatch", params: { puuid: row.id } });
 		}
 	};
@@ -234,36 +238,33 @@ const editNote = ref<PlayerNote>();
 
 const addMode = ref(false);
 
-watch(
-	() => router.currentRoute.value,
-	async (n, o) => {
-		if (n.name === "playerNotes") {
-			const puuid = n.params.puuid as string;
-			if (puuid) {
-				const dbValue = await playerNotesApi.queryPlayerNote(puuid);
-				const summonerInfo = await lcuApi.getSummonerByPuuid(puuid);
-				if (summonerInfo) {
-					if (dbValue) {
-						addMode.value = false;
-						editNote.value = { ...dbValue, summonerName: summonerInfo.displayName };
-					} else {
-						addMode.value = true;
-						editNote.value = {
-							summonerName: summonerInfo.displayName,
-							id: puuid,
-							createTime: "",
-							updateTime: "",
-							tags: [],
-							gameIds: []
-						};
-					}
-					editShow.value = true;
-				}
-			}
+const editNoteLoad = async (puuid: string) => {
+	const dbValue = await playerNotesApi.queryPlayerNote(puuid);
+	const summonerInfo = await lcuApi.getSummonerByPuuid(puuid);
+	if (summonerInfo) {
+		if (dbValue) {
+			addMode.value = false;
+			editNote.value = { ...dbValue, summonerName: summonerInfo.gameName };
+		} else {
+			addMode.value = true;
+			editNote.value = {
+				summonerName: summonerInfo.gameName,
+				id: puuid,
+				createTime: "",
+				updateTime: "",
+				tags: [],
+				gameIds: []
+			};
 		}
-	},
-	{ deep: true }
-);
+		editShow.value = true;
+	}
+};
+
+onActivated(() => {
+	if (props.puuid) {
+		editNoteLoad(props.puuid);
+	}
+});
 </script>
 
 <template>

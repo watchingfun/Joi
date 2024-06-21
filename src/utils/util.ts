@@ -62,11 +62,5 @@ export const randomTimout = function <T>(
 };
 
 export const getNameAndTagLine = (summoner: SummonerInfo | Player) => {
-	let name;
-	if ("summonerName" in summoner) {
-		name = summoner.gameName || summoner.summonerName;
-	} else {
-		name = summoner.gameName || summoner.displayName;
-	}
-	return name + (summoner.tagLine ? " #" + summoner.tagLine : "");
+	return summoner.gameName + " #" + summoner.tagLine;
 };

@@ -175,7 +175,7 @@ export const queryMatchHistory = async (puuid: string, page: number = 1, pageSiz
 		url: `/lol-match-history/v1/products/lol/${puuid}/matches?begIndex=${begIndex}&endIndex=${endIndex}`
 	}).catch((e: any) => {
 		logger.error("QueryMatchHistory", e.message, puuid, begIndex, endIndex);
-		throw e;
+		throw new Error("查询战绩失败，远程服务异常："+e+"\n 艾欧尼亚服务器晚上有概率查询失败，不是本软件的问题");
 	});
 };
 
